@@ -137,42 +137,35 @@ namespace Ledybot
                 return;
             }
             lastReadMemSeq = 0;
-            string fileName = lastReadMemFileName;
-            if (fileName != null)
-            {
-                FileStream fs = new FileStream(fileName, FileMode.Create);
-                fs.Write(dataBuf, 0, dataBuf.Length);
-                fs.Close();
-                //log("dump saved into " + fileName + " successfully");
 
-                int i = 0;
-                string szResult = "";
-                for (i = 0; i < dataBuf.Length; i++)
+            int i = 0;
+            int iBufferlength = dataBuf.Length;
+            for (i = 0; i < dataBuf.Length; i++)
+            {
+                if (i % 2 == 0)
                 {
-                    if (i % 2 == 0)
+                    if (dataBuf[i] == 0x00)
                     {
-                        if (dataBuf[i] == 0x00)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            //this is what it looks like when you have no clue about unicode:
-                            szResult = szResult + (char)dataBuf[i];
-                        }
+                        iBufferlength = i;
+                        break;
                     }
                 }
-
-                //string szResult = Encoding.Unicode.GetString(dataBuf);
-
-                //t.BeginInvoke((MethodInvoker)delegate () { t.Text = szResult; ; });
-                lock (retValLock)
-                {
-                    retVal = szResult;
-                    retDone = true;
-                }
-                return;
             }
+            byte[] actualBuffer = new byte[iBufferlength];
+            for(i = 0; i < actualBuffer.Length; i++)
+            {
+                actualBuffer[i] = dataBuf[i];
+            }
+
+            string szResult = Encoding.Unicode.GetString(actualBuffer);
+
+            //t.BeginInvoke((MethodInvoker)delegate () { t.Text = szResult; ; });
+            lock (retValLock)
+            {
+                retVal = szResult;
+                retDone = true;
+            }
+            return;
             //log(byteToHex(dataBuf, 0));
 
         }

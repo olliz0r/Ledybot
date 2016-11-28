@@ -12,6 +12,31 @@ namespace Ledybot
 {
     public class Worker
     {
+        private uint addr_RequestedPokemon_en = 0x30784ef4;
+        private uint addr_RequestedPokemon_es = 0x307856F4;
+
+        private uint addr_RequestedLevel_en = 0x307879B4;
+        private uint addr_RequestedLevel_es = 0x307881B4;
+
+        private uint addr_DepositedPokemonNickname_en = 0x3077c514;
+        private uint addr_DepositedPokemonNickname_es = 0x3077cd14;
+
+        private uint addr_TrainerName_en = 0x305F1864;
+        private uint addr_TrainerName_es = 0x305F2064;
+
+        private uint addr_TrainerCountry_en = 0x305F2A14;
+        private uint addr_TrainerCountry_es = 0x305F3214;
+
+        private uint addr_TrainerSubCountry_en = 0x305F76A4;
+        private uint addr_TrainerSubCountry_es = 0x305F7EA4;
+
+        private uint addr_RequestedPokemon;
+        private uint addr_RequestedLevel;
+        private uint addr_DepositedPokemonNickname;
+        private uint addr_TrainerName;
+        private uint addr_TrainerCountry;
+        private uint addr_TrainerSubCountry;
+        
 
         private volatile string szPokemonToFind = "";
         private volatile string szPokemonToGive = "";
@@ -20,6 +45,8 @@ namespace Ledybot
         private volatile string szLevel = "";
         private volatile string szPID = "";
         private volatile int iPID = 0;
+        private volatile bool bSpanish = false;
+
         private volatile bool _shouldStop = false;
         public void DoWork()
         {
@@ -72,14 +99,14 @@ namespace Ledybot
 
                 for(int i = 0; i < 25; i++)
                 {
-                    string szReqPokemon = h.readSafe(0x30784ef4, 20, iPID);
+                    string szReqPokemon = h.readSafe(addr_RequestedPokemon, 20, iPID);
                     if(szReqPokemon == this.szPokemonToGive)
                     {
-                        string szLevel = h.readSafe(0x307879B4, 6, iPID);
+                        string szLevel = h.readSafe(addr_RequestedLevel, 12, iPID);
                         szLevel = szLevel.ToLower();
-                        if (szLevel.Contains(this.szLevel) || szLevel.Contains("any"))
+                        if (szLevel.Contains(this.szLevel) || (!this.bSpanish && szLevel.Contains("any")) || (this.bSpanish && szLevel.Contains("cual")))
                         {
-                            string szNickname = h.readSafe(0x3077c514, 20, iPID);
+                            string szNickname = h.readSafe(addr_DepositedPokemonNickname, 20, iPID);
 
                             string szPath = this.szDefaultPk7;
                             string szFileToFind = this.szPk7Folder + szNickname + ".pk7";
@@ -93,9 +120,9 @@ namespace Ledybot
                             string ek7 = BitConverter.ToString(cloneshort).Replace("-", ", 0x");
 
                             //optional: grab some trainer data
-                            string szTrainerName = h.readSafe(0x305F1864, 20, iPID);
-                            string szCountry = h.readSafe(0x305F2A14, 20, iPID);
-                            string szSubCountry = h.readSafe(0x305F76A4, 20, iPID);
+                            string szTrainerName = h.readSafe(addr_TrainerName, 20, iPID);
+                            string szCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
+                            string szSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
 
                             Program.f1.AppendListViewItem(szTrainerName, szNickname, szCountry, szSubCountry);
                             //Inject the Pokemon to box1slot1
@@ -146,7 +173,7 @@ namespace Ledybot
             _shouldStop = true;
         }
 
-        public void setValues(string szPtF, string szPtG, string szD, string szF, string szL, string szP)
+        public void setValues(string szPtF, string szPtG, string szD, string szF, string szL, string szP, bool bSpanish)
         {
             this.szPokemonToFind = szPtF;
             this.szPokemonToGive = szPtG;
@@ -154,7 +181,27 @@ namespace Ledybot
             this.szPk7Folder = szF;
             this.szLevel = szL;
             this.szPID = szP;
+            this.bSpanish = bSpanish;
 
+
+            if (bSpanish)
+            {
+                addr_RequestedPokemon = addr_RequestedPokemon_es;
+                addr_RequestedLevel = addr_RequestedLevel_es;
+                addr_DepositedPokemonNickname = addr_DepositedPokemonNickname_es;
+                addr_TrainerName = addr_TrainerName_es;
+                addr_TrainerCountry = addr_TrainerCountry_es;
+                addr_TrainerSubCountry = addr_TrainerSubCountry_es;
+            }
+            else
+            {
+                addr_RequestedPokemon = addr_RequestedPokemon_en;
+                addr_RequestedLevel = addr_RequestedLevel_en;
+                addr_DepositedPokemonNickname = addr_DepositedPokemonNickname_en;
+                addr_TrainerName = addr_TrainerName_en;
+                addr_TrainerCountry = addr_TrainerCountry_en;
+                addr_TrainerSubCountry = addr_TrainerSubCountry_en;
+            }
 
             this.iPID = int.Parse(szPID, NumberStyles.HexNumber);
         }
