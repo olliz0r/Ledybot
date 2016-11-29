@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.tb_IP = new System.Windows.Forms.TextBox();
             this.tb_Port = new System.Windows.Forms.TextBox();
             this.l_dummy = new System.Windows.Forms.Label();
@@ -49,10 +50,15 @@
             this.lv_log = new System.Windows.Forms.ListView();
             this.Time = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Trainer = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.Ditto = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.NickName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Country = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SubCountry = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.btn_Export = new System.Windows.Forms.Button();
             this.cb_Spanish = new System.Windows.Forms.CheckBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.nud_Count = new System.Windows.Forms.NumericUpDown();
+            this.cb_EndStart = new System.Windows.Forms.CheckBox();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_Count)).BeginInit();
             this.SuspendLayout();
             // 
             // tb_IP
@@ -61,11 +67,11 @@
             this.tb_IP.Name = "tb_IP";
             this.tb_IP.Size = new System.Drawing.Size(100, 20);
             this.tb_IP.TabIndex = 0;
-            this.tb_IP.Text = "192.168.178.48";
+            this.tb_IP.Text = "192.168.1.19";
             // 
             // tb_Port
             // 
-            this.tb_Port.Location = new System.Drawing.Point(135, 12);
+            this.tb_Port.Location = new System.Drawing.Point(135, 13);
             this.tb_Port.Name = "tb_Port";
             this.tb_Port.Size = new System.Drawing.Size(34, 20);
             this.tb_Port.TabIndex = 1;
@@ -82,11 +88,11 @@
             // 
             // tb_PID
             // 
-            this.tb_PID.Location = new System.Drawing.Point(191, 12);
+            this.tb_PID.Location = new System.Drawing.Point(191, 13);
             this.tb_PID.Name = "tb_PID";
             this.tb_PID.Size = new System.Drawing.Size(19, 20);
             this.tb_PID.TabIndex = 3;
-            this.tb_PID.Text = "2b";
+            this.tb_PID.Text = "2c";
             // 
             // lb_dummy2
             // 
@@ -99,7 +105,7 @@
             // 
             // btn_Connect
             // 
-            this.btn_Connect.Location = new System.Drawing.Point(216, 9);
+            this.btn_Connect.Location = new System.Drawing.Point(216, 11);
             this.btn_Connect.Name = "btn_Connect";
             this.btn_Connect.Size = new System.Drawing.Size(75, 23);
             this.btn_Connect.TabIndex = 5;
@@ -109,7 +115,7 @@
             // 
             // tb_PokemonToFind
             // 
-            this.tb_PokemonToFind.Location = new System.Drawing.Point(13, 70);
+            this.tb_PokemonToFind.Location = new System.Drawing.Point(12, 67);
             this.tb_PokemonToFind.Name = "tb_PokemonToFind";
             this.tb_PokemonToFind.Size = new System.Drawing.Size(100, 20);
             this.tb_PokemonToFind.TabIndex = 6;
@@ -118,7 +124,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 51);
+            this.label1.Location = new System.Drawing.Point(10, 51);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(106, 13);
             this.label1.TabIndex = 7;
@@ -135,7 +141,7 @@
             // 
             // tb_GiveAway
             // 
-            this.tb_GiveAway.Location = new System.Drawing.Point(12, 122);
+            this.tb_GiveAway.Location = new System.Drawing.Point(12, 123);
             this.tb_GiveAway.Name = "tb_GiveAway";
             this.tb_GiveAway.Size = new System.Drawing.Size(100, 20);
             this.tb_GiveAway.TabIndex = 9;
@@ -144,7 +150,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(125, 106);
+            this.label3.Location = new System.Drawing.Point(119, 106);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(36, 13);
             this.label3.TabIndex = 10;
@@ -152,11 +158,12 @@
             // 
             // tb_Level
             // 
-            this.tb_Level.Location = new System.Drawing.Point(128, 122);
+            this.tb_Level.Location = new System.Drawing.Point(122, 123);
             this.tb_Level.Name = "tb_Level";
             this.tb_Level.Size = new System.Drawing.Size(33, 20);
             this.tb_Level.TabIndex = 11;
             this.tb_Level.Text = "91";
+            this.tb_Level.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // label4
             // 
@@ -173,7 +180,7 @@
             this.tb_Default.Name = "tb_Default";
             this.tb_Default.Size = new System.Drawing.Size(354, 20);
             this.tb_Default.TabIndex = 13;
-            this.tb_Default.Text = "C:/GiveAway/6IV.pk7";
+            this.tb_Default.Text = "D:/Ledybot/pk7s/Ditto.pk7";
             // 
             // label5
             // 
@@ -190,11 +197,11 @@
             this.tb_Folder.Name = "tb_Folder";
             this.tb_Folder.Size = new System.Drawing.Size(354, 20);
             this.tb_Folder.TabIndex = 15;
-            this.tb_Folder.Text = "C:/GiveAway/";
+            this.tb_Folder.Text = "D:/Ledybot/pk7s";
             // 
             // btn_Start
             // 
-            this.btn_Start.Location = new System.Drawing.Point(167, 120);
+            this.btn_Start.Location = new System.Drawing.Point(161, 121);
             this.btn_Start.Name = "btn_Start";
             this.btn_Start.Size = new System.Drawing.Size(58, 23);
             this.btn_Start.TabIndex = 16;
@@ -204,7 +211,7 @@
             // 
             // btn_Stop
             // 
-            this.btn_Stop.Location = new System.Drawing.Point(233, 120);
+            this.btn_Stop.Location = new System.Drawing.Point(225, 121);
             this.btn_Stop.Name = "btn_Stop";
             this.btn_Stop.Size = new System.Drawing.Size(58, 23);
             this.btn_Stop.TabIndex = 17;
@@ -217,7 +224,7 @@
             this.lv_log.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.Time,
             this.Trainer,
-            this.Ditto,
+            this.NickName,
             this.Country,
             this.SubCountry});
             this.lv_log.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
@@ -237,10 +244,10 @@
             // 
             this.Trainer.Text = "Trainer";
             // 
-            // Ditto
+            // NickName
             // 
-            this.Ditto.Text = "Ditto";
-            this.Ditto.Width = 50;
+            this.NickName.Text = "Name";
+            this.NickName.Width = 50;
             // 
             // Country
             // 
@@ -250,22 +257,68 @@
             // 
             this.SubCountry.Text = "SubCountry";
             // 
+            // btn_Export
+            // 
+            this.btn_Export.Location = new System.Drawing.Point(12, 515);
+            this.btn_Export.Name = "btn_Export";
+            this.btn_Export.Size = new System.Drawing.Size(354, 23);
+            this.btn_Export.TabIndex = 19;
+            this.btn_Export.Text = "Export";
+            this.btn_Export.UseVisualStyleBackColor = true;
+            this.btn_Export.Click += new System.EventHandler(this.btn_Export_Click);
+            // 
             // cb_Spanish
             // 
             this.cb_Spanish.AutoSize = true;
-            this.cb_Spanish.Location = new System.Drawing.Point(297, 122);
+            this.cb_Spanish.Location = new System.Drawing.Point(289, 125);
             this.cb_Spanish.Name = "cb_Spanish";
             this.cb_Spanish.Size = new System.Drawing.Size(64, 17);
-            this.cb_Spanish.TabIndex = 19;
+            this.cb_Spanish.TabIndex = 20;
             this.cb_Spanish.Text = "Spanish";
             this.cb_Spanish.UseVisualStyleBackColor = true;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(119, 51);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(38, 13);
+            this.label6.TabIndex = 22;
+            this.label6.Text = "Count:";
+            // 
+            // nud_Count
+            // 
+            this.nud_Count.Location = new System.Drawing.Point(122, 68);
+            this.nud_Count.Name = "nud_Count";
+            this.nud_Count.Size = new System.Drawing.Size(35, 20);
+            this.nud_Count.TabIndex = 23;
+            this.nud_Count.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nud_Count.Value = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
+            // 
+            // cb_EndStart
+            // 
+            this.cb_EndStart.AutoSize = true;
+            this.cb_EndStart.Location = new System.Drawing.Point(163, 69);
+            this.cb_EndStart.Name = "cb_EndStart";
+            this.cb_EndStart.Size = new System.Drawing.Size(92, 17);
+            this.cb_EndStart.TabIndex = 24;
+            this.cb_EndStart.Text = "Start from end";
+            this.cb_EndStart.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(378, 520);
+            this.ClientSize = new System.Drawing.Size(378, 552);
+            this.Controls.Add(this.cb_EndStart);
+            this.Controls.Add(this.nud_Count);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.cb_Spanish);
+            this.Controls.Add(this.btn_Export);
             this.Controls.Add(this.lv_log);
             this.Controls.Add(this.btn_Stop);
             this.Controls.Add(this.btn_Start);
@@ -285,8 +338,10 @@
             this.Controls.Add(this.l_dummy);
             this.Controls.Add(this.tb_Port);
             this.Controls.Add(this.tb_IP);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "Ledybot v1.0";
+            ((System.ComponentModel.ISupportInitialize)(this.nud_Count)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -315,10 +370,14 @@
         private System.Windows.Forms.ListView lv_log;
         private System.Windows.Forms.ColumnHeader Time;
         private System.Windows.Forms.ColumnHeader Trainer;
-        private System.Windows.Forms.ColumnHeader Ditto;
+        private System.Windows.Forms.ColumnHeader NickName;
         private System.Windows.Forms.ColumnHeader Country;
         private System.Windows.Forms.ColumnHeader SubCountry;
+        private System.Windows.Forms.Button btn_Export;
         private System.Windows.Forms.CheckBox cb_Spanish;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.NumericUpDown nud_Count;
+        private System.Windows.Forms.CheckBox cb_EndStart;
     }
 }
 

@@ -107,7 +107,7 @@ namespace Ledybot
                 Program.ntrClient.retDone = false;
             }
             bool waiting = true;
-            Program.ntrClient.sendReadMemPacket(addr, byteCount, (uint)pid, "C:/temp.txt");
+            Program.ntrClient.sendReadMemPacket(addr, byteCount, (uint)pid);
             string szReturn = "";
             while (waiting)
             {

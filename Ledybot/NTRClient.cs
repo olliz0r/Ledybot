@@ -15,7 +15,6 @@ namespace Ledybot
         public NetworkStream netStream;
         public Thread packetRecvThread;
         UInt32 lastReadMemSeq;
-        string lastReadMemFileName;
         private object syncLock = new object();
         public object retValLock = new object();
         int heartbeatSendable;
@@ -26,7 +25,7 @@ namespace Ledybot
 
         public string retVal;
         public bool retDone;
-        
+
 
         int readNetworkStream(NetworkStream stream, byte[] buf, int length)
         {
@@ -152,12 +151,12 @@ namespace Ledybot
                 }
             }
             byte[] actualBuffer = new byte[iBufferlength];
-            for(i = 0; i < actualBuffer.Length; i++)
+            for (i = 0; i < actualBuffer.Length; i++)
             {
                 actualBuffer[i] = dataBuf[i];
             }
 
-            string szResult = Encoding.Unicode.GetString(actualBuffer);
+            string szResult = Encoding.Unicode.GetString(actualBuffer).Trim('\0');
 
             //t.BeginInvoke((MethodInvoker)delegate () { t.Text = szResult; ; });
             lock (retValLock)
@@ -170,11 +169,10 @@ namespace Ledybot
 
         }
 
-        public void sendReadMemPacket(UInt32 addr, UInt32 size, UInt32 pid, string fileName)
+        public void sendReadMemPacket(UInt32 addr, UInt32 size, UInt32 pid)
         {
             sendEmptyPacket(9, pid, addr, size);
             lastReadMemSeq = currentSeq;
-            lastReadMemFileName = fileName;
         }
 
         public void sendEmptyPacket(UInt32 cmd, UInt32 arg0 = 0, UInt32 arg1 = 0, UInt32 arg2 = 0, UInt32 arg3 = 0, UInt32 arg4 = 0)

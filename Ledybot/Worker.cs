@@ -36,7 +36,7 @@ namespace Ledybot
         private uint addr_TrainerName;
         private uint addr_TrainerCountry;
         private uint addr_TrainerSubCountry;
-        
+
 
         private volatile string szPokemonToFind = "";
         private volatile string szPokemonToGive = "";
@@ -46,16 +46,18 @@ namespace Ledybot
         private volatile string szPID = "";
         private volatile int iPID = 0;
         private volatile bool bSpanish = false;
+        private volatile int count = 0;
+        private volatile bool endStart = false;
 
         private volatile bool _shouldStop = false;
         public void DoWork()
         {
             bool bPokemonFound = false;
             ScriptHelper h = Program.scriptHelper;
-            
+
             while (!_shouldStop)
             {
-                Thread.Sleep(2000);
+                Thread.Sleep(2250);
                 bool bSent = false;
                 if (!bPokemonFound)
                 {
@@ -68,7 +70,7 @@ namespace Ledybot
                     //What Pokemon?
                     h.press(h.Abtn);
                     //black screen
-                    Thread.Sleep(3000);
+                    Thread.Sleep(3250);
 
                     //"type" the name of the pokemon we want to find
                     byte[] name = new byte[this.szPokemonToFind.Length * 2];
@@ -84,7 +86,7 @@ namespace Ledybot
                     Thread.Sleep(1000);
                     h.press(h.Abtn);
                     //black screen
-                    Thread.Sleep(4000);
+                    Thread.Sleep(4250);
                     bPokemonFound = true;
                 }
                 else
@@ -95,12 +97,22 @@ namespace Ledybot
 
                 h.touch(h.searchBtn);
                 //finding pokemon
-                Thread.Sleep(4000);
+                Thread.Sleep(4250);
 
-                for(int i = 0; i < 25; i++)
+                if(endStart)
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        h.press(h.right);
+                        Thread.Sleep(100);
+                    }
+                }
+                
+
+                for (int i = 0; i < count; i++)
                 {
                     string szReqPokemon = h.readSafe(addr_RequestedPokemon, 20, iPID);
-                    if(szReqPokemon == this.szPokemonToGive)
+                    if (szReqPokemon == this.szPokemonToGive)
                     {
                         string szLevel = h.readSafe(addr_RequestedLevel, 12, iPID);
                         szLevel = szLevel.ToLower();
@@ -136,7 +148,7 @@ namespace Ledybot
                             Thread.Sleep(1000);
                             h.press(h.Abtn);
                             //trade starts here
-                            Thread.Sleep(10000);
+                            Thread.Sleep(10250);
                             //if the pokemon has been traded we have 35 seconds to get back to the starting spot for the bot by spamming b a bit
                             h.press(h.Abtn);
                             Thread.Sleep(1000);
@@ -150,21 +162,28 @@ namespace Ledybot
                             Thread.Sleep(1000);
                             h.press(h.Bbtn);
                             //if the trade is still going on wait for it to finish
-                            Thread.Sleep(30000);
+                            Thread.Sleep(30250);
                             bSent = true;
                             break;
                         }
                     }
-                    h.press(h.right);
-                    Thread.Sleep(500);
+                    if(endStart)
+                    {
+                        h.press(h.left);
+                    } else
+                    {
+                        h.press(h.right);
+                    }
+                    
+                    Thread.Sleep(750);
                 }
                 if (!bSent)
                 {
                     //no tradable pokemon in the last X pokemon, start from the front of the list again
                     h.press(h.Bbtn);
-                    Thread.Sleep(1000);
+                    Thread.Sleep(1250);
                     h.press(h.Bbtn);
-                    Thread.Sleep(1000);
+                    Thread.Sleep(1250);
                 }
             }
         }
@@ -173,7 +192,7 @@ namespace Ledybot
             _shouldStop = true;
         }
 
-        public void setValues(string szPtF, string szPtG, string szD, string szF, string szL, string szP, bool bSpanish)
+        public void setValues(string szPtF, string szPtG, string szD, string szF, string szL, string szP, bool bSpanish, int count = 25, bool endStart = false)
         {
             this.szPokemonToFind = szPtF;
             this.szPokemonToGive = szPtG;
@@ -182,6 +201,8 @@ namespace Ledybot
             this.szLevel = szL;
             this.szPID = szP;
             this.bSpanish = bSpanish;
+            this.count = count;
+            this.endStart = endStart;
 
 
             if (bSpanish)
