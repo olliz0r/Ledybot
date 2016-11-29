@@ -39,7 +39,7 @@ namespace Ledybot
             if (workerThread == null && workerObject == null)
             {
                 workerObject = new Worker();
-                workerObject.setValues(tb_PokemonToFind.Text, tb_GiveAway.Text, tb_Default.Text, tb_Folder.Text, tb_Level.Text, tb_PID.Text);
+                workerObject.setValues(tb_PokemonToFind.Text, tb_GiveAway.Text, tb_Default.Text, tb_Folder.Text, tb_Level.Text, tb_PID.Text, cb_Spanish.Checked);
                 workerThread = new Thread(workerObject.DoWork);
                 workerThread.Start();
             }         

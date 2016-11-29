@@ -52,6 +52,7 @@
             this.Ditto = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Country = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SubCountry = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.cb_Spanish = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // tb_IP
@@ -249,11 +250,22 @@
             // 
             this.SubCountry.Text = "SubCountry";
             // 
+            // cb_Spanish
+            // 
+            this.cb_Spanish.AutoSize = true;
+            this.cb_Spanish.Location = new System.Drawing.Point(297, 122);
+            this.cb_Spanish.Name = "cb_Spanish";
+            this.cb_Spanish.Size = new System.Drawing.Size(64, 17);
+            this.cb_Spanish.TabIndex = 19;
+            this.cb_Spanish.Text = "Spanish";
+            this.cb_Spanish.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(378, 520);
+            this.Controls.Add(this.cb_Spanish);
             this.Controls.Add(this.lv_log);
             this.Controls.Add(this.btn_Stop);
             this.Controls.Add(this.btn_Start);
@@ -306,6 +318,7 @@
         private System.Windows.Forms.ColumnHeader Ditto;
         private System.Windows.Forms.ColumnHeader Country;
         private System.Windows.Forms.ColumnHeader SubCountry;
+        private System.Windows.Forms.CheckBox cb_Spanish;
     }
 }
 
