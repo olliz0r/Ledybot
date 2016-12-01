@@ -28,7 +28,5 @@ Lots of things!
 - An actual working stop button (it will stop... eventually... maybe)
 - Speed optimizations
 - Prevent the same people from requesting more than once every X min. I already have the data of who requests (at least trainer name, country and subcountry), I'd just need to add them to a list and block them for a while. This would also block people from the same region with the same name though (unless I find a better way to identify who is requesting)
-- Add an option to search from the back of the queue?
 - Add an option for several deposited pokemon (to prevent people from redepositing the same pokemon all the time)?
-- Add an option to select how many gts entries we look at max (currently hardcoded 25)
 - ... and more!
