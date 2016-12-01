@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -109,6 +110,42 @@ namespace Ledybot
                 result.Append(String.Format("\"{0}\"", columnValue(i)));
             }
             result.AppendLine();
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            config.AppSettings.Settings["IP"].Value = tb_IP.Text;
+            config.AppSettings.Settings["Port"].Value = tb_Port.Text;
+            config.AppSettings.Settings["PID"].Value = tb_PID.Text;
+            config.AppSettings.Settings["Deposited"].Value = tb_PokemonToFind.Text;
+            config.AppSettings.Settings["Count"].Value = nud_Count.Value.ToString();
+            config.AppSettings.Settings["StartFromEnd"].Value = cb_EndStart.Checked.ToString();
+            config.AppSettings.Settings["GiveAway"].Value = tb_GiveAway.Text;
+            config.AppSettings.Settings["Level"].Value = tb_Level.Text;
+            config.AppSettings.Settings["Spanish"].Value = cb_Spanish.Checked.ToString();
+            config.AppSettings.Settings["Default"].Value = tb_Default.Text;
+            config.AppSettings.Settings["Folder"].Value = tb_Folder.Text;
+            config.Save(ConfigurationSaveMode.Modified);
+            ConfigurationManager.RefreshSection("appSettings");
+
+            Application.Exit();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            tb_IP.Text = config.AppSettings.Settings["IP"].Value;
+            tb_Port.Text = config.AppSettings.Settings["Port"].Value;
+            tb_PID.Text = config.AppSettings.Settings["PID"].Value;
+            tb_PokemonToFind.Text = config.AppSettings.Settings["Deposited"].Value;
+            nud_Count.Value = Int32.Parse(config.AppSettings.Settings["Count"].Value);
+            cb_EndStart.Checked = Boolean.Parse(config.AppSettings.Settings["StartFromEnd"].Value);
+            tb_GiveAway.Text = config.AppSettings.Settings["GiveAway"].Value;
+            tb_Level.Text = config.AppSettings.Settings["Level"].Value;
+            cb_Spanish.Checked = Boolean.Parse(config.AppSettings.Settings["Spanish"].Value);
+            tb_Default.Text = config.AppSettings.Settings["Default"].Value;
+            tb_Folder.Text = config.AppSettings.Settings["Folder"].Value;
         }
     }
 }

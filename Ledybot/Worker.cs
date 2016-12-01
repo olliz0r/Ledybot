@@ -48,6 +48,10 @@ namespace Ledybot
         private volatile bool bSpanish = false;
         private volatile int count = 0;
         private volatile bool endStart = false;
+        private volatile string firstIncorrectRequest = "";
+        private volatile string firstIncorrectTrainer = "";
+        private volatile string firstIncorrectCountry = "";
+        private volatile string firstIncorrectSubCountry = "";
 
         private volatile bool _shouldStop = false;
         public void DoWork()
@@ -103,6 +107,16 @@ namespace Ledybot
                 {
                     for (int i = 0; i < count; i++)
                     {
+                        string szReqPokemon = h.readSafe(addr_RequestedPokemon, 20, iPID);
+                        string szTrainerName = h.readSafe(addr_TrainerName, 20, iPID);
+                        string szCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
+                        string szSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
+
+                        if(firstIncorrectRequest == szReqPokemon && firstIncorrectTrainer == szTrainerName && firstIncorrectCountry == szCountry && firstIncorrectSubCountry == szSubCountry)
+                        {
+                            break;
+                        }
+
                         h.press(h.right);
                         Thread.Sleep(100);
                     }
@@ -116,7 +130,7 @@ namespace Ledybot
                     {
                         string szLevel = h.readSafe(addr_RequestedLevel, 12, iPID);
                         szLevel = szLevel.ToLower();
-                        if (szLevel.Contains(this.szLevel) || (!this.bSpanish && szLevel.Contains("any")) || (this.bSpanish && szLevel.Contains("cual")))
+                        if (szLevel.Contains(this.szLevel + " ") || szLevel.Contains(" " + this.szLevel) || (!this.bSpanish && szLevel.Contains("any")) || (this.bSpanish && szLevel.Contains("cual")))
                         {
                             string szNickname = h.readSafe(addr_DepositedPokemonNickname, 20, iPID);
 
@@ -167,15 +181,23 @@ namespace Ledybot
                             break;
                         }
                     }
+                    else if(endStart)
+                    {
+                        firstIncorrectRequest = szReqPokemon;
+                        firstIncorrectTrainer = h.readSafe(addr_TrainerName, 20, iPID);
+                        firstIncorrectCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
+                        firstIncorrectSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
+                    }
                     if(endStart)
                     {
                         h.press(h.left);
-                    } else
+                    }
+                    else
                     {
                         h.press(h.right);
                     }
                     
-                    Thread.Sleep(750);
+                    Thread.Sleep(500);
                 }
                 if (!bSent)
                 {
