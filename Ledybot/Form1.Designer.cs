@@ -56,9 +56,8 @@
             this.btn_Export = new System.Windows.Forms.Button();
             this.cb_Spanish = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.nud_Count = new System.Windows.Forms.NumericUpDown();
-            this.cb_EndStart = new System.Windows.Forms.CheckBox();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_Count)).BeginInit();
+            this.nud_Dex = new System.Windows.Forms.NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_Dex)).BeginInit();
             this.SuspendLayout();
             // 
             // tb_IP
@@ -282,40 +281,39 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(119, 51);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(38, 13);
+            this.label6.Size = new System.Drawing.Size(29, 13);
             this.label6.TabIndex = 22;
-            this.label6.Text = "Count:";
+            this.label6.Text = "Dex:";
             // 
-            // nud_Count
+            // nud_Dex
             // 
-            this.nud_Count.Location = new System.Drawing.Point(122, 68);
-            this.nud_Count.Name = "nud_Count";
-            this.nud_Count.Size = new System.Drawing.Size(35, 20);
-            this.nud_Count.TabIndex = 23;
-            this.nud_Count.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.nud_Count.Value = new decimal(new int[] {
-            25,
+            this.nud_Dex.Location = new System.Drawing.Point(122, 67);
+            this.nud_Dex.Maximum = new decimal(new int[] {
+            802,
             0,
             0,
             0});
-            // 
-            // cb_EndStart
-            // 
-            this.cb_EndStart.AutoSize = true;
-            this.cb_EndStart.Location = new System.Drawing.Point(163, 69);
-            this.cb_EndStart.Name = "cb_EndStart";
-            this.cb_EndStart.Size = new System.Drawing.Size(92, 17);
-            this.cb_EndStart.TabIndex = 24;
-            this.cb_EndStart.Text = "Start from end";
-            this.cb_EndStart.UseVisualStyleBackColor = true;
+            this.nud_Dex.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_Dex.Name = "nud_Dex";
+            this.nud_Dex.Size = new System.Drawing.Size(47, 20);
+            this.nud_Dex.TabIndex = 23;
+            this.nud_Dex.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nud_Dex.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(378, 552);
-            this.Controls.Add(this.cb_EndStart);
-            this.Controls.Add(this.nud_Count);
+            this.Controls.Add(this.nud_Dex);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.cb_Spanish);
             this.Controls.Add(this.btn_Export);
@@ -343,7 +341,7 @@
             this.Text = "Ledybot v1.0";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.nud_Count)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_Dex)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -378,8 +376,7 @@
         private System.Windows.Forms.Button btn_Export;
         private System.Windows.Forms.CheckBox cb_Spanish;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.NumericUpDown nud_Count;
-        private System.Windows.Forms.CheckBox cb_EndStart;
+        private System.Windows.Forms.NumericUpDown nud_Dex;
     }
 }
 

@@ -156,7 +156,18 @@ namespace Ledybot
                 actualBuffer[i] = dataBuf[i];
             }
 
-            string szResult = Encoding.Unicode.GetString(actualBuffer).Trim('\0');
+            string szResult = "";
+
+            if(dataBuf.Length <= 4)
+            {
+                Array.Reverse(actualBuffer);
+                szResult = BitConverter.ToString(actualBuffer).Replace("-", string.Empty);
+            }
+            else
+            {
+                szResult = Encoding.Unicode.GetString(actualBuffer).Trim('\0');
+            }
+            
 
             //t.BeginInvoke((MethodInvoker)delegate () { t.Text = szResult; ; });
             lock (retValLock)

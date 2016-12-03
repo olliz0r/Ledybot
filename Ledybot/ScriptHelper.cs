@@ -111,7 +111,7 @@ namespace Ledybot
             string szReturn = "";
             while (waiting)
             {
-                Thread.Sleep(100);
+                Thread.Sleep(10);
                 lock (Program.ntrClient.retValLock)
                 {
                     if (Program.ntrClient.retDone)

@@ -30,6 +30,11 @@ namespace Ledybot
         private uint addr_TrainerSubCountry_en = 0x305F76A4;
         private uint addr_TrainerSubCountry_es = 0x305F7EA4;
 
+        //private uint addr_PageEntryDepositedPokemonNickname = 0x32A6A7D8;
+        //private uint addr_PageEntryDexRequest = 0x32A6A7D0;
+        private uint addr_PageSize = 0x32A6A1A4;
+        private uint addr_PageEndStartRecord = 0x32A6A68C;
+
         private uint addr_RequestedPokemon;
         private uint addr_RequestedLevel;
         private uint addr_DepositedPokemonNickname;
@@ -46,12 +51,11 @@ namespace Ledybot
         private volatile string szPID = "";
         private volatile int iPID = 0;
         private volatile bool bSpanish = false;
-        private volatile int count = 0;
-        private volatile bool endStart = false;
-        private volatile string firstIncorrectRequest = "";
-        private volatile string firstIncorrectTrainer = "";
-        private volatile string firstIncorrectCountry = "";
-        private volatile string firstIncorrectSubCountry = "";
+        private volatile int dexNum = 0;
+        //private volatile string firstIncorrectRequest = "";
+        //private volatile string firstIncorrectTrainer = "";
+        //private volatile string firstIncorrectCountry = "";
+        //private volatile string firstIncorrectSubCountry = "";
 
         private volatile bool _shouldStop = false;
         public void DoWork()
@@ -103,110 +107,343 @@ namespace Ledybot
                 //finding pokemon
                 Thread.Sleep(4250);
 
-                if(endStart)
+                bool lastPage = false;
+                int pageCount = 1;
+                while(!lastPage)
                 {
-                    for (int i = 0; i < count; i++)
+                    int szListCount = int.Parse(h.readSafe(addr_PageSize, 1, iPID), NumberStyles.HexNumber);
+                    if(szListCount == 100)
                     {
-                        string szReqPokemon = h.readSafe(addr_RequestedPokemon, 20, iPID);
-                        string szTrainerName = h.readSafe(addr_TrainerName, 20, iPID);
-                        string szCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
-                        string szSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
-
-                        if(firstIncorrectRequest == szReqPokemon && firstIncorrectTrainer == szTrainerName && firstIncorrectCountry == szCountry && firstIncorrectSubCountry == szSubCountry)
+                        for(int i = 0; i < 99; i++)
                         {
-                            break;
+                            h.press(h.right);
                         }
+
+                        string szReqPokemon1 = h.readSafe(addr_RequestedPokemon, 20, iPID);
+                        string szTrainerName1 = h.readSafe(addr_TrainerName, 20, iPID);
+                        string szCountry1 = h.readSafe(addr_TrainerCountry, 20, iPID);
+                        string szSubCountry1 = h.readSafe(addr_TrainerSubCountry, 20, iPID);
 
                         h.press(h.right);
-                        Thread.Sleep(100);
-                    }
-                }
-                
+                        Thread.Sleep(3000);
 
-                for (int i = 0; i < count; i++)
-                {
-                    string szReqPokemon = h.readSafe(addr_RequestedPokemon, 20, iPID);
-                    if (szReqPokemon == this.szPokemonToGive)
-                    {
-                        string szLevel = h.readSafe(addr_RequestedLevel, 12, iPID);
-                        szLevel = szLevel.ToLower();
-                        if (szLevel.Contains(this.szLevel + " ") || szLevel.Contains(" " + this.szLevel) || (!this.bSpanish && szLevel.Contains("any")) || (this.bSpanish && szLevel.Contains("cual")))
+                        string szReqPokemon2 = h.readSafe(addr_RequestedPokemon, 20, iPID);
+                        string szTrainerName2 = h.readSafe(addr_TrainerName, 20, iPID);
+                        string szCountry2 = h.readSafe(addr_TrainerCountry, 20, iPID);
+                        string szSubCountry2 = h.readSafe(addr_TrainerSubCountry, 20, iPID);
+
+                        if(szReqPokemon1 == szReqPokemon2 && szTrainerName1 == szTrainerName2 && szCountry1 == szCountry2 && szSubCountry1 == szSubCountry2)
                         {
-                            string szNickname = h.readSafe(addr_DepositedPokemonNickname, 20, iPID);
-
-                            string szPath = this.szDefaultPk7;
-                            string szFileToFind = this.szPk7Folder + szNickname + ".pk7";
-                            if (File.Exists(szFileToFind))
-                            {
-                                szPath = szFileToFind;
-                            }
-
-                            byte[] pkmEncrypted = System.IO.File.ReadAllBytes(szPath);
-                            byte[] cloneshort = PKHeX.encryptArray(pkmEncrypted.Take(232).ToArray());
-                            string ek7 = BitConverter.ToString(cloneshort).Replace("-", ", 0x");
-
-                            //optional: grab some trainer data
-                            string szTrainerName = h.readSafe(addr_TrainerName, 20, iPID);
-                            string szCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
-                            string szSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
-
-                            Program.f1.AppendListViewItem(szTrainerName, szNickname, szCountry, szSubCountry);
-                            //Inject the Pokemon to box1slot1
-                            Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
-                            Thread.Sleep(1000);
-                            h.press(h.Abtn);
-                            Thread.Sleep(3000);
-                            h.press(h.Abtn);
-                            Thread.Sleep(1000);
-                            h.press(h.Abtn);
-                            Thread.Sleep(1000);
-                            h.press(h.Abtn);
-                            //trade starts here
-                            Thread.Sleep(10250);
-                            //if the pokemon has been traded we have 35 seconds to get back to the starting spot for the bot by spamming b a bit
-                            h.press(h.Abtn);
-                            Thread.Sleep(1000);
-                            h.press(h.Bbtn);
-                            Thread.Sleep(1000);
-                            h.press(h.Bbtn);
-                            Thread.Sleep(1000);
-                            h.press(h.Bbtn);
-                            Thread.Sleep(1000);
-                            h.press(h.Bbtn);
-                            Thread.Sleep(1000);
-                            h.press(h.Bbtn);
-                            //if the trade is still going on wait for it to finish
-                            Thread.Sleep(30250);
-                            bSent = true;
-                            break;
+                            lastPage = true;
+                        } else
+                        {
+                            pageCount += 1;
                         }
-                    }
-                    else if(endStart)
-                    {
-                        firstIncorrectRequest = szReqPokemon;
-                        firstIncorrectTrainer = h.readSafe(addr_TrainerName, 20, iPID);
-                        firstIncorrectCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
-                        firstIncorrectSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
-                    }
-                    if(endStart)
-                    {
-                        h.press(h.left);
                     }
                     else
                     {
-                        h.press(h.right);
+                        lastPage = true;
                     }
-                    
-                    Thread.Sleep(500);
                 }
+
+                for(int i = pageCount; i > 0; i--)
+                {
+                    if (lastPage)
+                    {
+                        int szListCount = int.Parse(h.readSafe(addr_PageSize, 1, iPID), NumberStyles.HexNumber);
+                        uint addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEndStartRecord, 4, iPID), NumberStyles.HexNumber);
+                        int dexNumber = 0;
+                        for (int j = szListCount; j > 0; j--)
+                        {
+                            string hex = h.readSafe(addr_PageEntryAddress + 0xC, 2, iPID);
+                            dexNumber = int.Parse(hex, NumberStyles.HexNumber);
+                            if (dexNumber == dexNum)
+                            {
+                                for (int k = 0; k < j - 1; k++)
+                                {
+                                    h.press(h.right);
+                                    Thread.Sleep(100);
+                                }
+
+                                string szReqPokemon = h.readSafe(addr_RequestedPokemon, 20, iPID);
+                                if (szReqPokemon == this.szPokemonToGive)
+                                {
+                                    string szLevel = h.readSafe(addr_RequestedLevel, 12, iPID);
+                                    szLevel = szLevel.ToLower();
+                                    if (szLevel.Contains(this.szLevel + " ") || szLevel.Contains(" " + this.szLevel) || (!this.bSpanish && szLevel.Contains("any")) || (this.bSpanish && szLevel.Contains("cual")))
+                                    {
+                                        string szNickname = h.readSafe(addr_DepositedPokemonNickname, 20, iPID);
+
+                                        string szPath = this.szDefaultPk7;
+                                        string szFileToFind = this.szPk7Folder + szNickname + ".pk7";
+                                        if (File.Exists(szFileToFind))
+                                        {
+                                            szPath = szFileToFind;
+                                        }
+
+                                        byte[] pkmEncrypted = System.IO.File.ReadAllBytes(szPath);
+                                        byte[] cloneshort = PKHeX.encryptArray(pkmEncrypted.Take(232).ToArray());
+                                        string ek7 = BitConverter.ToString(cloneshort).Replace("-", ", 0x");
+
+                                        //optional: grab some trainer data
+                                        string szTrainerName = h.readSafe(addr_TrainerName, 20, iPID);
+                                        string szCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
+                                        string szSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
+
+                                        Program.f1.AppendListViewItem(szTrainerName, szNickname, szCountry, szSubCountry);
+                                        //Inject the Pokemon to box1slot1
+                                        Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
+                                        Thread.Sleep(1000);
+                                        h.press(h.Abtn);
+                                        Thread.Sleep(3000);
+                                        h.press(h.Abtn);
+                                        Thread.Sleep(1000);
+                                        h.press(h.Abtn);
+                                        Thread.Sleep(1000);
+                                        h.press(h.Abtn);
+                                        //trade starts here
+                                        Thread.Sleep(10250);
+                                        //if the pokemon has been traded we have 35 seconds to get back to the starting spot for the bot by spamming b a bit
+                                        h.press(h.Abtn);
+                                        Thread.Sleep(1000);
+                                        h.press(h.Bbtn);
+                                        Thread.Sleep(1000);
+                                        h.press(h.Bbtn);
+                                        Thread.Sleep(1000);
+                                        h.press(h.Bbtn);
+                                        Thread.Sleep(1000);
+                                        h.press(h.Bbtn);
+                                        Thread.Sleep(1000);
+                                        h.press(h.Bbtn);
+                                        //if the trade is still going on wait for it to finish
+                                        Thread.Sleep(30250);
+                                        bSent = true;
+                                        break;
+                                    }
+                                }
+
+                                for (int k = 0; k < j; k++)
+                                {
+                                    h.press(h.left);
+                                    Thread.Sleep(100);
+                                }
+
+                            }
+                            addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEntryAddress, 4, iPID), NumberStyles.HexNumber);
+                        }
+                        lastPage = false;
+                    }
+                    else
+                    {
+                        int szListCount = int.Parse(h.readSafe(addr_PageSize, 1, iPID), NumberStyles.HexNumber);
+                        uint addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEndStartRecord, 4, iPID), NumberStyles.HexNumber);
+                        int dexNumber = 0;
+                        for (int j = 0; j < szListCount; j++)
+                        {
+                            string hex = h.readSafe(addr_PageEntryAddress + 0xC, 2, iPID);
+                            dexNumber = int.Parse(hex, NumberStyles.HexNumber);
+                            if (dexNumber == dexNum)
+                            {
+                                for (int k = 0; k < j; k++)
+                                {
+                                    h.press(h.left);
+                                    Thread.Sleep(100);
+                                }
+
+                                string szReqPokemon = h.readSafe(addr_RequestedPokemon, 20, iPID);
+                                if (szReqPokemon == this.szPokemonToGive)
+                                {
+                                    string szLevel = h.readSafe(addr_RequestedLevel, 12, iPID);
+                                    szLevel = szLevel.ToLower();
+                                    if (szLevel.Contains(this.szLevel + " ") || szLevel.Contains(" " + this.szLevel) || (!this.bSpanish && szLevel.Contains("any")) || (this.bSpanish && szLevel.Contains("cual")))
+                                    {
+                                        string szNickname = h.readSafe(addr_DepositedPokemonNickname, 20, iPID);
+
+                                        string szPath = this.szDefaultPk7;
+                                        string szFileToFind = this.szPk7Folder + szNickname + ".pk7";
+                                        if (File.Exists(szFileToFind))
+                                        {
+                                            szPath = szFileToFind;
+                                        }
+
+                                        byte[] pkmEncrypted = System.IO.File.ReadAllBytes(szPath);
+                                        byte[] cloneshort = PKHeX.encryptArray(pkmEncrypted.Take(232).ToArray());
+                                        string ek7 = BitConverter.ToString(cloneshort).Replace("-", ", 0x");
+
+                                        //optional: grab some trainer data
+                                        string szTrainerName = h.readSafe(addr_TrainerName, 20, iPID);
+                                        string szCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
+                                        string szSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
+
+                                        Program.f1.AppendListViewItem(szTrainerName, szNickname, szCountry, szSubCountry);
+                                        //Inject the Pokemon to box1slot1
+                                        Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
+                                        Thread.Sleep(1000);
+                                        h.press(h.Abtn);
+                                        Thread.Sleep(3000);
+                                        h.press(h.Abtn);
+                                        Thread.Sleep(1000);
+                                        h.press(h.Abtn);
+                                        Thread.Sleep(1000);
+                                        h.press(h.Abtn);
+                                        //trade starts here
+                                        Thread.Sleep(10250);
+                                        //if the pokemon has been traded we have 35 seconds to get back to the starting spot for the bot by spamming b a bit
+                                        h.press(h.Abtn);
+                                        Thread.Sleep(1000);
+                                        h.press(h.Bbtn);
+                                        Thread.Sleep(1000);
+                                        h.press(h.Bbtn);
+                                        Thread.Sleep(1000);
+                                        h.press(h.Bbtn);
+                                        Thread.Sleep(1000);
+                                        h.press(h.Bbtn);
+                                        Thread.Sleep(1000);
+                                        h.press(h.Bbtn);
+                                        //if the trade is still going on wait for it to finish
+                                        Thread.Sleep(30250);
+                                        bSent = true;
+                                        break;
+                                    }
+                                }
+
+                                for (int k = 0; k < j; k++)
+                                {
+                                    h.press(h.right);
+                                    Thread.Sleep(100);
+                                }
+
+                            }
+                            addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEntryAddress, 4, iPID), NumberStyles.HexNumber);
+                        }
+                    }
+                    if (bSent)
+                    {
+                        break;
+                    }
+
+                    if (i != 1)
+                    {
+                        h.press(h.left);
+                        Thread.Sleep(3000);
+                    }
+                }
+
                 if (!bSent)
                 {
-                    //no tradable pokemon in the last X pokemon, start from the front of the list again
+                    //no tradable pokemon found
                     h.press(h.Bbtn);
                     Thread.Sleep(1250);
                     h.press(h.Bbtn);
                     Thread.Sleep(1250);
                 }
+
+                //if(endStart)
+                //{
+                //    for (int i = 0; i < count; i++)
+                //    {
+                //        string szReqPokemon = h.readSafe(addr_RequestedPokemon, 20, iPID);
+                //        if (szReqPokemon != this.szPokemonToGive)
+                //        {
+                //            string szTrainerName = h.readSafe(addr_TrainerName, 20, iPID);
+                //            string szCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
+                //            string szSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
+
+                //            if (firstIncorrectRequest == szReqPokemon && firstIncorrectTrainer == szTrainerName && firstIncorrectCountry == szCountry && firstIncorrectSubCountry == szSubCountry)
+                //            {
+                //                break;
+                //            }
+                //        }
+                //        h.press(h.right);
+                //        Thread.Sleep(100);
+                //    }
+                //}
+
+
+                //for (int i = 0; i < count; i++)
+                //{
+                //    string szReqPokemon = h.readSafe(addr_RequestedPokemon, 20, iPID);
+                //    if (szReqPokemon == this.szPokemonToGive)
+                //    {
+                //        string szLevel = h.readSafe(addr_RequestedLevel, 12, iPID);
+                //        szLevel = szLevel.ToLower();
+                //        if (szLevel.Contains(this.szLevel + " ") || szLevel.Contains(" " + this.szLevel) || (!this.bSpanish && szLevel.Contains("any")) || (this.bSpanish && szLevel.Contains("cual")))
+                //        {
+                //            string szNickname = h.readSafe(addr_DepositedPokemonNickname, 20, iPID);
+
+                //            string szPath = this.szDefaultPk7;
+                //            string szFileToFind = this.szPk7Folder + szNickname + ".pk7";
+                //            if (File.Exists(szFileToFind))
+                //            {
+                //                szPath = szFileToFind;
+                //            }
+
+                //            byte[] pkmEncrypted = System.IO.File.ReadAllBytes(szPath);
+                //            byte[] cloneshort = PKHeX.encryptArray(pkmEncrypted.Take(232).ToArray());
+                //            string ek7 = BitConverter.ToString(cloneshort).Replace("-", ", 0x");
+
+                //            //optional: grab some trainer data
+                //            string szTrainerName = h.readSafe(addr_TrainerName, 20, iPID);
+                //            string szCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
+                //            string szSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
+
+                //            Program.f1.AppendListViewItem(szTrainerName, szNickname, szCountry, szSubCountry);
+                //            //Inject the Pokemon to box1slot1
+                //            Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
+                //            Thread.Sleep(1000);
+                //            h.press(h.Abtn);
+                //            Thread.Sleep(3000);
+                //            h.press(h.Abtn);
+                //            Thread.Sleep(1000);
+                //            h.press(h.Abtn);
+                //            Thread.Sleep(1000);
+                //            h.press(h.Abtn);
+                //            //trade starts here
+                //            Thread.Sleep(10250);
+                //            //if the pokemon has been traded we have 35 seconds to get back to the starting spot for the bot by spamming b a bit
+                //            h.press(h.Abtn);
+                //            Thread.Sleep(1000);
+                //            h.press(h.Bbtn);
+                //            Thread.Sleep(1000);
+                //            h.press(h.Bbtn);
+                //            Thread.Sleep(1000);
+                //            h.press(h.Bbtn);
+                //            Thread.Sleep(1000);
+                //            h.press(h.Bbtn);
+                //            Thread.Sleep(1000);
+                //            h.press(h.Bbtn);
+                //            //if the trade is still going on wait for it to finish
+                //            Thread.Sleep(30250);
+                //            bSent = true;
+                //            break;
+                //        }
+                //    }
+                //    else if(endStart)
+                //    {
+                //        firstIncorrectRequest = szReqPokemon;
+                //        firstIncorrectTrainer = h.readSafe(addr_TrainerName, 20, iPID);
+                //        firstIncorrectCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
+                //        firstIncorrectSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
+                //    }
+                //    if(endStart)
+                //    {
+                //        h.press(h.left);
+                //    }
+                //    else
+                //    {
+                //        h.press(h.right);
+                //    }
+
+                //    Thread.Sleep(100);
+                //}
+                //if (!bSent)
+                //{
+                //    //no tradable pokemon in the last X pokemon, start from the front of the list again
+                //    h.press(h.Bbtn);
+                //    Thread.Sleep(1250);
+                //    h.press(h.Bbtn);
+                //    Thread.Sleep(1250);
+                //}
             }
         }
         public void RequestStop()
@@ -214,7 +451,7 @@ namespace Ledybot
             _shouldStop = true;
         }
 
-        public void setValues(string szPtF, string szPtG, string szD, string szF, string szL, string szP, bool bSpanish, int count = 25, bool endStart = false)
+        public void setValues(string szPtF, string szPtG, string szD, string szF, string szL, string szP, bool bSpanish, int dex)
         {
             this.szPokemonToFind = szPtF;
             this.szPokemonToGive = szPtG;
@@ -223,8 +460,7 @@ namespace Ledybot
             this.szLevel = szL;
             this.szPID = szP;
             this.bSpanish = bSpanish;
-            this.count = count;
-            this.endStart = endStart;
+            this.dexNum = dex;
 
 
             if (bSpanish)

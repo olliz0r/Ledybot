@@ -44,7 +44,7 @@ namespace Ledybot
             if (workerThread == null && workerObject == null)
             {
                 workerObject = new Worker();
-                workerObject.setValues(tb_PokemonToFind.Text, tb_GiveAway.Text, tb_Default.Text, tb_Folder.Text, tb_Level.Text, tb_PID.Text, cb_Spanish.Checked, (int) nud_Count.Value, cb_EndStart.Checked);
+                workerObject.setValues(tb_PokemonToFind.Text, tb_GiveAway.Text, tb_Default.Text, tb_Folder.Text, tb_Level.Text, tb_PID.Text, cb_Spanish.Checked, (int) nud_Dex.Value);
                 workerThread = new Thread(workerObject.DoWork);
                 workerThread.Start();
             }         
@@ -119,8 +119,7 @@ namespace Ledybot
             config.AppSettings.Settings["Port"].Value = tb_Port.Text;
             config.AppSettings.Settings["PID"].Value = tb_PID.Text;
             config.AppSettings.Settings["Deposited"].Value = tb_PokemonToFind.Text;
-            config.AppSettings.Settings["Count"].Value = nud_Count.Value.ToString();
-            config.AppSettings.Settings["StartFromEnd"].Value = cb_EndStart.Checked.ToString();
+            config.AppSettings.Settings["Dex"].Value = nud_Dex.Value.ToString();
             config.AppSettings.Settings["GiveAway"].Value = tb_GiveAway.Text;
             config.AppSettings.Settings["Level"].Value = tb_Level.Text;
             config.AppSettings.Settings["Spanish"].Value = cb_Spanish.Checked.ToString();
@@ -139,8 +138,7 @@ namespace Ledybot
             tb_Port.Text = config.AppSettings.Settings["Port"].Value;
             tb_PID.Text = config.AppSettings.Settings["PID"].Value;
             tb_PokemonToFind.Text = config.AppSettings.Settings["Deposited"].Value;
-            nud_Count.Value = Int32.Parse(config.AppSettings.Settings["Count"].Value);
-            cb_EndStart.Checked = Boolean.Parse(config.AppSettings.Settings["StartFromEnd"].Value);
+            nud_Dex.Value = Int32.Parse(config.AppSettings.Settings["Dex"].Value);
             tb_GiveAway.Text = config.AppSettings.Settings["GiveAway"].Value;
             tb_Level.Text = config.AppSettings.Settings["Level"].Value;
             cb_Spanish.Checked = Boolean.Parse(config.AppSettings.Settings["Spanish"].Value);
