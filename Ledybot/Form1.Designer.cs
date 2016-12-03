@@ -57,6 +57,10 @@
             this.cb_Spanish = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
             this.nud_Dex = new System.Windows.Forms.NumericUpDown();
+            this.label7 = new System.Windows.Forms.Label();
+            this.cmb_Gender = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.cmb_Levels = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.nud_Dex)).BeginInit();
             this.SuspendLayout();
             // 
@@ -308,11 +312,67 @@
             0,
             0});
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(175, 51);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(48, 13);
+            this.label7.TabIndex = 24;
+            this.label7.Text = "Gender: ";
+            // 
+            // cmb_Gender
+            // 
+            this.cmb_Gender.FormattingEnabled = true;
+            this.cmb_Gender.Items.AddRange(new object[] {
+            "Male",
+            "Female"});
+            this.cmb_Gender.Location = new System.Drawing.Point(178, 67);
+            this.cmb_Gender.Name = "cmb_Gender";
+            this.cmb_Gender.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.cmb_Gender.Size = new System.Drawing.Size(59, 21);
+            this.cmb_Gender.TabIndex = 25;
+            this.cmb_Gender.Text = "Male";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(243, 51);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(36, 13);
+            this.label8.TabIndex = 26;
+            this.label8.Text = "Level:";
+            // 
+            // cmb_Levels
+            // 
+            this.cmb_Levels.FormattingEnabled = true;
+            this.cmb_Levels.Items.AddRange(new object[] {
+            "1 - 10",
+            "11 - 20",
+            "21 - 30",
+            "31 - 40",
+            "41 - 50",
+            "51 - 60",
+            "61 - 70",
+            "71 - 80",
+            "81 - 90",
+            "91 - Higher"});
+            this.cmb_Levels.Location = new System.Drawing.Point(246, 67);
+            this.cmb_Levels.Name = "cmb_Levels";
+            this.cmb_Levels.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.cmb_Levels.Size = new System.Drawing.Size(84, 21);
+            this.cmb_Levels.TabIndex = 27;
+            this.cmb_Levels.Text = "91 to Higher";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(378, 552);
+            this.Controls.Add(this.cmb_Levels);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.cmb_Gender);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.nud_Dex);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.cb_Spanish);
@@ -377,6 +437,10 @@
         private System.Windows.Forms.CheckBox cb_Spanish;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.NumericUpDown nud_Dex;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox cmb_Gender;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ComboBox cmb_Levels;
     }
 }
 
