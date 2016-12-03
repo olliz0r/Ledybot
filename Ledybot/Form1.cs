@@ -44,7 +44,7 @@ namespace Ledybot
             if (workerThread == null && workerObject == null)
             {
                 workerObject = new Worker();
-                workerObject.setValues(tb_PokemonToFind.Text, tb_GiveAway.Text, tb_Default.Text, tb_Folder.Text, tb_Level.Text, tb_PID.Text, cb_Spanish.Checked, (int) nud_Dex.Value, cmb_Gender.SelectedIndex, cmb_Levels.SelectedIndex);
+                workerObject.setValues(tb_PokemonToFind.Text, tb_Default.Text, tb_Folder.Text, tb_PID.Text, cb_Spanish.Checked, (int) nud_Dex.Value, cmb_Gender.SelectedIndex, cmb_Levels.SelectedIndex);
                 workerThread = new Thread(workerObject.DoWork);
                 workerThread.Start();
             }         
@@ -120,7 +120,6 @@ namespace Ledybot
             config.AppSettings.Settings["PID"].Value = tb_PID.Text;
             config.AppSettings.Settings["Deposited"].Value = tb_PokemonToFind.Text;
             config.AppSettings.Settings["Dex"].Value = nud_Dex.Value.ToString();
-            config.AppSettings.Settings["GiveAway"].Value = tb_GiveAway.Text;
             config.AppSettings.Settings["Level"].Value = cmb_Levels.SelectedIndex.ToString();
             config.AppSettings.Settings["Spanish"].Value = cb_Spanish.Checked.ToString();
             config.AppSettings.Settings["Default"].Value = tb_Default.Text;
@@ -140,7 +139,6 @@ namespace Ledybot
             tb_PID.Text = config.AppSettings.Settings["PID"].Value;
             tb_PokemonToFind.Text = config.AppSettings.Settings["Deposited"].Value;
             nud_Dex.Value = Int32.Parse(config.AppSettings.Settings["Dex"].Value);
-            tb_GiveAway.Text = config.AppSettings.Settings["GiveAway"].Value;
             cmb_Levels.SelectedIndex = Int32.Parse(config.AppSettings.Settings["Level"].Value);
             cb_Spanish.Checked = Boolean.Parse(config.AppSettings.Settings["Spanish"].Value);
             tb_Default.Text = config.AppSettings.Settings["Default"].Value;

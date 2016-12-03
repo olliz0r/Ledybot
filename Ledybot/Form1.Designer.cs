@@ -37,10 +37,6 @@
             this.btn_Connect = new System.Windows.Forms.Button();
             this.tb_PokemonToFind = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.tb_GiveAway = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.tb_Level = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.tb_Default = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -132,41 +128,6 @@
             this.label1.Size = new System.Drawing.Size(106, 13);
             this.label1.TabIndex = 7;
             this.label1.Text = "Deposited Pokemon:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 106);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(106, 13);
-            this.label2.TabIndex = 8;
-            this.label2.Text = "GiveAway Pokemon:";
-            // 
-            // tb_GiveAway
-            // 
-            this.tb_GiveAway.Location = new System.Drawing.Point(12, 123);
-            this.tb_GiveAway.Name = "tb_GiveAway";
-            this.tb_GiveAway.Size = new System.Drawing.Size(100, 20);
-            this.tb_GiveAway.TabIndex = 9;
-            this.tb_GiveAway.Text = "Ditto";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(119, 106);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(36, 13);
-            this.label3.TabIndex = 10;
-            this.label3.Text = "Level:";
-            // 
-            // tb_Level
-            // 
-            this.tb_Level.Location = new System.Drawing.Point(122, 123);
-            this.tb_Level.Name = "tb_Level";
-            this.tb_Level.Size = new System.Drawing.Size(33, 20);
-            this.tb_Level.TabIndex = 11;
-            this.tb_Level.Text = "91";
-            this.tb_Level.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // label4
             // 
@@ -384,10 +345,6 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.tb_Default);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.tb_Level);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.tb_GiveAway);
-            this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tb_PokemonToFind);
             this.Controls.Add(this.btn_Connect);
@@ -398,7 +355,7 @@
             this.Controls.Add(this.tb_IP);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
-            this.Text = "Ledybot v1.0";
+            this.Text = "Ledybot";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.nud_Dex)).EndInit();
@@ -417,10 +374,6 @@
         private System.Windows.Forms.Button btn_Connect;
         private System.Windows.Forms.TextBox tb_PokemonToFind;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox tb_GiveAway;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox tb_Level;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox tb_Default;
         private System.Windows.Forms.Label label5;

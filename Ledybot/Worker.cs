@@ -44,10 +44,8 @@ namespace Ledybot
 
 
         private volatile string szPokemonToFind = "";
-        private volatile string szPokemonToGive = "";
         private volatile string szDefaultPk7 = "";
         private volatile string szPk7Folder = "";
-        private volatile string szLevel = "";
         private volatile string szPID = "";
         private volatile int iPID = 0;
         private volatile bool bSpanish = false;
@@ -116,25 +114,23 @@ namespace Ledybot
                     int szListCount = int.Parse(h.readSafe(addr_PageSize, 1, iPID), NumberStyles.HexNumber);
                     if (szListCount == 100)
                     {
+                        uint addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEndStartRecord, 4, iPID), NumberStyles.HexNumber);
+                        string hex = h.readSafe(addr_PageEntryAddress + 0x48, 4, iPID);
+                        int szTrainerID1 = int.Parse(hex, NumberStyles.HexNumber);
+
                         for (int i = 0; i < 99; i++)
                         {
                             h.press(h.right);
                         }
-
-                        string szReqPokemon1 = h.readSafe(addr_RequestedPokemon, 20, iPID);
-                        string szTrainerName1 = h.readSafe(addr_TrainerName, 20, iPID);
-                        string szCountry1 = h.readSafe(addr_TrainerCountry, 20, iPID);
-                        string szSubCountry1 = h.readSafe(addr_TrainerSubCountry, 20, iPID);
-
+                        Thread.Sleep(100);
                         h.press(h.right);
                         Thread.Sleep(3000);
 
-                        string szReqPokemon2 = h.readSafe(addr_RequestedPokemon, 20, iPID);
-                        string szTrainerName2 = h.readSafe(addr_TrainerName, 20, iPID);
-                        string szCountry2 = h.readSafe(addr_TrainerCountry, 20, iPID);
-                        string szSubCountry2 = h.readSafe(addr_TrainerSubCountry, 20, iPID);
+                        addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEndStartRecord, 4, iPID), NumberStyles.HexNumber);
+                        hex = h.readSafe(addr_PageEntryAddress + 0x48, 4, iPID);
+                        int szTrainerID2 = int.Parse(hex, NumberStyles.HexNumber);
 
-                        if (szReqPokemon1 == szReqPokemon2 && szTrainerName1 == szTrainerName2 && szCountry1 == szCountry2 && szSubCountry1 == szSubCountry2)
+                        if (szTrainerID1 == szTrainerID2)
                         {
                             lastPage = true;
                         }
@@ -142,167 +138,173 @@ namespace Ledybot
                         {
                             pageCount += 1;
                         }
+
+                        for (int i = 0; i < szListCount - 1; i++)
+                        {
+                            h.press(h.right);
+                        }
+
                     }
                     else
                     {
                         lastPage = true;
                     }
+
                 }
 
                 for (int i = pageCount; i > 0; i--)
                 {
-                    if (lastPage)
+                    //if (lastPage)
+                    //{
+                    //    int szListCount = int.Parse(h.readSafe(addr_PageSize, 1, iPID), NumberStyles.HexNumber);
+                    //    uint addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEndStartRecord, 4, iPID), NumberStyles.HexNumber);
+                    //    int dexNumber = 0;
+                    //    for (int j = szListCount; j > 0; j--)
+                    //    {
+                    //        string hex = h.readSafe(addr_PageEntryAddress + 0xC, 2, iPID);
+                    //        dexNumber = int.Parse(hex, NumberStyles.HexNumber);
+                    //        if (dexNumber == dexNum)
+                    //        {
+                    //            hex = h.readSafe(addr_PageEntryAddress + 0xE, 1, iPID);
+                    //            int gender = (hex == "" ? 0 : int.Parse(hex, NumberStyles.HexNumber));
+                    //            hex = h.readSafe(addr_PageEntryAddress + 0xF, 1, iPID);
+                    //            int level = (hex == "" ? 0 : int.Parse(hex, NumberStyles.HexNumber));
+
+                    //            if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
+                    //            {
+                    //                for (int k = 0; k < j - 1; k++)
+                    //                {
+                    //                    h.press(h.right);
+                    //                    Thread.Sleep(100);
+                    //                }
+
+                    //                string szNickname = h.readSafe(addr_DepositedPokemonNickname, 20, iPID);
+
+                    //                string szPath = this.szDefaultPk7;
+                    //                string szFileToFind = this.szPk7Folder + szNickname + ".pk7";
+                    //                if (File.Exists(szFileToFind))
+                    //                {
+                    //                    szPath = szFileToFind;
+                    //                }
+
+                    //                byte[] pkmEncrypted = System.IO.File.ReadAllBytes(szPath);
+                    //                byte[] cloneshort = PKHeX.encryptArray(pkmEncrypted.Take(232).ToArray());
+                    //                string ek7 = BitConverter.ToString(cloneshort).Replace("-", ", 0x");
+
+                    //            optional: grab some trainer data
+                    //                string szTrainerName = h.readSafe(addr_TrainerName, 20, iPID);
+                    //                string szCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
+                    //                string szSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
+
+                    //                Program.f1.AppendListViewItem(szTrainerName, szNickname, szCountry, szSubCountry);
+                    //                Inject the Pokemon to box1slot1
+                    //                Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
+                    //                Thread.Sleep(1000);
+                    //                h.press(h.Abtn);
+                    //                Thread.Sleep(3000);
+                    //                h.press(h.Abtn);
+                    //                Thread.Sleep(1000);
+                    //                h.press(h.Abtn);
+                    //                Thread.Sleep(1000);
+                    //                h.press(h.Abtn);
+                    //                trade starts here
+                    //                Thread.Sleep(10250);
+                    //                if the pokemon has been traded we have 35 seconds to get back to the starting spot for the bot by spamming b a bit
+                    //                h.press(h.Abtn);
+                    //                Thread.Sleep(1000);
+                    //                h.press(h.Bbtn);
+                    //                Thread.Sleep(1000);
+                    //                h.press(h.Bbtn);
+                    //                Thread.Sleep(1000);
+                    //                h.press(h.Bbtn);
+                    //                Thread.Sleep(1000);
+                    //                h.press(h.Bbtn);
+                    //                Thread.Sleep(1000);
+                    //                h.press(h.Bbtn);
+                    //                if the trade is still going on wait for it to finish
+                    //                Thread.Sleep(30250);
+                    //                bSent = true;
+                    //                break;
+                    //            }
+                    //        }
+                    //        addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEntryAddress, 4, iPID), NumberStyles.HexNumber);
+                    //    }
+                    //    lastPage = false;
+                    //}
+
+                    int szListCount = int.Parse(h.readSafe(addr_PageSize, 1, iPID), NumberStyles.HexNumber);
+                    uint addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEndStartRecord, 4, iPID), NumberStyles.HexNumber);
+                    int dexNumber = 0;
+                    for (int j = 0; j < szListCount; j++)
                     {
-                        int szListCount = int.Parse(h.readSafe(addr_PageSize, 1, iPID), NumberStyles.HexNumber);
-                        uint addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEndStartRecord, 4, iPID), NumberStyles.HexNumber);
-                        int dexNumber = 0;
-                        for (int j = szListCount; j > 0; j--)
+                        string hex = h.readSafe(addr_PageEntryAddress + 0xC, 2, iPID);
+                        dexNumber = int.Parse(hex, NumberStyles.HexNumber);
+                        if (dexNumber == dexNum)
                         {
-                            string hex = h.readSafe(addr_PageEntryAddress + 0xC, 2, iPID);
-                            dexNumber = int.Parse(hex, NumberStyles.HexNumber);
-                            if (dexNumber == dexNum)
+                            hex = h.readSafe(addr_PageEntryAddress + 0xE, 1, iPID);
+                            int gender = (hex == "" ? 0 : int.Parse(hex, NumberStyles.HexNumber));
+                            hex = h.readSafe(addr_PageEntryAddress + 0xF, 1, iPID);
+                            int level = (hex == "" ? 0 : int.Parse(hex, NumberStyles.HexNumber));
+                            if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
                             {
-                                hex = h.readSafe(addr_PageEntryAddress + 0xE, 1, iPID);
-                                int gender = (hex == "" ? 0 : int.Parse(hex, NumberStyles.HexNumber));
-                                hex = h.readSafe(addr_PageEntryAddress + 0xF, 1, iPID);
-                                int level = (hex == "" ? 0 : int.Parse(hex, NumberStyles.HexNumber));
-
-                                if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
+                                for (int k = 0; k < j; k++)
                                 {
-                                    for (int k = 0; k < j - 1; k++)
-                                    {
-                                        h.press(h.right);
-                                        Thread.Sleep(100);
-                                    }
-
-                                    string szNickname = h.readSafe(addr_DepositedPokemonNickname, 20, iPID);
-
-                                    string szPath = this.szDefaultPk7;
-                                    string szFileToFind = this.szPk7Folder + szNickname + ".pk7";
-                                    if (File.Exists(szFileToFind))
-                                    {
-                                        szPath = szFileToFind;
-                                    }
-
-                                    byte[] pkmEncrypted = System.IO.File.ReadAllBytes(szPath);
-                                    byte[] cloneshort = PKHeX.encryptArray(pkmEncrypted.Take(232).ToArray());
-                                    string ek7 = BitConverter.ToString(cloneshort).Replace("-", ", 0x");
-
-                                    //optional: grab some trainer data
-                                    string szTrainerName = h.readSafe(addr_TrainerName, 20, iPID);
-                                    string szCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
-                                    string szSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
-
-                                    Program.f1.AppendListViewItem(szTrainerName, szNickname, szCountry, szSubCountry);
-                                    //Inject the Pokemon to box1slot1
-                                    Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Abtn);
-                                    Thread.Sleep(3000);
-                                    h.press(h.Abtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Abtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Abtn);
-                                    //trade starts here
-                                    Thread.Sleep(10250);
-                                    //if the pokemon has been traded we have 35 seconds to get back to the starting spot for the bot by spamming b a bit
-                                    h.press(h.Abtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Bbtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Bbtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Bbtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Bbtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Bbtn);
-                                    //if the trade is still going on wait for it to finish
-                                    Thread.Sleep(30250);
-                                    bSent = true;
-                                    break;
+                                    h.press(h.left);
+                                    Thread.Sleep(100);
                                 }
-                            }
-                            addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEntryAddress, 4, iPID), NumberStyles.HexNumber);
-                        }
-                        lastPage = false;
-                    }
-                    else
-                    {
-                        int szListCount = int.Parse(h.readSafe(addr_PageSize, 1, iPID), NumberStyles.HexNumber);
-                        uint addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEndStartRecord, 4, iPID), NumberStyles.HexNumber);
-                        int dexNumber = 0;
-                        for (int j = 0; j < szListCount; j++)
-                        {
-                            string hex = h.readSafe(addr_PageEntryAddress + 0xC, 2, iPID);
-                            dexNumber = int.Parse(hex, NumberStyles.HexNumber);
-                            if (dexNumber == dexNum)
-                            {
-                                hex = h.readSafe(addr_PageEntryAddress + 0xE, 1, iPID);
-                                int gender = (hex == "" ? 0 : int.Parse(hex, NumberStyles.HexNumber));
-                                hex = h.readSafe(addr_PageEntryAddress + 0xF, 1, iPID);
-                                int level = (hex == "" ? 0 : int.Parse(hex, NumberStyles.HexNumber));
-                                if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
+
+                                string szNickname = h.readSafe(addr_DepositedPokemonNickname, 20, iPID);
+
+                                string szPath = this.szDefaultPk7;
+                                string szFileToFind = this.szPk7Folder + szNickname + ".pk7";
+                                if (File.Exists(szFileToFind))
                                 {
-                                    for (int k = 0; k < j - 1; k++)
-                                    {
-                                        h.press(h.left);
-                                        Thread.Sleep(100);
-                                    }
-
-                                    string szNickname = h.readSafe(addr_DepositedPokemonNickname, 20, iPID);
-
-                                    string szPath = this.szDefaultPk7;
-                                    string szFileToFind = this.szPk7Folder + szNickname + ".pk7";
-                                    if (File.Exists(szFileToFind))
-                                    {
-                                        szPath = szFileToFind;
-                                    }
-
-                                    byte[] pkmEncrypted = System.IO.File.ReadAllBytes(szPath);
-                                    byte[] cloneshort = PKHeX.encryptArray(pkmEncrypted.Take(232).ToArray());
-                                    string ek7 = BitConverter.ToString(cloneshort).Replace("-", ", 0x");
-
-                                    //optional: grab some trainer data
-                                    string szTrainerName = h.readSafe(addr_TrainerName, 20, iPID);
-                                    string szCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
-                                    string szSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
-
-                                    Program.f1.AppendListViewItem(szTrainerName, szNickname, szCountry, szSubCountry);
-                                    //Inject the Pokemon to box1slot1
-                                    Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Abtn);
-                                    Thread.Sleep(3000);
-                                    h.press(h.Abtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Abtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Abtn);
-                                    //trade starts here
-                                    Thread.Sleep(10250);
-                                    //if the pokemon has been traded we have 35 seconds to get back to the starting spot for the bot by spamming b a bit
-                                    h.press(h.Abtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Bbtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Bbtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Bbtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Bbtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Bbtn);
-                                    //if the trade is still going on wait for it to finish
-                                    Thread.Sleep(30250);
-                                    bSent = true;
-                                    break;
+                                    szPath = szFileToFind;
                                 }
+
+                                byte[] pkmEncrypted = System.IO.File.ReadAllBytes(szPath);
+                                byte[] cloneshort = PKHeX.encryptArray(pkmEncrypted.Take(232).ToArray());
+                                string ek7 = BitConverter.ToString(cloneshort).Replace("-", ", 0x");
+
+                                //optional: grab some trainer data
+                                string szTrainerName = h.readSafe(addr_TrainerName, 20, iPID);
+                                string szCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
+                                string szSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
+
+                                Program.f1.AppendListViewItem(szTrainerName, szNickname, szCountry, szSubCountry);
+                                //Inject the Pokemon to box1slot1
+                                Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
+                                Thread.Sleep(1000);
+                                h.press(h.Abtn);
+                                Thread.Sleep(3000);
+                                h.press(h.Abtn);
+                                Thread.Sleep(1000);
+                                h.press(h.Abtn);
+                                Thread.Sleep(1000);
+                                h.press(h.Abtn);
+                                //trade starts here
+                                Thread.Sleep(10250);
+                                //if the pokemon has been traded we have 35 seconds to get back to the starting spot for the bot by spamming b a bit
+                                h.press(h.Abtn);
+                                Thread.Sleep(1000);
+                                h.press(h.Bbtn);
+                                Thread.Sleep(1000);
+                                h.press(h.Bbtn);
+                                Thread.Sleep(1000);
+                                h.press(h.Bbtn);
+                                Thread.Sleep(1000);
+                                h.press(h.Bbtn);
+                                Thread.Sleep(1000);
+                                h.press(h.Bbtn);
+                                //if the trade is still going on wait for it to finish
+                                Thread.Sleep(30250);
+                                bSent = true;
+                                break;
                             }
-                            addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEntryAddress, 4, iPID), NumberStyles.HexNumber);
                         }
+                        addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEntryAddress, 4, iPID), NumberStyles.HexNumber);
                     }
+
                     if (bSent)
                     {
                         break;
@@ -310,6 +312,11 @@ namespace Ledybot
 
                     if (i != 1)
                     {
+                        for(int j = 0; j < szListCount; j++)
+                        {
+                            h.press(h.left);
+                        }
+                        Thread.Sleep(125);
                         h.press(h.left);
                         Thread.Sleep(3000);
                     }
@@ -437,17 +444,15 @@ namespace Ledybot
             _shouldStop = true;
         }
 
-        public void setValues(string szPtF, string szPtG, string szD, string szF, string szL, string szP, bool bSpanish, int dex, int gender, int level)
+        public void setValues(string szPtF, string szD, string szF, string szP, bool bSpanish, int dex, int gender, int level)
         {
             this.szPokemonToFind = szPtF;
-            this.szPokemonToGive = szPtG;
             this.szDefaultPk7 = szD;
             this.szPk7Folder = szF;
-            this.szLevel = szL;
             this.szPID = szP;
             this.bSpanish = bSpanish;
             this.dexNum = dex;
-            this.genderIndex = gender;
+            this.genderIndex = gender + 1;
             this.levelIndex = level + 1;
 
 
