@@ -99,8 +99,12 @@ namespace Ledybot
                 }
                 else
                 {
+                    h.touch(h.searchBtn);
+                    Thread.Sleep(3000);
+                    h.press(h.Bbtn);
+                    Thread.Sleep(3000);
                     h.press(h.Abtn);
-                    Thread.Sleep(2000);
+                    Thread.Sleep(3000);
                 }
 
                 h.touch(h.searchBtn);
@@ -118,7 +122,7 @@ namespace Ledybot
                         string hex = h.readSafe(addr_PageEntryAddress + 0x48, 4, iPID);
                         int szTrainerID1 = int.Parse(hex, NumberStyles.HexNumber);
 
-                        for (int i = 0; i < 99; i++)
+                        for (int i = 0; i < szListCount - 1; i++)
                         {
                             h.press(h.right);
                         }
@@ -133,21 +137,22 @@ namespace Ledybot
                         if (szTrainerID1 == szTrainerID2)
                         {
                             lastPage = true;
+                            continue;
                         }
                         else
                         {
                             pageCount += 1;
-                        }
-
-                        for (int i = 0; i < szListCount - 1; i++)
-                        {
-                            h.press(h.right);
-                        }
+                        }   
 
                     }
                     else
                     {
                         lastPage = true;
+                        for (int i = 0; i < szListCount; i++)
+                        {
+                            h.press(h.right);
+                            Thread.Sleep(100);
+                        }
                     }
 
                 }
@@ -250,7 +255,7 @@ namespace Ledybot
                                 for (int k = 0; k < j; k++)
                                 {
                                     h.press(h.left);
-                                    Thread.Sleep(100);
+                                    Thread.Sleep(150);
                                 }
 
                                 string szNickname = h.readSafe(addr_DepositedPokemonNickname, 20, iPID);
@@ -276,7 +281,7 @@ namespace Ledybot
                                 Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
                                 Thread.Sleep(1000);
                                 h.press(h.Abtn);
-                                Thread.Sleep(3000);
+                                Thread.Sleep(3250);
                                 h.press(h.Abtn);
                                 Thread.Sleep(1000);
                                 h.press(h.Abtn);
@@ -312,11 +317,11 @@ namespace Ledybot
 
                     if (i != 1)
                     {
-                        for(int j = 0; j < szListCount; j++)
+                        for(int j = 0; j < szListCount - 1; j++)
                         {
                             h.press(h.left);
+                            Thread.Sleep(100);
                         }
-                        Thread.Sleep(125);
                         h.press(h.left);
                         Thread.Sleep(3000);
                     }
