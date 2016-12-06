@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Configuration;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Ledybot
@@ -11,29 +14,52 @@ namespace Ledybot
     {
         public MainForm()
         {
+            Program.ntrClient.Connected += connectCheck;
+            Program.ntrClient.InfoReady += getGame;
             InitializeComponent();
+
+            ofd_Injection.Title = "Select an EKX/PKX file";
+            ofd_Injection.Filter = "Gen 7 pokémon files|*.pk7";
+            string path = @Application.StartupPath;
+            ofd_Injection.InitialDirectory = path;
         }
+
+        public int pid = 0;
 
         private void btn_Connect_Click(object sender, EventArgs e)
         {
             string szIp = tb_IP.Text;
-            string szPort = tb_Port.Text;
-
-            int iPort = Convert.ToInt32(szPort);
 
             if (!Program.Connected)
             {
-                Program.Connected = Program.scriptHelper.connect(szIp, iPort);
-                if (Program.Connected)
-                {
-                    MessageBox.Show("Connection Successful!");
-                }
-            } else
+                Program.scriptHelper.connect(szIp, 8000);
+            }
+            else
             {
                 MessageBox.Show("You are already connected!");
             }
 
+
+        }
+
+        public void getGame(object sender, EventArgs e)
+        {
+            InfoReadyEventArgs args = (InfoReadyEventArgs) e;
             
+            string log = args.info;
+            if(log.Contains("niji_loc"))
+            {
+                string splitlog = log.Substring(log.IndexOf(", pname: niji_loc") - 8, log.Length - log.IndexOf(", pname: niji_loc"));
+                pid = Convert.ToInt32("0x" + splitlog.Substring(0, 8), 16);
+                Program.scriptHelper.write(0x3DFFD0, BitConverter.GetBytes(0xE3A01000), pid);
+                MessageBox.Show("Connection Successful!");
+            }
+        }
+
+        public void connectCheck(object sender, EventArgs e)
+        {
+
+            Program.scriptHelper.listprocess();
         }
 
         Thread workerThread = null;
@@ -44,17 +70,17 @@ namespace Ledybot
             if (workerThread == null && workerObject == null)
             {
                 workerObject = new Worker();
-                workerObject.setValues(tb_PokemonToFind.Text, tb_Default.Text, tb_Folder.Text, tb_PID.Text, cb_Spanish.Checked, (int) nud_Dex.Value, cmb_Gender.SelectedIndex, cmb_Levels.SelectedIndex);
+                workerObject.setValues(tb_PokemonToFind.Text, tb_Default.Text, tb_Folder.Text, pid, cb_Spanish.Checked, (int)nud_Dex.Value, cmb_Gender.SelectedIndex, cmb_Levels.SelectedIndex);
                 workerThread = new Thread(workerObject.DoWork);
                 workerThread.Start();
-            }         
+            }
         }
 
         public void AppendListViewItem(string szTrainerName, string szNickname, string szCountry, string szSubCountry)
         {
             if (InvokeRequired)
             {
-                 this.Invoke(new Action<string, string, string, string>(AppendListViewItem), new object[] { szTrainerName, szNickname, szCountry, szSubCountry });
+                this.Invoke(new Action<string, string, string, string>(AppendListViewItem), new object[] { szTrainerName, szNickname, szCountry, szSubCountry });
                 return;
             }
             string[] row = { DateTime.Now.ToString("h:mm:ss"), szTrainerName, szNickname, szCountry, szSubCountry };
@@ -66,7 +92,7 @@ namespace Ledybot
 
         private void btn_Stop_Click(object sender, EventArgs e)
         {
-            if(workerThread != null && workerObject != null)
+            if (workerThread != null && workerObject != null)
             {
                 workerObject.RequestStop();
                 workerThread.Join();
@@ -116,8 +142,6 @@ namespace Ledybot
         {
             Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             config.AppSettings.Settings["IP"].Value = tb_IP.Text;
-            config.AppSettings.Settings["Port"].Value = tb_Port.Text;
-            config.AppSettings.Settings["PID"].Value = tb_PID.Text;
             config.AppSettings.Settings["Deposited"].Value = tb_PokemonToFind.Text;
             config.AppSettings.Settings["Dex"].Value = nud_Dex.Value.ToString();
             config.AppSettings.Settings["Level"].Value = cmb_Levels.SelectedIndex.ToString();
@@ -135,8 +159,6 @@ namespace Ledybot
         {
             Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             tb_IP.Text = config.AppSettings.Settings["IP"].Value;
-            tb_Port.Text = config.AppSettings.Settings["Port"].Value;
-            tb_PID.Text = config.AppSettings.Settings["PID"].Value;
             tb_PokemonToFind.Text = config.AppSettings.Settings["Deposited"].Value;
             nud_Dex.Value = Int32.Parse(config.AppSettings.Settings["Dex"].Value);
             cmb_Levels.SelectedIndex = Int32.Parse(config.AppSettings.Settings["Level"].Value);
@@ -144,6 +166,76 @@ namespace Ledybot
             tb_Default.Text = config.AppSettings.Settings["Default"].Value;
             tb_Folder.Text = config.AppSettings.Settings["Folder"].Value;
             cmb_Gender.SelectedIndex = Int32.Parse(config.AppSettings.Settings["Gender"].Value);
+        }
+
+        private void btn_BrowseInject_Click(object sender, EventArgs e)
+        {
+            if (ofd_Injection.ShowDialog() == DialogResult.OK)
+            {
+                txt_FileInjection.Text = ofd_Injection.FileName;
+                ofd_Injection.InitialDirectory = Path.GetDirectoryName(ofd_Injection.FileName);
+            }
+        }
+
+        public uint boxOff = 0x330D9838;
+
+        private void btn_Inject_Click(object sender, EventArgs e)
+        {
+            byte[] pkmEncrypted = System.IO.File.ReadAllBytes(txt_FileInjection.Text);
+            byte[] cloneshort = PKHeX.encryptArray(pkmEncrypted.Take(232).ToArray());
+            uint boxIndex = Decimal.ToUInt32((nud_BoxInjection.Value - 1) * 30 + nud_SlotInjection.Value - 1);
+            uint count = Decimal.ToUInt32(nud_CountInjection.Value);
+            if (boxIndex + count > 32 * 30)
+            {
+                uint newCount = 32 * 30 - boxIndex;
+                count = newCount;
+            }
+
+            byte[] dataToWrite = new byte[count * 232];
+            for (int i = 0; i < count; i++)
+                cloneshort.CopyTo(dataToWrite, i * 232);
+            uint offset = boxOff + boxIndex * 232;
+            Program.scriptHelper.write(offset, dataToWrite, pid);
+            MessageBox.Show("Injection Successful!");
+        }
+
+        private void btn_Disconnect_Click(object sender, EventArgs e)
+        {
+            if (Program.Connected)
+            {
+                Program.ntrClient.disconnect();
+
+                if (!Program.Connected)
+                {
+                    MessageBox.Show("Disconnection Successful!");
+                }
+            }
+            else
+            {
+                MessageBox.Show("You are already disconnected!");
+            }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                Program.ntrClient.sendHeartbeatPacket();
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private void nud_BoxInjection_ValueChanged(object sender, EventArgs e)
+        {
+            nud_CountInjection.Maximum = 32 * 30 - (Decimal.ToUInt32((nud_BoxInjection.Value - 1) * 30 + nud_SlotInjection.Value - 1));
+        }
+
+        private void nud_SlotInjection_ValueChanged(object sender, EventArgs e)
+        {
+            nud_CountInjection.Maximum = 32 * 30 - (Decimal.ToUInt32((nud_BoxInjection.Value - 1) * 30 + nud_SlotInjection.Value - 1));
         }
     }
 }

@@ -7,6 +7,17 @@ using System.Windows.Forms;
 
 namespace Ledybot
 {
+
+    public class InfoReadyEventArgs : EventArgs
+    {
+        public string info;
+
+        public InfoReadyEventArgs(string info_)
+        {
+            this.info = info_;
+        }
+    }
+
     public class NTRClient
     {
         public String host;
@@ -25,6 +36,20 @@ namespace Ledybot
 
         public string retVal;
         public bool retDone;
+
+        public event EventHandler<InfoReadyEventArgs> InfoReady;
+        public event EventHandler Connected;
+
+
+        protected virtual void OnInfoReady(InfoReadyEventArgs e)
+        {
+            InfoReady?.Invoke(this, e);
+        }
+
+        protected virtual void OnConnected(EventArgs e)
+        {
+            Connected?.Invoke(this, e);
+        }
 
 
         int readNetworkStream(NetworkStream stream, byte[] buf, int length)
@@ -97,6 +122,7 @@ namespace Ledybot
                             byte[] dataBuf = new byte[dataLen];
                             readNetworkStream(stream, dataBuf, dataBuf.Length);
                             string logMsg = Encoding.UTF8.GetString(dataBuf);
+                            OnInfoReady(new InfoReadyEventArgs(logMsg));
                             //Console.WriteLine(logMsg);
                         }
                         lock (syncLock)
@@ -136,38 +162,34 @@ namespace Ledybot
                 return;
             }
             lastReadMemSeq = 0;
-
-            int i = 0;
-            int iBufferlength = dataBuf.Length;
-            for (i = 0; i < dataBuf.Length; i++)
+            string szResult = "";
+            if (dataBuf.Length > 4)
             {
-                if (i % 2 == 0)
+                int i = 0;
+                int iBufferlength = dataBuf.Length;
+                for (i = 0; i < dataBuf.Length; i++)
                 {
-                    if (dataBuf[i] == 0x00)
+                    if (i % 2 == 0)
                     {
-                        iBufferlength = i;
-                        break;
+                        if (dataBuf[i] == 0x00)
+                        {
+                            iBufferlength = i;
+                            break;
+                        }
                     }
                 }
-            }
-            byte[] actualBuffer = new byte[iBufferlength];
-            for (i = 0; i < actualBuffer.Length; i++)
-            {
-                actualBuffer[i] = dataBuf[i];
-            }
-
-            string szResult = "";
-
-            if(dataBuf.Length <= 4)
-            {
-                Array.Reverse(actualBuffer);
-                szResult = BitConverter.ToString(actualBuffer).Replace("-", string.Empty);
+                byte[] actualBuffer = new byte[iBufferlength];
+                for (i = 0; i < actualBuffer.Length; i++)
+                {
+                    actualBuffer[i] = dataBuf[i];
+                }
+                szResult = Encoding.Unicode.GetString(actualBuffer).Trim('\0');
             }
             else
             {
-                szResult = Encoding.Unicode.GetString(actualBuffer).Trim('\0');
+                Array.Reverse(dataBuf);
+                szResult = BitConverter.ToString(dataBuf).Replace("-", string.Empty);
             }
-            
 
             //t.BeginInvoke((MethodInvoker)delegate () { t.Text = szResult; ; });
             lock (retValLock)
@@ -204,7 +226,7 @@ namespace Ledybot
             port = serverPort;
         }
 
-        public Boolean connectToServer()
+        public void connectToServer()
         {
             if (tcp != null)
             {
@@ -214,26 +236,20 @@ namespace Ledybot
             tcp.NoDelay = true;
             try
             {
-                if (tcp.ConnectAsync(host, port).Wait(1000))
-                {
-                    currentSeq = 0;
-                    netStream = tcp.GetStream();
-                    heartbeatSendable = 1;
-                    packetRecvThread = new Thread(new ThreadStart(packetRecvThreadStart));
-                    packetRecvThread.Start();
-                    Program.Connected = true;
-                }
-                else
-                {
-                    Program.Connected = false;
-                }
+                tcp.Connect(host, port);
+                currentSeq = 0;
+                netStream = tcp.GetStream();
+                heartbeatSendable = 1;
+                packetRecvThread = new Thread(new ThreadStart(packetRecvThreadStart));
+                packetRecvThread.Start();
+                OnConnected(null);
+                Program.Connected = true;
             }
             catch
             {
+                MessageBox.Show("Error connecting to the 3DS. Please make sure you have the correct IP.", "Ledybot", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Program.Connected = false;
             }
-
-            return Program.Connected;
         }
 
         public void disconnect(bool waitPacketThread = true)
@@ -302,7 +318,7 @@ namespace Ledybot
 
         public void sendHeartbeatPacket()
         {
-            if (Program.Connected)
+            if (tcp != null)
             {
                 lock (syncLock)
                 {
@@ -310,14 +326,6 @@ namespace Ledybot
                     {
                         heartbeatSendable = 0;
                         sendPacket(0, 0, null, 0);
-                    }
-                    else
-                    {
-                        timeout++;
-                        if (timeout == 5)
-                        {
-                            disconnect(false);
-                        }
                     }
                 }
             }

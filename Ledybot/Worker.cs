@@ -34,6 +34,7 @@ namespace Ledybot
         //private uint addr_PageEntryDexRequest = 0x32A6A7D0;
         private uint addr_PageSize = 0x32A6A1A4;
         private uint addr_PageEndStartRecord = 0x32A6A68C;
+        private uint addr_PageCurrentView = 0x305ea384;
 
         private uint addr_RequestedPokemon;
         private uint addr_RequestedLevel;
@@ -449,12 +450,12 @@ namespace Ledybot
             _shouldStop = true;
         }
 
-        public void setValues(string szPtF, string szD, string szF, string szP, bool bSpanish, int dex, int gender, int level)
+        public void setValues(string szPtF, string szD, string szF, int iP, bool bSpanish, int dex, int gender, int level)
         {
             this.szPokemonToFind = szPtF;
             this.szDefaultPk7 = szD;
             this.szPk7Folder = szF;
-            this.szPID = szP;
+            this.iPID = iP;
             this.bSpanish = bSpanish;
             this.dexNum = dex;
             this.genderIndex = gender + 1;
@@ -480,7 +481,7 @@ namespace Ledybot
                 addr_TrainerSubCountry = addr_TrainerSubCountry_en;
             }
 
-            this.iPID = int.Parse(szPID, NumberStyles.HexNumber);
+            
         }
 
     }

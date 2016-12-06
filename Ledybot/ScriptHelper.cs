@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ledybot
 {
@@ -15,10 +16,10 @@ namespace Ledybot
 
         public uint searchBtn = 0x01B618E0;
         
-        public Boolean connect(string host, int port)
+        public void connect(string host, int port)
         {
             Program.ntrClient.setServer(host, port);
-            return Program.ntrClient.connectToServer();
+            Program.ntrClient.connectToServer();
         }
 
         public void disconnect()
@@ -122,6 +123,11 @@ namespace Ledybot
                 }
             }
             return szReturn;
+        }
+
+        public void listprocess()
+        {
+            Program.ntrClient.sendEmptyPacket(5);
         }
 
     }
