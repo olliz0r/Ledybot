@@ -123,7 +123,6 @@ namespace Ledybot
                             readNetworkStream(stream, dataBuf, dataBuf.Length);
                             string logMsg = Encoding.UTF8.GetString(dataBuf);
                             OnInfoReady(new InfoReadyEventArgs(logMsg));
-                            //Console.WriteLine(logMsg);
                         }
                         lock (syncLock)
                         {

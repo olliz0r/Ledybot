@@ -46,6 +46,7 @@
             this.NickName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Country = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SubCountry = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.FC = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btn_Export = new System.Windows.Forms.Button();
             this.cb_Spanish = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -57,6 +58,7 @@
             this.tc_Control = new System.Windows.Forms.TabControl();
             this.tp_GTS = new System.Windows.Forms.TabPage();
             this.tp_Injection = new System.Windows.Forms.TabPage();
+            this.btn_Delete = new System.Windows.Forms.Button();
             this.nud_CountInjection = new System.Windows.Forms.NumericUpDown();
             this.label10 = new System.Windows.Forms.Label();
             this.btn_Inject = new System.Windows.Forms.Button();
@@ -65,11 +67,16 @@
             this.label9 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.btn_BrowseInject = new System.Windows.Forms.Button();
-            this.txt_FileInjection = new System.Windows.Forms.TextBox();
+            this.tb_FileInjection = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.tp_Breeding = new System.Windows.Forms.TabPage();
+            this.btn_EggAvailable = new System.Windows.Forms.Button();
             this.ofd_Injection = new System.Windows.Forms.OpenFileDialog();
             this.btn_Disconnect = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.label11 = new System.Windows.Forms.Label();
+            this.btn_EggStart = new System.Windows.Forms.Button();
+            this.btn_EggStop = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.nud_Dex)).BeginInit();
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
@@ -77,6 +84,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nud_CountInjection)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_SlotInjection)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_BoxInjection)).BeginInit();
+            this.tp_Breeding.SuspendLayout();
             this.SuspendLayout();
             // 
             // tb_IP
@@ -150,6 +158,7 @@
             // 
             // btn_Start
             // 
+            this.btn_Start.Enabled = false;
             this.btn_Start.Location = new System.Drawing.Point(154, 73);
             this.btn_Start.Name = "btn_Start";
             this.btn_Start.Size = new System.Drawing.Size(58, 23);
@@ -160,6 +169,7 @@
             // 
             // btn_Stop
             // 
+            this.btn_Stop.Enabled = false;
             this.btn_Stop.Location = new System.Drawing.Point(218, 73);
             this.btn_Stop.Name = "btn_Stop";
             this.btn_Stop.Size = new System.Drawing.Size(58, 23);
@@ -175,7 +185,8 @@
             this.Trainer,
             this.NickName,
             this.Country,
-            this.SubCountry});
+            this.SubCountry,
+            this.FC});
             this.lv_log.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lv_log.Location = new System.Drawing.Point(6, 198);
             this.lv_log.Name = "lv_log";
@@ -205,6 +216,10 @@
             // SubCountry
             // 
             this.SubCountry.Text = "SubCountry";
+            // 
+            // FC
+            // 
+            this.FC.Text = "FC";
             // 
             // btn_Export
             // 
@@ -314,6 +329,7 @@
             // 
             this.tc_Control.Controls.Add(this.tp_GTS);
             this.tc_Control.Controls.Add(this.tp_Injection);
+            this.tc_Control.Controls.Add(this.tp_Breeding);
             this.tc_Control.Location = new System.Drawing.Point(1, 33);
             this.tc_Control.Name = "tc_Control";
             this.tc_Control.SelectedIndex = 0;
@@ -322,6 +338,7 @@
             // 
             // tp_GTS
             // 
+            this.tp_GTS.AllowDrop = true;
             this.tp_GTS.Controls.Add(this.label1);
             this.tp_GTS.Controls.Add(this.cmb_Levels);
             this.tp_GTS.Controls.Add(this.tb_PokemonToFind);
@@ -346,9 +363,13 @@
             this.tp_GTS.TabIndex = 0;
             this.tp_GTS.Text = "GTS";
             this.tp_GTS.UseVisualStyleBackColor = true;
+            this.tp_GTS.DragDrop += new System.Windows.Forms.DragEventHandler(this.tp_GTS_DragDrop);
+            this.tp_GTS.DragEnter += new System.Windows.Forms.DragEventHandler(this.tp_GTS_DragEnter);
             // 
             // tp_Injection
             // 
+            this.tp_Injection.AllowDrop = true;
+            this.tp_Injection.Controls.Add(this.btn_Delete);
             this.tp_Injection.Controls.Add(this.nud_CountInjection);
             this.tp_Injection.Controls.Add(this.label10);
             this.tp_Injection.Controls.Add(this.btn_Inject);
@@ -357,7 +378,7 @@
             this.tp_Injection.Controls.Add(this.label9);
             this.tp_Injection.Controls.Add(this.label3);
             this.tp_Injection.Controls.Add(this.btn_BrowseInject);
-            this.tp_Injection.Controls.Add(this.txt_FileInjection);
+            this.tp_Injection.Controls.Add(this.tb_FileInjection);
             this.tp_Injection.Controls.Add(this.label2);
             this.tp_Injection.Location = new System.Drawing.Point(4, 22);
             this.tp_Injection.Name = "tp_Injection";
@@ -366,6 +387,19 @@
             this.tp_Injection.TabIndex = 1;
             this.tp_Injection.Text = "Injection";
             this.tp_Injection.UseVisualStyleBackColor = true;
+            this.tp_Injection.DragDrop += new System.Windows.Forms.DragEventHandler(this.tp_Injection_DragDrop);
+            this.tp_Injection.DragEnter += new System.Windows.Forms.DragEventHandler(this.tp_Injection_DragEnter);
+            // 
+            // btn_Delete
+            // 
+            this.btn_Delete.Enabled = false;
+            this.btn_Delete.Location = new System.Drawing.Point(7, 120);
+            this.btn_Delete.Name = "btn_Delete";
+            this.btn_Delete.Size = new System.Drawing.Size(354, 23);
+            this.btn_Delete.TabIndex = 10;
+            this.btn_Delete.Text = "Delete";
+            this.btn_Delete.UseVisualStyleBackColor = true;
+            this.btn_Delete.Click += new System.EventHandler(this.btn_Delete_Click);
             // 
             // nud_CountInjection
             // 
@@ -401,6 +435,7 @@
             // 
             // btn_Inject
             // 
+            this.btn_Inject.Enabled = false;
             this.btn_Inject.Location = new System.Drawing.Point(7, 91);
             this.btn_Inject.Name = "btn_Inject";
             this.btn_Inject.Size = new System.Drawing.Size(354, 23);
@@ -485,12 +520,13 @@
             this.btn_BrowseInject.UseVisualStyleBackColor = true;
             this.btn_BrowseInject.Click += new System.EventHandler(this.btn_BrowseInject_Click);
             // 
-            // txt_FileInjection
+            // tb_FileInjection
             // 
-            this.txt_FileInjection.Location = new System.Drawing.Point(7, 24);
-            this.txt_FileInjection.Name = "txt_FileInjection";
-            this.txt_FileInjection.Size = new System.Drawing.Size(279, 20);
-            this.txt_FileInjection.TabIndex = 1;
+            this.tb_FileInjection.Location = new System.Drawing.Point(7, 24);
+            this.tb_FileInjection.Name = "tb_FileInjection";
+            this.tb_FileInjection.ReadOnly = true;
+            this.tb_FileInjection.Size = new System.Drawing.Size(279, 20);
+            this.tb_FileInjection.TabIndex = 1;
             // 
             // label2
             // 
@@ -500,6 +536,30 @@
             this.label2.Size = new System.Drawing.Size(26, 13);
             this.label2.TabIndex = 0;
             this.label2.Text = "File:";
+            // 
+            // tp_Breeding
+            // 
+            this.tp_Breeding.Controls.Add(this.btn_EggStop);
+            this.tp_Breeding.Controls.Add(this.btn_EggStart);
+            this.tp_Breeding.Controls.Add(this.label11);
+            this.tp_Breeding.Controls.Add(this.btn_EggAvailable);
+            this.tp_Breeding.Location = new System.Drawing.Point(4, 22);
+            this.tp_Breeding.Name = "tp_Breeding";
+            this.tp_Breeding.Size = new System.Drawing.Size(369, 495);
+            this.tp_Breeding.TabIndex = 2;
+            this.tp_Breeding.Text = "Breeding";
+            this.tp_Breeding.UseVisualStyleBackColor = true;
+            // 
+            // btn_EggAvailable
+            // 
+            this.btn_EggAvailable.Enabled = false;
+            this.btn_EggAvailable.Location = new System.Drawing.Point(8, 4);
+            this.btn_EggAvailable.Name = "btn_EggAvailable";
+            this.btn_EggAvailable.Size = new System.Drawing.Size(353, 23);
+            this.btn_EggAvailable.TabIndex = 0;
+            this.btn_EggAvailable.Text = "Egg Available";
+            this.btn_EggAvailable.UseVisualStyleBackColor = true;
+            this.btn_EggAvailable.Click += new System.EventHandler(this.btn_EggAvailable_Click);
             // 
             // ofd_Injection
             // 
@@ -520,6 +580,37 @@
             this.timer1.Enabled = true;
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(5, 35);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(111, 13);
+            this.label11.TabIndex = 1;
+            this.label11.Text = "Egg Always Available:";
+            // 
+            // btn_EggStart
+            // 
+            this.btn_EggStart.Enabled = false;
+            this.btn_EggStart.Location = new System.Drawing.Point(122, 30);
+            this.btn_EggStart.Name = "btn_EggStart";
+            this.btn_EggStart.Size = new System.Drawing.Size(75, 23);
+            this.btn_EggStart.TabIndex = 2;
+            this.btn_EggStart.Text = "Start";
+            this.btn_EggStart.UseVisualStyleBackColor = true;
+            this.btn_EggStart.Click += new System.EventHandler(this.btn_EggStart_Click);
+            // 
+            // btn_EggStop
+            // 
+            this.btn_EggStop.Enabled = false;
+            this.btn_EggStop.Location = new System.Drawing.Point(203, 30);
+            this.btn_EggStop.Name = "btn_EggStop";
+            this.btn_EggStop.Size = new System.Drawing.Size(75, 23);
+            this.btn_EggStop.TabIndex = 3;
+            this.btn_EggStop.Text = "Stop";
+            this.btn_EggStop.UseVisualStyleBackColor = true;
+            this.btn_EggStop.Click += new System.EventHandler(this.btn_EggStop_Click);
             // 
             // MainForm
             // 
@@ -544,6 +635,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.nud_CountInjection)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_SlotInjection)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_BoxInjection)).EndInit();
+            this.tp_Breeding.ResumeLayout(false);
+            this.tp_Breeding.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -585,12 +678,19 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btn_BrowseInject;
-        private System.Windows.Forms.TextBox txt_FileInjection;
+        private System.Windows.Forms.TextBox tb_FileInjection;
         private System.Windows.Forms.OpenFileDialog ofd_Injection;
         private System.Windows.Forms.NumericUpDown nud_CountInjection;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Button btn_Disconnect;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Button btn_Delete;
+        private System.Windows.Forms.ColumnHeader FC;
+        private System.Windows.Forms.TabPage tp_Breeding;
+        private System.Windows.Forms.Button btn_EggAvailable;
+        private System.Windows.Forms.Button btn_EggStart;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Button btn_EggStop;
     }
 }
 

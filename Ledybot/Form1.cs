@@ -3,7 +3,9 @@ using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -22,6 +24,8 @@ namespace Ledybot
             ofd_Injection.Filter = "Gen 7 pokémon files|*.pk7";
             string path = @Application.StartupPath;
             ofd_Injection.InitialDirectory = path;
+
+            btn_Disconnect.Enabled = false;
         }
 
         public int pid = 0;
@@ -40,14 +44,15 @@ namespace Ledybot
             }
 
 
+
         }
 
         public void getGame(object sender, EventArgs e)
         {
-            InfoReadyEventArgs args = (InfoReadyEventArgs) e;
-            
+            InfoReadyEventArgs args = (InfoReadyEventArgs)e;
+
             string log = args.info;
-            if(log.Contains("niji_loc"))
+            if (log.Contains("niji_loc"))
             {
                 string splitlog = log.Substring(log.IndexOf(", pname: niji_loc") - 8, log.Length - log.IndexOf(", pname: niji_loc"));
                 pid = Convert.ToInt32("0x" + splitlog.Substring(0, 8), 16);
@@ -56,10 +61,35 @@ namespace Ledybot
             }
         }
 
+        public void setupButtons()
+        {
+            btn_Connect.Enabled = false;
+            btn_Disconnect.Enabled = true;
+            btn_Start.Enabled = true;
+            btn_Inject.Enabled = true;
+            btn_Delete.Enabled = true;
+            btn_EggAvailable.Enabled = true;
+            btn_EggStart.Enabled = true;
+        }
+
+        public void undoButtons()
+        {
+            btn_Connect.Enabled = true;
+            btn_Disconnect.Enabled = false;
+            btn_Start.Enabled = false;
+            btn_Stop.Enabled = false;
+            btn_Inject.Enabled = false;
+            btn_Delete.Enabled = false;
+            btn_EggAvailable.Enabled = false;
+            btn_EggStart.Enabled = false;
+            btn_EggStop.Enabled = false;
+        }
+
         public void connectCheck(object sender, EventArgs e)
         {
 
             Program.scriptHelper.listprocess();
+            setupButtons();
         }
 
         Thread workerThread = null;
@@ -70,20 +100,22 @@ namespace Ledybot
             if (workerThread == null && workerObject == null)
             {
                 workerObject = new Worker();
-                workerObject.setValues(tb_PokemonToFind.Text, tb_Default.Text, tb_Folder.Text, pid, cb_Spanish.Checked, (int)nud_Dex.Value, cmb_Gender.SelectedIndex, cmb_Levels.SelectedIndex);
+                workerObject.setValues(0, pid, tb_PokemonToFind.Text, tb_Default.Text, tb_Folder.Text, cb_Spanish.Checked, (int)nud_Dex.Value, cmb_Gender.SelectedIndex, cmb_Levels.SelectedIndex);
                 workerThread = new Thread(workerObject.DoWork);
                 workerThread.Start();
+                btn_Stop.Enabled = true;
+                btn_Start.Enabled = false;
             }
         }
 
-        public void AppendListViewItem(string szTrainerName, string szNickname, string szCountry, string szSubCountry)
+        public void AppendListViewItem(string szTrainerName, string szNickname, string szCountry, string szSubCountry, string fc)
         {
             if (InvokeRequired)
             {
-                this.Invoke(new Action<string, string, string, string>(AppendListViewItem), new object[] { szTrainerName, szNickname, szCountry, szSubCountry });
+                this.Invoke(new Action<string, string, string, string, string>(AppendListViewItem), new object[] { szTrainerName, szNickname, szCountry, szSubCountry, fc });
                 return;
             }
-            string[] row = { DateTime.Now.ToString("h:mm:ss"), szTrainerName, szNickname, szCountry, szSubCountry };
+            string[] row = { DateTime.Now.ToString("h:mm:ss"), szTrainerName, szNickname, szCountry, szSubCountry, Regex.Replace(fc, ".{4}", "$0-").Substring(0, fc.Length + 2) };
             var listViewItem = new ListViewItem(row);
 
             lv_log.Items.Add(listViewItem);
@@ -95,10 +127,13 @@ namespace Ledybot
             if (workerThread != null && workerObject != null)
             {
                 workerObject.RequestStop();
-                workerThread.Join();
+                workerThread.Abort();
 
                 workerObject = null;
                 workerThread = null;
+
+                btn_Start.Enabled = true;
+                btn_Stop.Enabled = false;
             }
         }
 
@@ -172,7 +207,7 @@ namespace Ledybot
         {
             if (ofd_Injection.ShowDialog() == DialogResult.OK)
             {
-                txt_FileInjection.Text = ofd_Injection.FileName;
+                tb_FileInjection.Text = ofd_Injection.FileName;
                 ofd_Injection.InitialDirectory = Path.GetDirectoryName(ofd_Injection.FileName);
             }
         }
@@ -181,7 +216,13 @@ namespace Ledybot
 
         private void btn_Inject_Click(object sender, EventArgs e)
         {
-            byte[] pkmEncrypted = System.IO.File.ReadAllBytes(txt_FileInjection.Text);
+
+            if (tb_FileInjection.Text == "")
+            {
+                MessageBox.Show("Please select a file!", "Ledybot", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            byte[] pkmEncrypted = System.IO.File.ReadAllBytes(tb_FileInjection.Text);
             byte[] cloneshort = PKHeX.encryptArray(pkmEncrypted.Take(232).ToArray());
             uint boxIndex = Decimal.ToUInt32((nud_BoxInjection.Value - 1) * 30 + nud_SlotInjection.Value - 1);
             uint count = Decimal.ToUInt32(nud_CountInjection.Value);
@@ -203,11 +244,22 @@ namespace Ledybot
         {
             if (Program.Connected)
             {
+
+                if (workerThread != null && workerObject != null)
+                {
+                    workerObject.RequestStop();
+                    workerThread.Abort();
+
+                    workerObject = null;
+                    workerThread = null;
+                }
+
                 Program.ntrClient.disconnect();
 
                 if (!Program.Connected)
                 {
                     MessageBox.Show("Disconnection Successful!");
+                    undoButtons();
                 }
             }
             else
@@ -236,6 +288,123 @@ namespace Ledybot
         private void nud_SlotInjection_ValueChanged(object sender, EventArgs e)
         {
             nud_CountInjection.Maximum = 32 * 30 - (Decimal.ToUInt32((nud_BoxInjection.Value - 1) * 30 + nud_SlotInjection.Value - 1));
+        }
+
+        private void tp_GTS_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.All;
+        }
+
+        private void tp_GTS_DragDrop(object sender, DragEventArgs e)
+        {
+            string input = ((string[])e.Data.GetData(DataFormats.FileDrop, false))[0];
+            if (File.GetAttributes(input).HasFlag(FileAttributes.Directory))
+            {
+                tb_Folder.Text = input;
+            }
+            else
+            {
+                tb_Default.Text = input;
+            }
+
+        }
+
+        private void tp_Injection_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.All;
+        }
+
+        private void tp_Injection_DragDrop(object sender, DragEventArgs e)
+        {
+            string input = ((string[])e.Data.GetData(DataFormats.FileDrop, false))[0];
+            if (!File.GetAttributes(input).HasFlag(FileAttributes.Directory))
+            {
+                tb_FileInjection.Text = input;
+            }
+            else
+            {
+                MessageBox.Show("Please drag a file!", "Ledybot", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btn_Delete_Click(object sender, EventArgs e)
+        {
+            byte[] cloneshort = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x26, 0x06, 0x00, 0x00, 0x7E, 0xE9, 0x71, 0x52, 0xB0, 0x31, 0x42, 0x8E, 0xCC, 0xE2, 0xC5, 0xAF, 0xDB, 0x67, 0x33, 0xFC, 0x2C, 0xEF, 0x5E, 0xFC, 0xC5, 0xCA, 0xD6, 0xEB, 0x3D, 0x99, 0xBC, 0x7A, 0xA7, 0xCB, 0xD6, 0x5D, 0x78, 0x91, 0xA6, 0x27, 0x8D, 0x61, 0x92, 0x16, 0xB8, 0xCF, 0x5D, 0x37, 0x80, 0x30, 0x7C, 0x40, 0xFB, 0x48, 0x13, 0x32, 0xE7, 0xFE, 0xE6, 0xDF, 0x0E, 0x3D, 0xF9, 0x63, 0x29, 0x1D, 0x8D, 0xEA, 0x96, 0x62, 0x68, 0x92, 0x97, 0xA3, 0x49, 0x1C, 0x03, 0x6E, 0xAA, 0x31, 0x89, 0xAA, 0xC5, 0xD3, 0xEA, 0xC3, 0xD9, 0x82, 0xC6, 0xE0, 0x5C, 0x94, 0x3B, 0x4E, 0x5F, 0x5A, 0x28, 0x24, 0xB3, 0xFB, 0xE1, 0xBF, 0x8E, 0x7B, 0x7F, 0x00, 0xC4, 0x40, 0x48, 0xC8, 0xD1, 0xBF, 0xB6, 0x38, 0x3B, 0x90, 0x23, 0xFB, 0x23, 0x7D, 0x34, 0xBE, 0x00, 0xDA, 0x6A, 0x70, 0xC5, 0xDF, 0x84, 0xBA, 0x14, 0xE4, 0xA1, 0x60, 0x2B, 0x2B, 0x38, 0x8F, 0xA0, 0xB6, 0x60, 0x41, 0x36, 0x16, 0x09, 0xF0, 0x4B, 0xB5, 0x0E, 0x26, 0xA8, 0xB6, 0x43, 0x7B, 0xCB, 0xF9, 0xEF, 0x68, 0xD4, 0xAF, 0x5F, 0x74, 0xBE, 0xC3, 0x61, 0xE0, 0x95, 0x98, 0xF1, 0x84, 0xBA, 0x11, 0x62, 0x24, 0x80, 0xCC, 0xC4, 0xA7, 0xA2, 0xB7, 0x55, 0xA8, 0x5C, 0x1C, 0x42, 0xA2, 0x3A, 0x86, 0x05, 0xAD, 0xD2, 0x11, 0x19, 0xB0, 0xFD, 0x57, 0xE9, 0x4E, 0x60, 0xBA, 0x1B, 0x45, 0x2E, 0x17, 0xA9, 0x34, 0x93, 0x2D, 0x66, 0x09, 0x2D, 0x11, 0xE0, 0xA1, 0x74, 0x42, 0xC4, 0x73, 0x19, 0x28, 0x22, 0xF0, 0x43, 0x28, 0x54, 0xA6 };
+            uint boxIndex = Decimal.ToUInt32((nud_BoxInjection.Value - 1) * 30 + nud_SlotInjection.Value - 1);
+            uint count = Decimal.ToUInt32(nud_CountInjection.Value);
+            if (boxIndex + count > 32 * 30)
+            {
+                uint newCount = 32 * 30 - boxIndex;
+                count = newCount;
+            }
+
+            byte[] dataToWrite = new byte[count * 232];
+            for (int i = 0; i < count; i++)
+                cloneshort.CopyTo(dataToWrite, i * 232);
+            uint offset = boxOff + boxIndex * 232;
+            Program.scriptHelper.write(offset, dataToWrite, pid);
+            MessageBox.Show("Deletion Successful!");
+        }
+
+        public byte[] StringToByteArray(string hex)
+        {
+            int NumberChars = hex.Length;
+            byte[] bytes = new byte[NumberChars / 2];
+            for (int i = 0; i < NumberChars; i += 2)
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            return bytes;
+        }
+
+        public byte calculateChecksum(byte[] principal)
+        {
+            byte[] newPrincipal = new byte[principal.Length];
+            Array.Copy(principal, newPrincipal, newPrincipal.Length);
+            Array.Reverse(newPrincipal);
+            using (SHA1Managed sha1 = new SHA1Managed())
+            {
+                byte[] hash = sha1.ComputeHash(newPrincipal);
+                byte MyChecksum = (byte)(hash[0] >> 1);
+                return MyChecksum;
+            }
+        }
+
+        public string ByteArrayToString(byte[] ba)
+        {
+            string hex = BitConverter.ToString(ba);
+            return hex.Replace("-", "");
+        }
+
+        private uint eggOff = 0x3313EDD8;
+
+        private void btn_EggAvailable_Click(object sender, EventArgs e)
+        {
+            byte[] data = BitConverter.GetBytes(0x01);
+            Program.scriptHelper.write(eggOff, data, pid);
+        }
+
+        private void btn_EggStart_Click(object sender, EventArgs e)
+        {
+            workerObject = new Worker();
+            workerObject.setValues(1, pid);
+            workerThread = new Thread(workerObject.DoWork);
+            workerThread.Start();
+            btn_EggStop.Enabled = true;
+            btn_EggStart.Enabled = false;
+        }
+
+        private void btn_EggStop_Click(object sender, EventArgs e)
+        {
+            if (workerThread != null && workerObject != null)
+            {
+                workerObject.RequestStop();
+                workerThread.Abort();
+
+                workerObject = null;
+                workerThread = null;
+
+                btn_EggStart.Enabled = true;
+                btn_EggStop.Enabled = false;
+            }
         }
     }
 }
