@@ -137,6 +137,7 @@ namespace Ledybot
                         if (await waitTaskbool)
                         {
                             botState = (int)gtsbotstates.findfromstart;
+                            await Task.Delay(2250);
                         }
                         else
                         {
@@ -146,7 +147,6 @@ namespace Ledybot
                         }
                         break;
                     case (int)gtsbotstates.findfromstart:
-                        await Task.Delay(2500);
                         waitTaskbool = Program.helper.waitNTRread(addr_PageSize);
                         if (await waitTaskbool)
                         {
@@ -169,7 +169,25 @@ namespace Ledybot
                                         await Task.Delay(commandtime + delaytime);
                                         Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
                                         await Task.Delay(commandtime + delaytime);
-                                        botState = (int)gtsbotstates.findfromend;
+                                        await Task.Delay(2250);
+                                        Program.helper.quicktouch(0, 0, commandtime);
+                                        await Task.Delay(commandtime + delaytime);
+                                        Program.helper.quicktouch(0, 0, commandtime);
+                                        await Task.Delay(commandtime + delaytime);
+                                        Program.helper.quicktouch(0, 0, commandtime);
+                                        await Task.Delay(commandtime + delaytime);
+                                        Program.helper.quicktouch(0, 0, commandtime);
+                                        await Task.Delay(commandtime + delaytime);
+                                        await Program.helper.waitNTRread(addr_PageStartingIndex);
+                                        if (Program.helper.lastRead == 0)
+                                        {
+                                            foundLastPage = true;
+                                        }
+                                        else
+                                        {
+                                            botState = (int)gtsbotstates.findfromend;
+                                        }
+
                                     }
                                 }
                                 else
@@ -231,7 +249,6 @@ namespace Ledybot
                         }
                         break;
                     case (int)gtsbotstates.findfromend:
-                        await Task.Delay(2500);
                         waitTaskbool = Program.helper.waitNTRread(addr_PageSize);
                         if (await waitTaskbool)
                         {
@@ -242,6 +259,20 @@ namespace Ledybot
                                 startIndex += 100;
                                 Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
                                 await Task.Delay(commandtime + delaytime);
+                                await Task.Delay(2250);
+                                Program.helper.quicktouch(0, 0, commandtime);
+                                await Task.Delay(commandtime + delaytime);
+                                Program.helper.quicktouch(0, 0, commandtime);
+                                await Task.Delay(commandtime + delaytime);
+                                Program.helper.quicktouch(0, 0, commandtime);
+                                await Task.Delay(commandtime + delaytime);
+                                Program.helper.quicktouch(0, 0, commandtime);
+                                await Task.Delay(commandtime + delaytime);
+                                await Program.helper.waitNTRread(addr_PageCurrentView);
+                                if (Program.helper.lastRead == 0)
+                                {
+                                    foundLastPage = true;
+                                }
                                 botState = (int)gtsbotstates.findfromstart;
                             }
                             else
@@ -287,6 +318,7 @@ namespace Ledybot
                                                 Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
                                                 await Task.Delay(commandtime + delaytime);
                                             }
+                                            await Task.Delay(2250);
                                         }
                                         else if (startIndex >= 200)
                                         {
@@ -300,6 +332,15 @@ namespace Ledybot
                                                 Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
                                                 await Task.Delay(commandtime + delaytime);
                                                 Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
+                                                await Task.Delay(commandtime + delaytime);
+                                                await Task.Delay(2250);
+                                                Program.helper.quicktouch(0, 0, commandtime);
+                                                await Task.Delay(commandtime + delaytime);
+                                                Program.helper.quicktouch(0, 0, commandtime);
+                                                await Task.Delay(commandtime + delaytime);
+                                                Program.helper.quicktouch(0, 0, commandtime);
+                                                await Task.Delay(commandtime + delaytime);
+                                                Program.helper.quicktouch(0, 0, commandtime);
                                                 await Task.Delay(commandtime + delaytime);
                                                 botState = (int)gtsbotstates.findfromstart;
                                             }
@@ -323,6 +364,9 @@ namespace Ledybot
                                                 Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
                                                 await Task.Delay(commandtime + delaytime);
                                                 Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
+                                                await Task.Delay(commandtime + delaytime);
+                                                await Task.Delay(2250);
+                                                Program.helper.quicktouch(0, 0, commandtime);
                                                 await Task.Delay(commandtime + delaytime);
                                                 Program.helper.quicktouch(0, 0, commandtime);
                                                 await Task.Delay(commandtime + delaytime);
@@ -383,7 +427,7 @@ namespace Ledybot
                             await Task.Delay(commandtime + delaytime);
                             Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
                             await Task.Delay(commandtime + delaytime);
-                            await Task.Delay(45000);
+                            await Task.Delay(47000);
                             startIndex = 0;
                             tradeIndex = -1;
                             listlength = 0;
@@ -396,6 +440,7 @@ namespace Ledybot
                         Program.helper.quicktouch(128, 64, commandtime);
                         await Task.Delay(commandtime + delaytime + 500);
                         await Program.helper.waittouch(160, 190);
+                        await Task.Delay(2250);
                         botState = (int)gtsbotstates.findfromstart;
                         break;
                     case (int)gtsbotstates.botexit:
