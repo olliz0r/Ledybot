@@ -147,27 +147,220 @@ namespace Ledybot
                         }
                         break;
                     case (int)gtsbotstates.findfromstart:
-                        waitTaskbool = Program.helper.waitNTRread(addr_PageSize);
-                        if (await waitTaskbool)
+                        await Program.helper.waitNTRread(addr_PageSize);
+
+                        attempts = 0;
+                        listlength = (int)Program.helper.lastRead;
+
+                        if (listlength == 100 && !foundLastPage)
                         {
-                            attempts = 0;
-                            listlength = (int)Program.helper.lastRead;
                             waitTaskbool = Program.helper.waitNTRread(addr_PageStartingIndex);
                             if (await waitTaskbool)
                             {
                                 startIndex = (int)Program.helper.lastRead;
-                                if (listlength == 100 && !foundLastPage)
+                                waitTaskbool = Program.helper.waitNTRwrite(addr_PageStartingIndex, (uint)(startIndex + 200), iPID);
+                                if (await waitTaskbool)
                                 {
+                                    startIndex += 100;
+                                    Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
+                                    await Task.Delay(commandtime + delaytime);
+                                    Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
+                                    await Task.Delay(commandtime + delaytime);
+                                    Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
+                                    await Task.Delay(commandtime + delaytime);
+                                    await Task.Delay(2250);
+                                    Program.helper.quicktouch(0, 0, commandtime);
+                                    await Task.Delay(commandtime + delaytime);
+                                    Program.helper.quicktouch(0, 0, commandtime);
+                                    await Task.Delay(commandtime + delaytime);
+                                    Program.helper.quicktouch(0, 0, commandtime);
+                                    await Task.Delay(commandtime + delaytime);
+                                    Program.helper.quicktouch(0, 0, commandtime);
+                                    await Task.Delay(commandtime + delaytime);
+                                    await Program.helper.waitNTRread(addr_PageStartingIndex);
+                                    if (Program.helper.lastRead == 0)
+                                    {
+                                        foundLastPage = true;
+                                    }
+                                    else
+                                    {
+                                        botState = (int)gtsbotstates.findfromend;
+                                    }
 
-                                    waitTaskbool = Program.helper.waitNTRwrite(addr_PageStartingIndex, (uint)(startIndex + 200), iPID);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            foundLastPage = true;
+                            attempts = 0;
+                            listlength = (int)Program.helper.lastRead;
+                            int dexnumber = 0;
+                            await Program.helper.waitNTRread(addr_PageEndStartRecord);
+                            addr_PageEntry = Program.helper.lastRead;
+                            await Program.helper.waitNTRread(0x32A6A7C4, (uint)(256 * 100));
+                            byte[] blockBytes = Program.helper.lastArray;
+                            byte[] block = new byte[256];
+                            for(int i = listlength; i > 0; i--)
+                            {
+                                Array.Copy(blockBytes, addr_PageEntry - 0x32A6A7C4, block, 0, 256);
+                                dexnumber = BitConverter.ToInt16(block, 0xC);
+                                if(dexnumber == dexNum)
+                                {
+                                    int gender = block[0xE];
+                                    int level = block[0xF];
+                                    if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
+                                    {
+                                        tradeIndex = i - 1;
+                                        botState = (int)gtsbotstates.trade;
+                                        break;
+                                    }
+                                }
+
+                                addr_PageEntry = BitConverter.ToUInt32(block, 0);
+
+                            }
+                            //for (int i = listlength; i > 0; i--)
+                            //{
+                            //    await Program.helper.waitNTRread(addr_PageEntry + 0xC, 2);
+                            //    dexnumber = BitConverter.ToInt16(Program.helper.lastArray, 0);
+                            //    if (dexnumber == dexNum)
+                            //    {
+                            //        await Program.helper.waitNTRread(addr_PageEntry + 0xE, 1);
+                            //        int gender = Program.helper.lastArray[0];
+                            //        await Program.helper.waitNTRread(addr_PageEntry + 0xF, 1);
+                            //        int level = Program.helper.lastArray[0];
+                            //        if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
+                            //        {
+                            //            tradeIndex = i - 1;
+                            //            botState = (int)gtsbotstates.trade;
+                            //            break;
+                            //        }
+                            //    }
+                            //    await Program.helper.waitNTRread(addr_PageEntry);
+                            //    addr_PageEntry = Program.helper.lastRead;
+                            //}
+                            if (tradeIndex == -1)
+                            {
+                                if (startIndex == 0)
+                                {
+                                    Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
+                                    await Task.Delay(commandtime + delaytime + 500);
+                                    Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
+                                    await Task.Delay(commandtime + delaytime);
+                                    botState = (int)gtsbotstates.research;
+                                }
+                                else
+                                {
+                                    startIndex -= 100;
+                                    Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
+                                    await Task.Delay(commandtime + delaytime);
+                                    await Task.Delay(2250);
+                                    botState = (int)gtsbotstates.findfromend;
+                                }
+                            }
+                        }
+
+                        break;
+                    case (int)gtsbotstates.findfromend:
+                        await Program.helper.waitNTRread(addr_PageSize);
+
+                        attempts = 0;
+                        listlength = (int)Program.helper.lastRead;
+                        if (listlength == 100 && !foundLastPage)
+                        {
+                            startIndex += 100;
+                            Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
+                            await Task.Delay(commandtime + delaytime);
+                            await Task.Delay(2250);
+                            Program.helper.quicktouch(0, 0, commandtime);
+                            await Task.Delay(commandtime + delaytime);
+                            Program.helper.quicktouch(0, 0, commandtime);
+                            await Task.Delay(commandtime + delaytime);
+                            Program.helper.quicktouch(0, 0, commandtime);
+                            await Task.Delay(commandtime + delaytime);
+                            Program.helper.quicktouch(0, 0, commandtime);
+                            await Task.Delay(commandtime + delaytime);
+                            await Program.helper.waitNTRread(addr_PageCurrentView);
+                            if (Program.helper.lastRead == 0)
+                            {
+                                foundLastPage = true;
+                            }
+                            botState = (int)gtsbotstates.findfromstart;
+                        }
+                        else
+                        {
+                            foundLastPage = true;
+                            attempts = 0;
+                            listlength = (int)Program.helper.lastRead;
+                            int dexnumber = 0;
+                            await Program.helper.waitNTRread(addr_PageEndStartRecord);
+                            addr_PageEntry = Program.helper.lastRead;
+                            await Program.helper.waitNTRread(0x32A6A7C4, (uint)(256 * 100));
+                            byte[] blockBytes = Program.helper.lastArray;
+                            byte[] block = new byte[256];
+                            for (int i = listlength; i > 0; i--)
+                            {
+                                Array.Copy(blockBytes, addr_PageEntry - 0x32A6A7C4, block, 0, 256);
+                                dexnumber = BitConverter.ToInt16(block, 0xC);
+                                if (dexnumber == dexNum)
+                                {
+                                    int gender = block[0xE];
+                                    int level = block[0xF];
+                                    if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
+                                    {
+                                        tradeIndex = i - 1;
+                                        botState = (int)gtsbotstates.trade;
+                                        break;
+                                    }
+                                }
+
+                                addr_PageEntry = BitConverter.ToUInt32(block, 0);
+
+                            }
+                            //for (int i = listlength; i > 0; i--)
+                            //{
+                            //    await Program.helper.waitNTRread(addr_PageEntry + 0xC, 2);
+                            //    dexnumber = BitConverter.ToInt16(Program.helper.lastArray, 0);
+                            //    if (dexnumber == dexNum)
+                            //    {
+                            //        await Program.helper.waitNTRread(addr_PageEntry + 0xE, 1);
+                            //        int gender = Program.helper.lastArray[0];
+                            //        await Program.helper.waitNTRread(addr_PageEntry + 0xF, 1);
+                            //        int level = Program.helper.lastArray[0];
+                            //        if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
+                            //        {
+                            //            tradeIndex = i - 1;
+                            //            botState = (int)gtsbotstates.trade;
+                            //            break;
+                            //        }
+                            //    }
+                            //    await Program.helper.waitNTRread(addr_PageEntry);
+                            //    addr_PageEntry = Program.helper.lastRead;
+                            //}
+                            if (tradeIndex == -1)
+                            {
+                                if (listlength < 100)
+                                {
+                                    for (int i = 0; i < listlength; i++)
+                                    {
+                                        Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
+                                        await Task.Delay(commandtime + delaytime);
+                                    }
+                                    await Task.Delay(2250);
+                                }
+                                else if (startIndex >= 200)
+                                {
+                                    waitTaskbool = Program.helper.waitNTRwrite(addr_PageStartingIndex, (uint)(startIndex - 200), iPID);
                                     if (await waitTaskbool)
                                     {
-                                        startIndex += 100;
+                                        await Program.helper.waitNTRwrite(addr_PageSize, 0x64, iPID);
+                                        startIndex -= 100;
+                                        Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
+                                        await Task.Delay(commandtime + delaytime);
                                         Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
                                         await Task.Delay(commandtime + delaytime);
-                                        Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
-                                        await Task.Delay(commandtime + delaytime);
-                                        Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
+                                        Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
                                         await Task.Delay(commandtime + delaytime);
                                         await Task.Delay(2250);
                                         Program.helper.quicktouch(0, 0, commandtime);
@@ -178,223 +371,44 @@ namespace Ledybot
                                         await Task.Delay(commandtime + delaytime);
                                         Program.helper.quicktouch(0, 0, commandtime);
                                         await Task.Delay(commandtime + delaytime);
-                                        await Program.helper.waitNTRread(addr_PageStartingIndex);
-                                        if (Program.helper.lastRead == 0)
-                                        {
-                                            foundLastPage = true;
-                                        }
-                                        else
-                                        {
-                                            botState = (int)gtsbotstates.findfromend;
-                                        }
-
+                                        botState = (int)gtsbotstates.findfromstart;
                                     }
+                                }
+                                else if (startIndex == 0)
+                                {
+                                    Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
+                                    await Task.Delay(commandtime + delaytime + 500);
+                                    Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
+                                    await Task.Delay(commandtime + delaytime);
+                                    botState = (int)gtsbotstates.research;
                                 }
                                 else
                                 {
-                                    foundLastPage = true;
-                                    waitTaskbool = Program.helper.waitNTRread(addr_PageSize);
+                                    waitTaskbool = Program.helper.waitNTRwrite(addr_PageStartingIndex, 100000, iPID);
                                     if (await waitTaskbool)
                                     {
-                                        attempts = 0;
-                                        listlength = (int)Program.helper.lastRead;
-                                        int dexnumber = 0;
+                                        startIndex -= 100;
+                                        Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
+                                        await Task.Delay(commandtime + delaytime);
+                                        Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
+                                        await Task.Delay(commandtime + delaytime);
+                                        Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
+                                        await Task.Delay(commandtime + delaytime);
+                                        await Task.Delay(2250);
+                                        Program.helper.quicktouch(0, 0, commandtime);
+                                        await Task.Delay(commandtime + delaytime);
+                                        Program.helper.quicktouch(0, 0, commandtime);
+                                        await Task.Delay(commandtime + delaytime);
+                                        Program.helper.quicktouch(0, 0, commandtime);
+                                        await Task.Delay(commandtime + delaytime);
+                                        Program.helper.quicktouch(0, 0, commandtime);
+                                        await Task.Delay(commandtime + delaytime);
+                                        botState = (int)gtsbotstates.findfromstart;
+                                    }
+                                }
+                            }
+                        }
 
-                                        waitTaskbool = Program.helper.waitNTRread(addr_PageEndStartRecord);
-                                        if (await waitTaskbool)
-                                        {
-                                            addr_PageEntry = Program.helper.lastRead;
-                                        }
-                                        else
-                                        {
-                                            break;
-                                        }
-                                        for (int i = listlength; i > 0; i--)
-                                        {
-                                            waitTaskbool = Program.helper.waitNTRread(addr_PageEntry + 0xC, 2);
-                                            if (await waitTaskbool)
-                                            {
-                                                dexnumber = BitConverter.ToInt16(Program.helper.lastArray, 0);
-                                                if (dexnumber == dexNum)
-                                                {
-                                                    await Program.helper.waitNTRread(addr_PageEntry + 0xE, 1);
-                                                    int gender = Program.helper.lastArray[0];
-                                                    await Program.helper.waitNTRread(addr_PageEntry + 0xF, 1);
-                                                    int level = Program.helper.lastArray[0];
-                                                    if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
-                                                    {
-                                                        tradeIndex = i - 1;
-                                                        botState = (int)gtsbotstates.trade;
-                                                        break;
-                                                    }
-                                                }
-                                                await Program.helper.waitNTRread(addr_PageEntry);
-                                                addr_PageEntry = Program.helper.lastRead;
-                                            }
-                                        }
-                                        if (tradeIndex == -1)
-                                        {
-                                            if (startIndex == 0)
-                                            {
-                                                Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                                Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                                botState = (int)gtsbotstates.research;
-                                            }
-                                            else
-                                            {
-                                                startIndex -= 100;
-                                                Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                                botState = (int)gtsbotstates.findfromend;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    case (int)gtsbotstates.findfromend:
-                        waitTaskbool = Program.helper.waitNTRread(addr_PageSize);
-                        if (await waitTaskbool)
-                        {
-                            attempts = 0;
-                            listlength = (int)Program.helper.lastRead;
-                            if (listlength == 100 && !foundLastPage)
-                            {
-                                startIndex += 100;
-                                Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
-                                await Task.Delay(commandtime + delaytime);
-                                await Task.Delay(2250);
-                                Program.helper.quicktouch(0, 0, commandtime);
-                                await Task.Delay(commandtime + delaytime);
-                                Program.helper.quicktouch(0, 0, commandtime);
-                                await Task.Delay(commandtime + delaytime);
-                                Program.helper.quicktouch(0, 0, commandtime);
-                                await Task.Delay(commandtime + delaytime);
-                                Program.helper.quicktouch(0, 0, commandtime);
-                                await Task.Delay(commandtime + delaytime);
-                                await Program.helper.waitNTRread(addr_PageCurrentView);
-                                if (Program.helper.lastRead == 0)
-                                {
-                                    foundLastPage = true;
-                                }
-                                botState = (int)gtsbotstates.findfromstart;
-                            }
-                            else
-                            {
-                                foundLastPage = true;
-                                waitTaskbool = Program.helper.waitNTRread(addr_PageSize);
-                                if (await waitTaskbool)
-                                {
-                                    attempts = 0;
-                                    listlength = (int)Program.helper.lastRead;
-                                    int dexnumber = 0;
-                                    waitTaskbool = Program.helper.waitNTRread(addr_PageEndStartRecord);
-                                    if (await waitTaskbool)
-                                    {
-                                        addr_PageEntry = Program.helper.lastRead;
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                    for (int i = listlength; i > 0; i--)
-                                    {
-                                        waitTaskbool = Program.helper.waitNTRread(addr_PageEntry + 0xC, 2);
-                                        if (await waitTaskbool)
-                                        {
-                                            dexnumber = BitConverter.ToInt16(Program.helper.lastArray, 0);
-                                            if (dexnumber == dexNum)
-                                            {
-                                                await Program.helper.waitNTRread(addr_PageEntry + 0xE, 1);
-                                                int gender = Program.helper.lastArray[0];
-                                                await Program.helper.waitNTRread(addr_PageEntry + 0xF, 1);
-                                                int level = Program.helper.lastArray[0];
-                                                if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
-                                                {
-                                                    tradeIndex = i - 1;
-                                                    botState = (int)gtsbotstates.trade;
-                                                    break;
-                                                }
-                                            }
-                                            await Program.helper.waitNTRread(addr_PageEntry);
-                                            addr_PageEntry = Program.helper.lastRead;
-                                        }
-                                    }
-                                    if (tradeIndex == -1)
-                                    {
-                                        if (listlength < 100)
-                                        {
-                                            for (int i = 0; i < listlength; i++)
-                                            {
-                                                Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                            }
-                                            await Task.Delay(2250);
-                                        }
-                                        else if (startIndex >= 200)
-                                        {
-                                            waitTaskbool = Program.helper.waitNTRwrite(addr_PageStartingIndex, (uint)(startIndex - 200), iPID);
-                                            if (await waitTaskbool)
-                                            {
-                                                await Program.helper.waitNTRwrite(addr_PageSize, 0x64, iPID);
-                                                startIndex -= 100;
-                                                Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                                Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                                Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                                await Task.Delay(2250);
-                                                Program.helper.quicktouch(0, 0, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                                Program.helper.quicktouch(0, 0, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                                Program.helper.quicktouch(0, 0, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                                Program.helper.quicktouch(0, 0, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                                botState = (int)gtsbotstates.findfromstart;
-                                            }
-                                        }
-                                        else if (startIndex == 0)
-                                        {
-                                            Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
-                                            await Task.Delay(commandtime + delaytime);
-                                            Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
-                                            await Task.Delay(commandtime + delaytime);
-                                            botState = (int)gtsbotstates.research;
-                                        }
-                                        else
-                                        {
-                                            waitTaskbool = Program.helper.waitNTRwrite(addr_PageStartingIndex, 100000, iPID);
-                                            if (await waitTaskbool)
-                                            {
-                                                startIndex -= 100;
-                                                Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                                Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                                Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                                await Task.Delay(2250);
-                                                Program.helper.quicktouch(0, 0, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                                Program.helper.quicktouch(0, 0, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                                Program.helper.quicktouch(0, 0, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                                Program.helper.quicktouch(0, 0, commandtime);
-                                                await Task.Delay(commandtime + delaytime);
-                                                botState = (int)gtsbotstates.findfromstart;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
                         break;
                     case (int)gtsbotstates.trade:
                         waitTaskbool = Program.helper.waitNTRwrite(addr_PageCurrentView, BitConverter.GetBytes(tradeIndex), iPID);

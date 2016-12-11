@@ -301,13 +301,13 @@ namespace Ledybot
             DataReadyWaiting myArgs = new DataReadyWaiting(new byte[0x04], handleMemoryRead, null);
             Program.f1.addwaitingForData(Program.scriptHelper.data(address, 0x04, pid), myArgs);
             int readcount = 0;
-            for (readcount = 0; readcount < timeout * 10; readcount++)
+            for (readcount = 0; readcount < timeout * 100; readcount++)
             {
-                await Task.Delay(100);
+                await Task.Delay(10);
                 if (CompareLastLog("finished"))
                     break;
             }
-            if (readcount == timeout * 10)
+            if (readcount == timeout * 100)
             {
                 return false;
             }
@@ -325,13 +325,13 @@ namespace Ledybot
             DataReadyWaiting myArgs = new DataReadyWaiting(new byte[size], handleMemoryRead, null);
             Program.f1.addwaitingForData(Program.scriptHelper.data(address, size, pid), myArgs);
             int readcount = 0;
-            for (readcount = 0; readcount < timeout * 10; readcount++)
+            for (readcount = 0; readcount < timeout * 100; readcount++)
             {
-                await Task.Delay(100);
+                await Task.Delay(10);
                 if (CompareLastLog("finished"))
                     break;
             }
-            if (readcount == timeout * 10)
+            if (readcount == timeout * 100)
             {
                 return false;
             }
@@ -353,13 +353,13 @@ namespace Ledybot
             DataReadyWaiting myArgs = new DataReadyWaiting(new byte[POKEBYTES], handlePokeRead, null);
             Program.f1.addwaitingForData(Program.scriptHelper.data(dumpOff, POKEBYTES, pid), myArgs);
             int readcount = 0;
-            for (readcount = 0; readcount < timeout * 10; readcount++)
+            for (readcount = 0; readcount < timeout * 100; readcount++)
             {
-                await Task.Delay(100);
+                await Task.Delay(10);
                 if (CompareLastLog("finished"))
                     break;
             }
-            if (readcount == timeout * 10)
+            if (readcount == timeout * 100)
                 return -2; // No data received
             else if (validator.Species != 0)
             {
@@ -376,13 +376,13 @@ namespace Ledybot
             DataReadyWaiting myArgs = new DataReadyWaiting(new byte[POKEBYTES], handlePokeRead, null);
             Program.f1.addwaitingForData(Program.scriptHelper.data(dumpOff, POKEBYTES, pid), myArgs);
             int readcount = 0;
-            for (readcount = 0; readcount < timeout * 10; readcount++)
+            for (readcount = 0; readcount < timeout * 100; readcount++)
             {
-                await Task.Delay(100);
+                await Task.Delay(10);
                 if (CompareLastLog("finished"))
                     break;
             }
-            if (readcount == timeout * 10)
+            if (readcount == timeout * 100)
                 return -2; // No data received
             else if (validator.Species != 0)
             {
@@ -400,13 +400,13 @@ namespace Ledybot
             DataReadyWaiting myArgs = new DataReadyWaiting(new byte[0x04], handleMemoryRead, null);
             Program.f1.addwaitingForData(Program.scriptHelper.data(address, 0x04, pid), myArgs);
             int readcount = 0;
-            for (readcount = 0; readcount < timeout * 10; readcount++)
+            for (readcount = 0; readcount < timeout * 100; readcount++)
             {
-                await Task.Delay(100);
+                await Task.Delay(10);
                 if (CompareLastLog("finished"))
                     break;
             }
-            if (readcount < timeout * 10)
+            if (readcount < timeout * 100)
             { // Data received
                 if (lastRead >= value && lastRead < value + range)
                     return true;
@@ -428,14 +428,14 @@ namespace Ledybot
                 Program.f1.addwaitingForData(Program.scriptHelper.data(address, 0x04, pid), myArgs);
                 // Wait for data
                 int readcount = 0;
-                for (readcount = 0; readcount < timeout * 10; readcount++)
+                for (readcount = 0; readcount < timeout * 100; readcount++)
                 {
-                    await Task.Delay(100);
+                    await Task.Delay(10);
                     time += 100;
                     if (CompareLastLog("finished"))
                         break;
                 }
-                if (readcount < timeout * 10)
+                if (readcount < timeout * 100)
                 { // Data received
                     if (lastRead >= value && lastRead < value + range)
                         return true;
@@ -455,14 +455,14 @@ namespace Ledybot
             byte[] command = BitConverter.GetBytes(data);
             Program.scriptHelper.write(address, command, pid);
             int waittimeout;
-            for (waittimeout = 0; waittimeout < timeout * 10; waittimeout++)
+            for (waittimeout = 0; waittimeout < timeout * 100; waittimeout++)
             {
                 WriteLastLog("");
-                await Task.Delay(100);
+                await Task.Delay(10);
                 if (CompareLastLog("finished"))
                     break;
             }
-            if (waittimeout < timeout)
+            if (waittimeout < timeout * 100)
                 return true;
             else
                 return false;
@@ -472,14 +472,14 @@ namespace Ledybot
         {
             Program.scriptHelper.write(address, data, pid);
             int waittimeout;
-            for (waittimeout = 0; waittimeout < timeout * 10; waittimeout++)
+            for (waittimeout = 0; waittimeout < timeout * 100; waittimeout++)
             {
                 WriteLastLog("");
-                await Task.Delay(100);
+                await Task.Delay(10);
                 if (CompareLastLog("finished"))
                     break;
             }
-            if (waittimeout < timeout)
+            if (waittimeout < timeout * 100)
                 return true;
             else
                 return false;

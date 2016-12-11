@@ -61,6 +61,7 @@ namespace Ledybot
         public event EventHandler<DataReadyEventArgs> DataReady;
         public event EventHandler Connected;
         public event EventHandler<InfoReadyEventArgs> InfoReady;
+        UInt32 lastReadMemSeq;
 
         protected virtual void OnDataReady(DataReadyEventArgs e)
         {
@@ -422,5 +423,8 @@ namespace Ledybot
             }
 
         }
+
+
     }
+
 }
