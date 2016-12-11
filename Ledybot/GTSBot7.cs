@@ -217,9 +217,16 @@ namespace Ledybot
                                                 dexnumber = BitConverter.ToInt16(Program.helper.lastArray, 0);
                                                 if (dexnumber == dexNum)
                                                 {
-                                                    tradeIndex = i - 1;
-                                                    botState = (int)gtsbotstates.trade;
-                                                    break;
+                                                    await Program.helper.waitNTRread(addr_PageEntry + 0xE, 1);
+                                                    int gender = Program.helper.lastArray[0];
+                                                    await Program.helper.waitNTRread(addr_PageEntry + 0xF, 1);
+                                                    int level = Program.helper.lastArray[0];
+                                                    if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
+                                                    {
+                                                        tradeIndex = i - 1;
+                                                        botState = (int)gtsbotstates.trade;
+                                                        break;
+                                                    }
                                                 }
                                                 await Program.helper.waitNTRread(addr_PageEntry);
                                                 addr_PageEntry = Program.helper.lastRead;
@@ -301,9 +308,16 @@ namespace Ledybot
                                             dexnumber = BitConverter.ToInt16(Program.helper.lastArray, 0);
                                             if (dexnumber == dexNum)
                                             {
-                                                tradeIndex = i - 1;
-                                                botState = (int)gtsbotstates.trade;
-                                                break;
+                                                await Program.helper.waitNTRread(addr_PageEntry + 0xE, 1);
+                                                int gender = Program.helper.lastArray[0];
+                                                await Program.helper.waitNTRread(addr_PageEntry + 0xF, 1);
+                                                int level = Program.helper.lastArray[0];
+                                                if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
+                                                {
+                                                    tradeIndex = i - 1;
+                                                    botState = (int)gtsbotstates.trade;
+                                                    break;
+                                                }
                                             }
                                             await Program.helper.waitNTRread(addr_PageEntry);
                                             addr_PageEntry = Program.helper.lastRead;
