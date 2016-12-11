@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -14,10 +16,31 @@ namespace Ledybot
 {
     public partial class MainForm : Form
     {
+
+        public delegate void LogDelegate(string l);
+        public LogDelegate delLastLog;
+        public string lastlog = "";
+        public int pid = 0;
+        public PKHeX dumpedPKHeX = new PKHeX();
+
+        public uint boxOff = 0x330D9838;
+        public uint partyOff = 0x34195E10;
+        private uint eggOff = 0x3313EDD8;
+
+        private bool botWorking = false;
+        private bool botStop = false;
+        private int botNumber = -1;
+
+        private GTSBot7 GTSBot7;
+
+        static Dictionary<uint, DataReadyWaiting> waitingForData = new Dictionary<uint, DataReadyWaiting>();
+
         public MainForm()
         {
+            Program.ntrClient.DataReady += handleDataReady;
             Program.ntrClient.Connected += connectCheck;
             Program.ntrClient.InfoReady += getGame;
+            delLastLog = new LogDelegate(lastLog);
             InitializeComponent();
 
             ofd_Injection.Title = "Select an EKX/PKX file";
@@ -28,7 +51,15 @@ namespace Ledybot
             btn_Disconnect.Enabled = false;
         }
 
-        public int pid = 0;
+        public void startAutoDisconnect()
+        {
+            disconnectTimer.Enabled = true;
+        }
+
+        public void lastLog(string l)
+        {
+            lastlog = l;
+        }
 
         private void btn_Connect_Click(object sender, EventArgs e)
         {
@@ -43,8 +74,6 @@ namespace Ledybot
                 MessageBox.Show("You are already connected!");
             }
 
-
-
         }
 
         public void getGame(object sender, EventArgs e)
@@ -56,6 +85,7 @@ namespace Ledybot
             {
                 string splitlog = log.Substring(log.IndexOf(", pname: niji_loc") - 8, log.Length - log.IndexOf(", pname: niji_loc"));
                 pid = Convert.ToInt32("0x" + splitlog.Substring(0, 8), 16);
+                Program.helper.pid = pid;
                 Program.scriptHelper.write(0x3DFFD0, BitConverter.GetBytes(0xE3A01000), pid);
                 MessageBox.Show("Connection Successful!");
             }
@@ -90,22 +120,47 @@ namespace Ledybot
 
             Program.scriptHelper.listprocess();
             setupButtons();
+            Program.Connected = true;
+        }
+
+        static void handleDataReady(object sender, DataReadyEventArgs e)
+        { // We move data processing to a separate thread. This way even if processing takes a long time, the netcode doesn't hang.
+            DataReadyWaiting args;
+            if (waitingForData.TryGetValue(e.seq, out args))
+            {
+                Array.Copy(e.data, args.data, Math.Min(e.data.Length, args.data.Length));
+                Thread t = new Thread(new ParameterizedThreadStart(args.handler));
+                t.Start(args);
+                waitingForData.Remove(e.seq);
+            }
         }
 
         Thread workerThread = null;
         Worker workerObject = null;
 
-        private void btn_Start_Click(object sender, EventArgs e)
+        private async void btn_Start_Click(object sender, EventArgs e)
         {
-            if (workerThread == null && workerObject == null)
+            btn_Stop.Enabled = true;
+            btn_Start.Enabled = false;
+            botWorking = true;
+            botStop = false;
+            botNumber = 3;
+            GTSBot7 = new GTSBot7(pid, tb_PokemonToFind.Text, tb_Default.Text, tb_Folder.Text, cb_Spanish.Checked, (int)nud_Dex.Value, cmb_Gender.SelectedIndex, cmb_Levels.SelectedIndex);
+            Task<int> Bot = GTSBot7.RunBot();
+            int result = await Bot;
+            if (botStop)
+                result = 8;
+            switch (result)
             {
-                workerObject = new Worker();
-                workerObject.setValues(0, pid, tb_PokemonToFind.Text, tb_Default.Text, tb_Folder.Text, cb_Spanish.Checked, (int)nud_Dex.Value, cmb_Gender.SelectedIndex, cmb_Levels.SelectedIndex);
-                workerThread = new Thread(workerObject.DoWork);
-                workerThread.Start();
-                btn_Stop.Enabled = true;
-                btn_Start.Enabled = false;
+                case 8:
+                    MessageBox.Show("Bot stopped by user", "Wonder Trade Bot", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    break;
+                default:
+                    MessageBox.Show("An error has occurred.", "GTS Bot", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
             }
+            botWorking = false;
+            botNumber = -1;
         }
 
         public void AppendListViewItem(string szTrainerName, string szNickname, string szCountry, string szSubCountry, string fc)
@@ -124,17 +179,10 @@ namespace Ledybot
 
         private void btn_Stop_Click(object sender, EventArgs e)
         {
-            if (workerThread != null && workerObject != null)
-            {
-                workerObject.RequestStop();
-                workerThread.Abort();
-
-                workerObject = null;
-                workerThread = null;
-
-                btn_Start.Enabled = true;
-                btn_Stop.Enabled = false;
-            }
+            GTSBot7.botstop = true;
+            btn_Start.Enabled = true;
+            btn_Stop.Enabled = false;
+            botStop = true;
         }
 
         private void btn_Export_Click(object sender, EventArgs e)
@@ -187,7 +235,6 @@ namespace Ledybot
             config.Save(ConfigurationSaveMode.Modified);
             ConfigurationManager.RefreshSection("appSettings");
 
-            Application.Exit();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -212,7 +259,7 @@ namespace Ledybot
             }
         }
 
-        public uint boxOff = 0x330D9838;
+
 
         private void btn_Inject_Click(object sender, EventArgs e)
         {
@@ -254,7 +301,7 @@ namespace Ledybot
                     workerThread = null;
                 }
 
-                Program.ntrClient.disconnect();
+                Program.scriptHelper.disconnect();
 
                 if (!Program.Connected)
                 {
@@ -266,6 +313,11 @@ namespace Ledybot
             {
                 MessageBox.Show("You are already disconnected!");
             }
+        }
+
+        public void addwaitingForData(uint newkey, DataReadyWaiting newvalue)
+        {
+            waitingForData.Add(newkey, newvalue);
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -374,7 +426,7 @@ namespace Ledybot
             return hex.Replace("-", "");
         }
 
-        private uint eggOff = 0x3313EDD8;
+
 
         private void btn_EggAvailable_Click(object sender, EventArgs e)
         {
@@ -386,7 +438,7 @@ namespace Ledybot
         {
             workerObject = new Worker();
             workerObject.setValues(1, pid);
-            workerThread = new Thread(workerObject.DoWork);
+            //workerThread = new Thread(workerObject.DoWork);
             workerThread.Start();
             btn_EggStop.Enabled = true;
             btn_EggStart.Enabled = false;
@@ -406,5 +458,33 @@ namespace Ledybot
                 btn_EggStop.Enabled = false;
             }
         }
+
+        private void disconnectTimer_Tick(object sender, EventArgs e)
+        {
+            disconnectTimer.Enabled = false;
+            Program.ntrClient.disconnect();
+        }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Program.ntrClient.disconnect();
+            Application.Exit();
+        }
     }
+
+    public class DataReadyWaiting
+    {
+        public byte[] data;
+        public object arguments;
+        public delegate void DataHandler(object data_arguments);
+        public DataHandler handler;
+
+        public DataReadyWaiting(byte[] data_, DataHandler handler_, object arguments_)
+        {
+            this.data = data_;
+            this.handler = handler_;
+            this.arguments = arguments_;
+        }
+    }
+
 }

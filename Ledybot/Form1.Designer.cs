@@ -70,13 +70,15 @@
             this.tb_FileInjection = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.tp_Breeding = new System.Windows.Forms.TabPage();
+            this.btn_EggStop = new System.Windows.Forms.Button();
+            this.btn_EggStart = new System.Windows.Forms.Button();
+            this.label11 = new System.Windows.Forms.Label();
             this.btn_EggAvailable = new System.Windows.Forms.Button();
             this.ofd_Injection = new System.Windows.Forms.OpenFileDialog();
             this.btn_Disconnect = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.label11 = new System.Windows.Forms.Label();
-            this.btn_EggStart = new System.Windows.Forms.Button();
-            this.btn_EggStop = new System.Windows.Forms.Button();
+            this.disconnectTimer = new System.Windows.Forms.Timer(this.components);
+            this.timer2 = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.nud_Dex)).BeginInit();
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
@@ -550,6 +552,37 @@
             this.tp_Breeding.Text = "Breeding";
             this.tp_Breeding.UseVisualStyleBackColor = true;
             // 
+            // btn_EggStop
+            // 
+            this.btn_EggStop.Enabled = false;
+            this.btn_EggStop.Location = new System.Drawing.Point(203, 30);
+            this.btn_EggStop.Name = "btn_EggStop";
+            this.btn_EggStop.Size = new System.Drawing.Size(75, 23);
+            this.btn_EggStop.TabIndex = 3;
+            this.btn_EggStop.Text = "Stop";
+            this.btn_EggStop.UseVisualStyleBackColor = true;
+            this.btn_EggStop.Click += new System.EventHandler(this.btn_EggStop_Click);
+            // 
+            // btn_EggStart
+            // 
+            this.btn_EggStart.Enabled = false;
+            this.btn_EggStart.Location = new System.Drawing.Point(122, 30);
+            this.btn_EggStart.Name = "btn_EggStart";
+            this.btn_EggStart.Size = new System.Drawing.Size(75, 23);
+            this.btn_EggStart.TabIndex = 2;
+            this.btn_EggStart.Text = "Start";
+            this.btn_EggStart.UseVisualStyleBackColor = true;
+            this.btn_EggStart.Click += new System.EventHandler(this.btn_EggStart_Click);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(5, 35);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(111, 13);
+            this.label11.TabIndex = 1;
+            this.label11.Text = "Egg Always Available:";
+            // 
             // btn_EggAvailable
             // 
             this.btn_EggAvailable.Enabled = false;
@@ -581,36 +614,9 @@
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // label11
+            // disconnectTimer
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(5, 35);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(111, 13);
-            this.label11.TabIndex = 1;
-            this.label11.Text = "Egg Always Available:";
-            // 
-            // btn_EggStart
-            // 
-            this.btn_EggStart.Enabled = false;
-            this.btn_EggStart.Location = new System.Drawing.Point(122, 30);
-            this.btn_EggStart.Name = "btn_EggStart";
-            this.btn_EggStart.Size = new System.Drawing.Size(75, 23);
-            this.btn_EggStart.TabIndex = 2;
-            this.btn_EggStart.Text = "Start";
-            this.btn_EggStart.UseVisualStyleBackColor = true;
-            this.btn_EggStart.Click += new System.EventHandler(this.btn_EggStart_Click);
-            // 
-            // btn_EggStop
-            // 
-            this.btn_EggStop.Enabled = false;
-            this.btn_EggStop.Location = new System.Drawing.Point(203, 30);
-            this.btn_EggStop.Name = "btn_EggStop";
-            this.btn_EggStop.Size = new System.Drawing.Size(75, 23);
-            this.btn_EggStop.TabIndex = 3;
-            this.btn_EggStop.Text = "Stop";
-            this.btn_EggStop.UseVisualStyleBackColor = true;
-            this.btn_EggStop.Click += new System.EventHandler(this.btn_EggStop_Click);
+            this.disconnectTimer.Tick += new System.EventHandler(this.disconnectTimer_Tick);
             // 
             // MainForm
             // 
@@ -625,6 +631,7 @@
             this.Name = "MainForm";
             this.Text = "Ledybot";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.nud_Dex)).EndInit();
             this.tc_Control.ResumeLayout(false);
@@ -691,6 +698,8 @@
         private System.Windows.Forms.Button btn_EggStart;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Button btn_EggStop;
+        private System.Windows.Forms.Timer disconnectTimer;
+        private System.Windows.Forms.Timer timer2;
     }
 }
 

@@ -30,8 +30,6 @@ namespace Ledybot
         private uint addr_TrainerSubCountry_en = 0x305F76A4;
         private uint addr_TrainerSubCountry_es = 0x305F7EA4;
 
-        //private uint addr_PageEntryDepositedPokemonNickname = 0x32A6A7D8;
-        //private uint addr_PageEntryDexRequest = 0x32A6A7D0;
         private uint addr_PageSize = 0x32A6A1A4;
         private uint addr_PageEndStartRecord = 0x32A6A68C;
         private uint addr_PageCurrentView = 0x305ea384;
@@ -57,422 +55,234 @@ namespace Ledybot
         private uint eggOff = 0x3313EDD8;
 
         private volatile int mode = 0;
-        //private volatile string firstIncorrectRequest = "";
-        //private volatile string firstIncorrectTrainer = "";
-        //private volatile string firstIncorrectCountry = "";
-        //private volatile string firstIncorrectSubCountry = "";
 
         private volatile bool _shouldStop = false;
-        public void DoWork()
-        {
+        //public void DoWork()
+        //{
 
-            bool bPokemonFound = false;
-            ScriptHelper h = Program.scriptHelper;
-            if (mode == 0)
-            {
-                while (!_shouldStop)
-                {
-                    Thread.Sleep(2250);
-                    bool bSent = false;
-                    if (!bPokemonFound)
-                    {
-                        h.press(h.Abtn);
-                        Thread.Sleep(1000);
-                        h.press(h.Abtn);
-                        Thread.Sleep(1000);
-                        h.press(h.up);
-                        Thread.Sleep(1000);
-                        //What Pokemon?
-                        h.press(h.Abtn);
-                        //black screen
-                        Thread.Sleep(3250);
+        //    bool bPokemonFound = false;
+        //    ScriptHelper h = Program.scriptHelper;
+        //    if (mode == 0)
+        //    {
+        //        while (!_shouldStop)
+        //        {
+        //            Thread.Sleep(2250);
+        //            bool bSent = false;
+        //            if (!bPokemonFound)
+        //            {
+        //                h.press(h.Abtn);
+        //                Thread.Sleep(1000);
+        //                h.press(h.Abtn);
+        //                Thread.Sleep(1000);
+        //                h.press(h.up);
+        //                Thread.Sleep(1000);
+        //                //What Pokemon?
+        //                h.press(h.Abtn);
+        //                //black screen
+        //                Thread.Sleep(3250);
 
-                        //"type" the name of the pokemon we want to find
-                        byte[] name = new byte[this.szPokemonToFind.Length * 2];
-                        for (int i = 0; i < szPokemonToFind.Length; i++)
-                        {
-                            name[i * 2] = (byte)szPokemonToFind[i];
-                            name[i * 2 + 1] = 0x00;
-                        }
-                        //I like this solution so much
-                        Program.scriptHelper.write(0x301118D4, name, iPID);
-                        Thread.Sleep(1000);
-                        h.press(h.start);
-                        Thread.Sleep(1000);
-                        h.press(h.Abtn);
-                        //black screen
-                        Thread.Sleep(4250);
-                        bPokemonFound = true;
-                    }
-                    else
-                    {
-                        h.touch(h.searchBtn);
-                        Thread.Sleep(3000);
-                        h.press(h.Bbtn);
-                        Thread.Sleep(3000);
-                        h.press(h.Abtn);
-                        Thread.Sleep(3000);
-                    }
+        //                //"type" the name of the pokemon we want to find
+        //                byte[] name = new byte[this.szPokemonToFind.Length * 2];
+        //                for (int i = 0; i < szPokemonToFind.Length; i++)
+        //                {
+        //                    name[i * 2] = (byte)szPokemonToFind[i];
+        //                    name[i * 2 + 1] = 0x00;
+        //                }
+        //                //I like this solution so much
+        //                Program.scriptHelper.write(0x301118D4, name, iPID);
+        //                Thread.Sleep(1000);
+        //                h.press(h.start);
+        //                Thread.Sleep(1000);
+        //                h.press(h.Abtn);
+        //                //black screen
+        //                Thread.Sleep(4250);
+        //                bPokemonFound = true;
+        //            }
+        //            else
+        //            {
+        //                h.touch(h.searchBtn);
+        //                Thread.Sleep(3000);
+        //                h.press(h.Bbtn);
+        //                Thread.Sleep(3000);
+        //                h.press(h.Abtn);
+        //                Thread.Sleep(3000);
+        //            }
 
-                    h.touch(h.searchBtn);
-                    //finding pokemon
-                    Thread.Sleep(4250);
+        //            h.touch(h.searchBtn);
+        //            //finding pokemon
+        //            Thread.Sleep(4250);
 
-                    bool lastPage = false;
-                    int pageCount = 1;
-                    while (!lastPage)
-                    {
-                        int szListCount = int.Parse(h.readSafe(addr_PageSize, 1, iPID), NumberStyles.HexNumber);
-                        if (szListCount == 100)
-                        {
-                            uint addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEndStartRecord, 4, iPID), NumberStyles.HexNumber);
-                            string hex = h.readSafe(addr_PageEntryAddress + 0x48, 4, iPID);
-                            int szTrainerID1 = int.Parse(hex, NumberStyles.HexNumber);
+        //            bool lastPage = false;
+        //            int pageCount = 1;
+        //            while (!lastPage)
+        //            {
+        //                int szListCount = int.Parse(h.readSafe(addr_PageSize, 1, iPID), NumberStyles.HexNumber);
+        //                if (szListCount == 100)
+        //                {
+        //                    uint addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEndStartRecord, 4, iPID), NumberStyles.HexNumber);
+        //                    string hex = h.readSafe(addr_PageEntryAddress + 0x48, 4, iPID);
+        //                    int szTrainerID1 = int.Parse(hex, NumberStyles.HexNumber);
 
-                            for (int i = 0; i < szListCount - 1; i++)
-                            {
-                                h.press(h.right);
-                            }
-                            Thread.Sleep(100);
-                            h.press(h.right);
-                            Thread.Sleep(3000);
+        //                    for (int i = 0; i < szListCount - 1; i++)
+        //                    {
+        //                        h.press(h.right);
+        //                    }
+        //                    Thread.Sleep(100);
+        //                    h.press(h.right);
+        //                    Thread.Sleep(3000);
 
-                            addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEndStartRecord, 4, iPID), NumberStyles.HexNumber);
-                            hex = h.readSafe(addr_PageEntryAddress + 0x48, 4, iPID);
-                            int szTrainerID2 = int.Parse(hex, NumberStyles.HexNumber);
+        //                    addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEndStartRecord, 4, iPID), NumberStyles.HexNumber);
+        //                    hex = h.readSafe(addr_PageEntryAddress + 0x48, 4, iPID);
+        //                    int szTrainerID2 = int.Parse(hex, NumberStyles.HexNumber);
 
-                            if (szTrainerID1 == szTrainerID2)
-                            {
-                                lastPage = true;
-                                continue;
-                            }
-                            else
-                            {
-                                pageCount += 1;
-                            }
+        //                    if (szTrainerID1 == szTrainerID2)
+        //                    {
+        //                        lastPage = true;
+        //                        continue;
+        //                    }
+        //                    else
+        //                    {
+        //                        pageCount += 1;
+        //                    }
 
-                        }
-                        else
-                        {
-                            lastPage = true;
-                            for (int i = 0; i < szListCount; i++)
-                            {
-                                h.press(h.right);
-                                Thread.Sleep(100);
-                            }
-                        }
+        //                }
+        //                else
+        //                {
+        //                    lastPage = true;
+        //                    for (int i = 0; i < szListCount; i++)
+        //                    {
+        //                        h.press(h.right);
+        //                        Thread.Sleep(100);
+        //                    }
+        //                }
 
-                    }
+        //            }
 
-                    for (int i = pageCount; i > 0; i--)
-                    {
-                        //if (lastPage)
-                        //{
-                        //    int szListCount = int.Parse(h.readSafe(addr_PageSize, 1, iPID), NumberStyles.HexNumber);
-                        //    uint addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEndStartRecord, 4, iPID), NumberStyles.HexNumber);
-                        //    int dexNumber = 0;
-                        //    for (int j = szListCount; j > 0; j--)
-                        //    {
-                        //        string hex = h.readSafe(addr_PageEntryAddress + 0xC, 2, iPID);
-                        //        dexNumber = int.Parse(hex, NumberStyles.HexNumber);
-                        //        if (dexNumber == dexNum)
-                        //        {
-                        //            hex = h.readSafe(addr_PageEntryAddress + 0xE, 1, iPID);
-                        //            int gender = (hex == "" ? 0 : int.Parse(hex, NumberStyles.HexNumber));
-                        //            hex = h.readSafe(addr_PageEntryAddress + 0xF, 1, iPID);
-                        //            int level = (hex == "" ? 0 : int.Parse(hex, NumberStyles.HexNumber));
+        //            for (int i = pageCount; i > 0; i--)
+        //            {
+        //                int szListCount = int.Parse(h.readSafe(addr_PageSize, 1, iPID), NumberStyles.HexNumber);
+        //                uint addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEndStartRecord, 4, iPID), NumberStyles.HexNumber);
+        //                int dexNumber = 0;
+        //                for (int j = 0; j < szListCount; j++)
+        //                {
+        //                    string hex = h.readSafe(addr_PageEntryAddress + 0xC, 2, iPID);
+        //                    dexNumber = int.Parse(hex, NumberStyles.HexNumber);
+        //                    if (dexNumber == dexNum)
+        //                    {
+        //                        hex = h.readSafe(addr_PageEntryAddress + 0xE, 1, iPID);
+        //                        int gender = (hex == "" ? 0 : int.Parse(hex, NumberStyles.HexNumber));
+        //                        hex = h.readSafe(addr_PageEntryAddress + 0xF, 1, iPID);
+        //                        int level = (hex == "" ? 0 : int.Parse(hex, NumberStyles.HexNumber));
+        //                        if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
+        //                        {
+        //                            for (int k = 0; k < j; k++)
+        //                            {
+        //                                h.press(h.left);
+        //                                Thread.Sleep(150);
+        //                            }
 
-                        //            if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
-                        //            {
-                        //                for (int k = 0; k < j - 1; k++)
-                        //                {
-                        //                    h.press(h.right);
-                        //                    Thread.Sleep(100);
-                        //                }
+        //                            string szNickname = h.readSafe(addr_DepositedPokemonNickname, 20, iPID);
 
-                        //                string szNickname = h.readSafe(addr_DepositedPokemonNickname, 20, iPID);
+        //                            string szPath = this.szDefaultPk7;
+        //                            string szFileToFind = this.szPk7Folder + szNickname + ".pk7";
+        //                            if (File.Exists(szFileToFind))
+        //                            {
+        //                                szPath = szFileToFind;
+        //                            }
 
-                        //                string szPath = this.szDefaultPk7;
-                        //                string szFileToFind = this.szPk7Folder + szNickname + ".pk7";
-                        //                if (File.Exists(szFileToFind))
-                        //                {
-                        //                    szPath = szFileToFind;
-                        //                }
+        //                            byte[] pkmEncrypted = System.IO.File.ReadAllBytes(szPath);
+        //                            byte[] cloneshort = PKHeX.encryptArray(pkmEncrypted.Take(232).ToArray());
+        //                            string ek7 = BitConverter.ToString(cloneshort).Replace("-", ", 0x");
 
-                        //                byte[] pkmEncrypted = System.IO.File.ReadAllBytes(szPath);
-                        //                byte[] cloneshort = PKHeX.encryptArray(pkmEncrypted.Take(232).ToArray());
-                        //                string ek7 = BitConverter.ToString(cloneshort).Replace("-", ", 0x");
+        //                            //optional: grab some trainer data
+        //                            string szTrainerName = h.readSafe(addr_TrainerName, 20, iPID);
+        //                            string szCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
+        //                            string szSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
+        //                            hex = h.readSafe(addr_PageEntryAddress + 0x48, 4, iPID);
+        //                            byte[] principal = Program.f1.StringToByteArray(hex);
+        //                            byte checksum = Program.f1.calculateChecksum(principal);
+        //                            byte[] fc = new byte[5];
+        //                            Array.Copy(principal, 0, fc, 1, 4);
+        //                            fc[0] = checksum;
+        //                            hex = Program.f1.ByteArrayToString(fc);
+        //                            long iFC = long.Parse(hex, NumberStyles.HexNumber);
 
-                        //            optional: grab some trainer data
-                        //                string szTrainerName = h.readSafe(addr_TrainerName, 20, iPID);
-                        //                string szCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
-                        //                string szSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
+        //                            Program.f1.AppendListViewItem(szTrainerName, szNickname, szCountry, szSubCountry, iFC.ToString());
+        //                            //Inject the Pokemon to box1slot1
+        //                            Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
+        //                            Thread.Sleep(1000);
+        //                            h.press(h.Abtn);
+        //                            Thread.Sleep(3250);
+        //                            h.press(h.Abtn);
+        //                            Thread.Sleep(1000);
+        //                            h.press(h.Abtn);
+        //                            Thread.Sleep(1000);
+        //                            h.press(h.Abtn);
+        //                            //trade starts here
+        //                            Thread.Sleep(10250);
+        //                            //if the pokemon has been traded we have 35 seconds to get back to the starting spot for the bot by spamming b a bit
+        //                            h.press(h.Abtn);
+        //                            Thread.Sleep(1000);
+        //                            h.press(h.Bbtn);
+        //                            Thread.Sleep(1000);
+        //                            h.press(h.Bbtn);
+        //                            Thread.Sleep(1000);
+        //                            h.press(h.Bbtn);
+        //                            Thread.Sleep(1000);
+        //                            h.press(h.Bbtn);
+        //                            Thread.Sleep(1000);
+        //                            h.press(h.Bbtn);
+        //                            //if the trade is still going on wait for it to finish
+        //                            Thread.Sleep(30250);
+        //                            bSent = true;
+        //                            break;
+        //                        }
+        //                    }
+        //                    addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEntryAddress, 4, iPID), NumberStyles.HexNumber);
+        //                }
 
-                        //                Program.f1.AppendListViewItem(szTrainerName, szNickname, szCountry, szSubCountry);
-                        //                Inject the Pokemon to box1slot1
-                        //                Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
-                        //                Thread.Sleep(1000);
-                        //                h.press(h.Abtn);
-                        //                Thread.Sleep(3000);
-                        //                h.press(h.Abtn);
-                        //                Thread.Sleep(1000);
-                        //                h.press(h.Abtn);
-                        //                Thread.Sleep(1000);
-                        //                h.press(h.Abtn);
-                        //                trade starts here
-                        //                Thread.Sleep(10250);
-                        //                if the pokemon has been traded we have 35 seconds to get back to the starting spot for the bot by spamming b a bit
-                        //                h.press(h.Abtn);
-                        //                Thread.Sleep(1000);
-                        //                h.press(h.Bbtn);
-                        //                Thread.Sleep(1000);
-                        //                h.press(h.Bbtn);
-                        //                Thread.Sleep(1000);
-                        //                h.press(h.Bbtn);
-                        //                Thread.Sleep(1000);
-                        //                h.press(h.Bbtn);
-                        //                Thread.Sleep(1000);
-                        //                h.press(h.Bbtn);
-                        //                if the trade is still going on wait for it to finish
-                        //                Thread.Sleep(30250);
-                        //                bSent = true;
-                        //                break;
-                        //            }
-                        //        }
-                        //        addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEntryAddress, 4, iPID), NumberStyles.HexNumber);
-                        //    }
-                        //    lastPage = false;
-                        //}
+        //                if (bSent)
+        //                {
+        //                    break;
+        //                }
 
-                        int szListCount = int.Parse(h.readSafe(addr_PageSize, 1, iPID), NumberStyles.HexNumber);
-                        uint addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEndStartRecord, 4, iPID), NumberStyles.HexNumber);
-                        int dexNumber = 0;
-                        for (int j = 0; j < szListCount; j++)
-                        {
-                            string hex = h.readSafe(addr_PageEntryAddress + 0xC, 2, iPID);
-                            dexNumber = int.Parse(hex, NumberStyles.HexNumber);
-                            if (dexNumber == dexNum)
-                            {
-                                hex = h.readSafe(addr_PageEntryAddress + 0xE, 1, iPID);
-                                int gender = (hex == "" ? 0 : int.Parse(hex, NumberStyles.HexNumber));
-                                hex = h.readSafe(addr_PageEntryAddress + 0xF, 1, iPID);
-                                int level = (hex == "" ? 0 : int.Parse(hex, NumberStyles.HexNumber));
-                                if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
-                                {
-                                    for (int k = 0; k < j; k++)
-                                    {
-                                        h.press(h.left);
-                                        Thread.Sleep(150);
-                                    }
+        //                if (i != 1)
+        //                {
+        //                    for (int j = 0; j < szListCount - 1; j++)
+        //                    {
+        //                        h.press(h.left);
+        //                        Thread.Sleep(100);
+        //                    }
+        //                    h.press(h.left);
+        //                    Thread.Sleep(3000);
+        //                }
+        //            }
 
-                                    string szNickname = h.readSafe(addr_DepositedPokemonNickname, 20, iPID);
+        //            if (!bSent)
+        //            {
+        //                //no tradable pokemon found
+        //                h.press(h.Bbtn);
+        //                Thread.Sleep(1250);
+        //                h.press(h.Bbtn);
+        //                Thread.Sleep(1250);
+        //            }
 
-                                    string szPath = this.szDefaultPk7;
-                                    string szFileToFind = this.szPk7Folder + szNickname + ".pk7";
-                                    if (File.Exists(szFileToFind))
-                                    {
-                                        szPath = szFileToFind;
-                                    }
-
-                                    byte[] pkmEncrypted = System.IO.File.ReadAllBytes(szPath);
-                                    byte[] cloneshort = PKHeX.encryptArray(pkmEncrypted.Take(232).ToArray());
-                                    string ek7 = BitConverter.ToString(cloneshort).Replace("-", ", 0x");
-
-                                    //optional: grab some trainer data
-                                    string szTrainerName = h.readSafe(addr_TrainerName, 20, iPID);
-                                    string szCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
-                                    string szSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
-                                    hex = h.readSafe(addr_PageEntryAddress + 0x48, 4, iPID);
-                                    byte[] principal = Program.f1.StringToByteArray(hex);
-                                    byte checksum = Program.f1.calculateChecksum(principal);
-                                    byte[] fc = new byte[5];
-                                    Array.Copy(principal, 0, fc, 1, 4);
-                                    fc[0] = checksum;
-                                    hex = Program.f1.ByteArrayToString(fc);
-                                    long iFC = long.Parse(hex, NumberStyles.HexNumber);
-
-                                    Program.f1.AppendListViewItem(szTrainerName, szNickname, szCountry, szSubCountry, iFC.ToString());
-                                    //Inject the Pokemon to box1slot1
-                                    Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Abtn);
-                                    Thread.Sleep(3250);
-                                    h.press(h.Abtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Abtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Abtn);
-                                    //trade starts here
-                                    Thread.Sleep(10250);
-                                    //if the pokemon has been traded we have 35 seconds to get back to the starting spot for the bot by spamming b a bit
-                                    h.press(h.Abtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Bbtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Bbtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Bbtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Bbtn);
-                                    Thread.Sleep(1000);
-                                    h.press(h.Bbtn);
-                                    //if the trade is still going on wait for it to finish
-                                    Thread.Sleep(30250);
-                                    bSent = true;
-                                    break;
-                                }
-                            }
-                            addr_PageEntryAddress = uint.Parse(h.readSafe(addr_PageEntryAddress, 4, iPID), NumberStyles.HexNumber);
-                        }
-
-                        if (bSent)
-                        {
-                            break;
-                        }
-
-                        if (i != 1)
-                        {
-                            for (int j = 0; j < szListCount - 1; j++)
-                            {
-                                h.press(h.left);
-                                Thread.Sleep(100);
-                            }
-                            h.press(h.left);
-                            Thread.Sleep(3000);
-                        }
-                    }
-
-                    if (!bSent)
-                    {
-                        //no tradable pokemon found
-                        h.press(h.Bbtn);
-                        Thread.Sleep(1250);
-                        h.press(h.Bbtn);
-                        Thread.Sleep(1250);
-                    }
-
-                    //if(endStart)
-                    //{
-                    //    for (int i = 0; i < count; i++)
-                    //    {
-                    //        string szReqPokemon = h.readSafe(addr_RequestedPokemon, 20, iPID);
-                    //        if (szReqPokemon != this.szPokemonToGive)
-                    //        {
-                    //            string szTrainerName = h.readSafe(addr_TrainerName, 20, iPID);
-                    //            string szCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
-                    //            string szSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
-
-                    //            if (firstIncorrectRequest == szReqPokemon && firstIncorrectTrainer == szTrainerName && firstIncorrectCountry == szCountry && firstIncorrectSubCountry == szSubCountry)
-                    //            {
-                    //                break;
-                    //            }
-                    //        }
-                    //        h.press(h.right);
-                    //        Thread.Sleep(100);
-                    //    }
-                    //}
-
-
-                    //for (int i = 0; i < count; i++)
-                    //{
-                    //    string szReqPokemon = h.readSafe(addr_RequestedPokemon, 20, iPID);
-                    //    if (szReqPokemon == this.szPokemonToGive)
-                    //    {
-                    //        string szLevel = h.readSafe(addr_RequestedLevel, 12, iPID);
-                    //        szLevel = szLevel.ToLower();
-                    //        if (szLevel.Contains(this.szLevel + " ") || szLevel.Contains(" " + this.szLevel) || (!this.bSpanish && szLevel.Contains("any")) || (this.bSpanish && szLevel.Contains("cual")))
-                    //        {
-                    //            string szNickname = h.readSafe(addr_DepositedPokemonNickname, 20, iPID);
-
-                    //            string szPath = this.szDefaultPk7;
-                    //            string szFileToFind = this.szPk7Folder + szNickname + ".pk7";
-                    //            if (File.Exists(szFileToFind))
-                    //            {
-                    //                szPath = szFileToFind;
-                    //            }
-
-                    //            byte[] pkmEncrypted = System.IO.File.ReadAllBytes(szPath);
-                    //            byte[] cloneshort = PKHeX.encryptArray(pkmEncrypted.Take(232).ToArray());
-                    //            string ek7 = BitConverter.ToString(cloneshort).Replace("-", ", 0x");
-
-                    //            //optional: grab some trainer data
-                    //            string szTrainerName = h.readSafe(addr_TrainerName, 20, iPID);
-                    //            string szCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
-                    //            string szSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
-
-                    //            Program.f1.AppendListViewItem(szTrainerName, szNickname, szCountry, szSubCountry);
-                    //            //Inject the Pokemon to box1slot1
-                    //            Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
-                    //            Thread.Sleep(1000);
-                    //            h.press(h.Abtn);
-                    //            Thread.Sleep(3000);
-                    //            h.press(h.Abtn);
-                    //            Thread.Sleep(1000);
-                    //            h.press(h.Abtn);
-                    //            Thread.Sleep(1000);
-                    //            h.press(h.Abtn);
-                    //            //trade starts here
-                    //            Thread.Sleep(10250);
-                    //            //if the pokemon has been traded we have 35 seconds to get back to the starting spot for the bot by spamming b a bit
-                    //            h.press(h.Abtn);
-                    //            Thread.Sleep(1000);
-                    //            h.press(h.Bbtn);
-                    //            Thread.Sleep(1000);
-                    //            h.press(h.Bbtn);
-                    //            Thread.Sleep(1000);
-                    //            h.press(h.Bbtn);
-                    //            Thread.Sleep(1000);
-                    //            h.press(h.Bbtn);
-                    //            Thread.Sleep(1000);
-                    //            h.press(h.Bbtn);
-                    //            //if the trade is still going on wait for it to finish
-                    //            Thread.Sleep(30250);
-                    //            bSent = true;
-                    //            break;
-                    //        }
-                    //    }
-                    //    else if(endStart)
-                    //    {
-                    //        firstIncorrectRequest = szReqPokemon;
-                    //        firstIncorrectTrainer = h.readSafe(addr_TrainerName, 20, iPID);
-                    //        firstIncorrectCountry = h.readSafe(addr_TrainerCountry, 20, iPID);
-                    //        firstIncorrectSubCountry = h.readSafe(addr_TrainerSubCountry, 20, iPID);
-                    //    }
-                    //    if(endStart)
-                    //    {
-                    //        h.press(h.left);
-                    //    }
-                    //    else
-                    //    {
-                    //        h.press(h.right);
-                    //    }
-
-                    //    Thread.Sleep(100);
-                    //}
-                    //if (!bSent)
-                    //{
-                    //    //no tradable pokemon in the last X pokemon, start from the front of the list again
-                    //    h.press(h.Bbtn);
-                    //    Thread.Sleep(1250);
-                    //    h.press(h.Bbtn);
-                    //    Thread.Sleep(1250);
-                    //}
-                }
-            }
-            else if(mode == 1)
-            {
-                while(!_shouldStop)
-                {
-                    int available = int.Parse(h.readSafe(eggOff, 1, iPID), NumberStyles.HexNumber);
-                    if(available == 0)
-                    {
-                        byte[] data = BitConverter.GetBytes(0x01);
-                        Program.scriptHelper.write(eggOff, data, iPID);
-                    }
-                    Thread.Sleep(3000);
-                }
-            }
-        }
+        //        }
+        //    }
+        //    else if(mode == 1)
+        //    {
+        //        while(!_shouldStop)
+        //        {
+        //            int available = int.Parse(h.readSafe(eggOff, 1, iPID), NumberStyles.HexNumber);
+        //            if(available == 0)
+        //            {
+        //                byte[] data = BitConverter.GetBytes(0x01);
+        //                Program.scriptHelper.write(eggOff, data, iPID);
+        //            }
+        //            Thread.Sleep(3000);
+        //        }
+        //    }
+        //}
         public void RequestStop()
         {
             _shouldStop = true;
