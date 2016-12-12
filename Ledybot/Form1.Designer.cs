@@ -44,9 +44,6 @@
             this.Time = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Trainer = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.NickName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.Country = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.SubCountry = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.FC = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btn_Export = new System.Windows.Forms.Button();
             this.cb_Spanish = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -185,10 +182,7 @@
             this.lv_log.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.Time,
             this.Trainer,
-            this.NickName,
-            this.Country,
-            this.SubCountry,
-            this.FC});
+            this.NickName});
             this.lv_log.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lv_log.Location = new System.Drawing.Point(6, 198);
             this.lv_log.Name = "lv_log";
@@ -210,18 +204,6 @@
             // 
             this.NickName.Text = "Name";
             this.NickName.Width = 50;
-            // 
-            // Country
-            // 
-            this.Country.Text = "Country";
-            // 
-            // SubCountry
-            // 
-            this.SubCountry.Text = "SubCountry";
-            // 
-            // FC
-            // 
-            this.FC.Text = "FC";
             // 
             // btn_Export
             // 
@@ -665,8 +647,6 @@
         private System.Windows.Forms.ColumnHeader Time;
         private System.Windows.Forms.ColumnHeader Trainer;
         private System.Windows.Forms.ColumnHeader NickName;
-        private System.Windows.Forms.ColumnHeader Country;
-        private System.Windows.Forms.ColumnHeader SubCountry;
         private System.Windows.Forms.Button btn_Export;
         private System.Windows.Forms.CheckBox cb_Spanish;
         private System.Windows.Forms.Label label6;
@@ -692,7 +672,6 @@
         private System.Windows.Forms.Button btn_Disconnect;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Button btn_Delete;
-        private System.Windows.Forms.ColumnHeader FC;
         private System.Windows.Forms.TabPage tp_Breeding;
         private System.Windows.Forms.Button btn_EggAvailable;
         private System.Windows.Forms.Button btn_EggStart;

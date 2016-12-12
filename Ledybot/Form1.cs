@@ -163,14 +163,14 @@ namespace Ledybot
             botNumber = -1;
         }
 
-        public void AppendListViewItem(string szTrainerName, string szNickname, string szCountry, string szSubCountry, string fc)
+        public void AppendListViewItem(string szTrainerName, string szNickname)
         {
             if (InvokeRequired)
             {
-                this.Invoke(new Action<string, string, string, string, string>(AppendListViewItem), new object[] { szTrainerName, szNickname, szCountry, szSubCountry, fc });
+                this.Invoke(new Action<string, string>(AppendListViewItem), new object[] { szTrainerName, szNickname });
                 return;
             }
-            string[] row = { DateTime.Now.ToString("h:mm:ss"), szTrainerName, szNickname, szCountry, szSubCountry, Regex.Replace(fc, ".{4}", "$0-").Substring(0, fc.Length + 2) };
+            string[] row = { DateTime.Now.ToString("h:mm:ss"), szTrainerName, szNickname };
             var listViewItem = new ListViewItem(row);
 
             lv_log.Items.Add(listViewItem);

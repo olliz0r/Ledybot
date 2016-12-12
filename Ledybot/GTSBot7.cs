@@ -55,7 +55,7 @@ namespace Ledybot
 
         private int listlength = 0;
         private int startIndex = 0;
-        private byte[] temp;
+        private byte[] block = new byte[256];
         private int tradeIndex = -1;
         private uint addr_PageEntry = 0;
         private bool foundLastPage = false;
@@ -168,14 +168,14 @@ namespace Ledybot
                                     await Task.Delay(commandtime + delaytime);
                                     Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
                                     await Task.Delay(commandtime + delaytime);
-                                    await Task.Delay(2250);
-                                    Program.helper.quicktouch(0, 0, commandtime);
+                                    await Task.Delay(2750);
+                                    Program.helper.quicktouch(10, 10, commandtime);
                                     await Task.Delay(commandtime + delaytime);
-                                    Program.helper.quicktouch(0, 0, commandtime);
+                                    Program.helper.quicktouch(10, 10, commandtime);
                                     await Task.Delay(commandtime + delaytime);
-                                    Program.helper.quicktouch(0, 0, commandtime);
+                                    Program.helper.quicktouch(10, 10, commandtime);
                                     await Task.Delay(commandtime + delaytime);
-                                    Program.helper.quicktouch(0, 0, commandtime);
+                                    Program.helper.quicktouch(10, 10, commandtime);
                                     await Task.Delay(commandtime + delaytime);
                                     await Program.helper.waitNTRread(addr_PageStartingIndex);
                                     if (Program.helper.lastRead == 0)
@@ -200,7 +200,6 @@ namespace Ledybot
                             addr_PageEntry = Program.helper.lastRead;
                             await Program.helper.waitNTRread(0x32A6A7C4, (uint)(256 * 100));
                             byte[] blockBytes = Program.helper.lastArray;
-                            byte[] block = new byte[256];
                             for(int i = listlength; i > 0; i--)
                             {
                                 Array.Copy(blockBytes, addr_PageEntry - 0x32A6A7C4, block, 0, 256);
@@ -272,14 +271,14 @@ namespace Ledybot
                             startIndex += 100;
                             Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
                             await Task.Delay(commandtime + delaytime);
-                            await Task.Delay(2250);
-                            Program.helper.quicktouch(0, 0, commandtime);
+                            await Task.Delay(2750);
+                            Program.helper.quicktouch(10, 10, commandtime);
                             await Task.Delay(commandtime + delaytime);
-                            Program.helper.quicktouch(0, 0, commandtime);
+                            Program.helper.quicktouch(10, 10, commandtime);
                             await Task.Delay(commandtime + delaytime);
-                            Program.helper.quicktouch(0, 0, commandtime);
+                            Program.helper.quicktouch(10, 10, commandtime);
                             await Task.Delay(commandtime + delaytime);
-                            Program.helper.quicktouch(0, 0, commandtime);
+                            Program.helper.quicktouch(10, 10, commandtime);
                             await Task.Delay(commandtime + delaytime);
                             await Program.helper.waitNTRread(addr_PageCurrentView);
                             if (Program.helper.lastRead == 0)
@@ -298,7 +297,6 @@ namespace Ledybot
                             addr_PageEntry = Program.helper.lastRead;
                             await Program.helper.waitNTRread(0x32A6A7C4, (uint)(256 * 100));
                             byte[] blockBytes = Program.helper.lastArray;
-                            byte[] block = new byte[256];
                             for (int i = listlength; i > 0; i--)
                             {
                                 Array.Copy(blockBytes, addr_PageEntry - 0x32A6A7C4, block, 0, 256);
@@ -362,14 +360,14 @@ namespace Ledybot
                                         await Task.Delay(commandtime + delaytime);
                                         Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
                                         await Task.Delay(commandtime + delaytime);
-                                        await Task.Delay(2250);
-                                        Program.helper.quicktouch(0, 0, commandtime);
+                                        await Task.Delay(2750);
+                                        Program.helper.quicktouch(10, 10, commandtime);
                                         await Task.Delay(commandtime + delaytime);
-                                        Program.helper.quicktouch(0, 0, commandtime);
+                                        Program.helper.quicktouch(10, 10, commandtime);
                                         await Task.Delay(commandtime + delaytime);
-                                        Program.helper.quicktouch(0, 0, commandtime);
+                                        Program.helper.quicktouch(10, 10, commandtime);
                                         await Task.Delay(commandtime + delaytime);
-                                        Program.helper.quicktouch(0, 0, commandtime);
+                                        Program.helper.quicktouch(10, 10, commandtime);
                                         await Task.Delay(commandtime + delaytime);
                                         botState = (int)gtsbotstates.findfromstart;
                                     }
@@ -394,14 +392,14 @@ namespace Ledybot
                                         await Task.Delay(commandtime + delaytime);
                                         Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
                                         await Task.Delay(commandtime + delaytime);
-                                        await Task.Delay(2250);
-                                        Program.helper.quicktouch(0, 0, commandtime);
+                                        await Task.Delay(2750);
+                                        Program.helper.quicktouch(10, 10, commandtime);
                                         await Task.Delay(commandtime + delaytime);
-                                        Program.helper.quicktouch(0, 0, commandtime);
+                                        Program.helper.quicktouch(10, 10, commandtime);
                                         await Task.Delay(commandtime + delaytime);
-                                        Program.helper.quicktouch(0, 0, commandtime);
+                                        Program.helper.quicktouch(10, 10, commandtime);
                                         await Task.Delay(commandtime + delaytime);
-                                        Program.helper.quicktouch(0, 0, commandtime);
+                                        Program.helper.quicktouch(10, 10, commandtime);
                                         await Task.Delay(commandtime + delaytime);
                                         botState = (int)gtsbotstates.findfromstart;
                                     }
@@ -414,8 +412,7 @@ namespace Ledybot
                         waitTaskbool = Program.helper.waitNTRwrite(addr_PageCurrentView, BitConverter.GetBytes(tradeIndex), iPID);
                         if (await waitTaskbool)
                         {
-                            await Program.helper.waitNTRread(addr_PageEntry + 0x14, 20);
-                            string szNickname = Encoding.Unicode.GetString(Program.helper.lastArray).Trim('\0');
+                            string szNickname = Encoding.Unicode.GetString(block, 0x14, 20).Trim('\0');
 
                             string szPath = this.szDefaultPk7;
                             string szFileToFind = this.szPk7Folder + szNickname + ".pk7";
@@ -429,14 +426,10 @@ namespace Ledybot
                             string ek7 = BitConverter.ToString(cloneshort).Replace("-", ", 0x");
 
                             //optional: grab some trainer data
-                            await Program.helper.waitNTRread(addr_PageEntry + 0x4C, 20);
-                            string szTrainerName = Encoding.Unicode.GetString(Program.helper.lastArray).Trim('\0');
-                            await Program.helper.waitNTRread(addr_TrainerCountry, 20);
-                            string szCountry = Encoding.Unicode.GetString(Program.helper.lastArray).Trim('\0');
-                            await Program.helper.waitNTRread(addr_TrainerSubCountry, 20);
-                            string szSubCountry = Encoding.Unicode.GetString(Program.helper.lastArray).Trim('\0');
+                            string szTrainerName = Encoding.Unicode.GetString(block, 0x4C, 20).Trim('\0');
                             await Program.helper.waitNTRread(addr_PageEntry + 0x48);
-                            byte[] principal = Program.helper.lastArray;
+                            byte[] principal = new byte[4];
+                            Array.Copy(block, 0x48, principal, 0, 4);
                             byte checksum = Program.f1.calculateChecksum(principal);
                             byte[] fc = new byte[5];
                             Array.Copy(principal, 0, fc, 1, 4);
@@ -444,7 +437,7 @@ namespace Ledybot
                             string hex = Program.f1.ByteArrayToString(fc);
                             long iFC = long.Parse(hex, NumberStyles.HexNumber);
 
-                            Program.f1.AppendListViewItem(szTrainerName, szNickname, szCountry, szSubCountry, iFC.ToString());
+                            Program.f1.AppendListViewItem(szTrainerName, szNickname);
                             //Inject the Pokemon to box1slot1
                             Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
                             Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
@@ -455,7 +448,19 @@ namespace Ledybot
                             await Task.Delay(commandtime + delaytime);
                             Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
                             await Task.Delay(commandtime + delaytime);
-                            await Task.Delay(47000);
+                            await Task.Delay(10250);
+                            Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
+                            await Task.Delay(commandtime + delaytime);
+                            await Task.Delay(1000);
+                            Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
+                            await Task.Delay(commandtime + delaytime);
+                            await Task.Delay(1000);
+                            Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
+                            await Task.Delay(commandtime + delaytime);
+                            await Task.Delay(1000);
+                            Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
+                            await Task.Delay(commandtime + delaytime);
+                            await Task.Delay(32000);
                             startIndex = 0;
                             tradeIndex = -1;
                             listlength = 0;
