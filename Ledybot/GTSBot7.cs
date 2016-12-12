@@ -196,6 +196,7 @@ namespace Ledybot
                             attempts = 0;
                             listlength = (int)Program.helper.lastRead;
                             int dexnumber = 0;
+                            int principal = 0;
                             await Program.helper.waitNTRread(addr_PageEndStartRecord);
                             addr_PageEntry = Program.helper.lastRead;
                             await Program.helper.waitNTRread(0x32A6A7C4, (uint)(256 * 100));
@@ -204,7 +205,8 @@ namespace Ledybot
                             {
                                 Array.Copy(blockBytes, addr_PageEntry - 0x32A6A7C4, block, 0, 256);
                                 dexnumber = BitConverter.ToInt16(block, 0xC);
-                                if(dexnumber == dexNum)
+                                principal = BitConverter.ToInt32(block, 0x48);
+                                if(!Program.f1.blacklist.Contains(principal) && dexnumber == dexNum)
                                 {
                                     int gender = block[0xE];
                                     int level = block[0xF];
@@ -246,7 +248,7 @@ namespace Ledybot
                                     Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
                                     await Task.Delay(commandtime + delaytime + 500);
                                     Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
-                                    await Task.Delay(commandtime + delaytime);
+                                    await Task.Delay(commandtime + delaytime + 500);
                                     botState = (int)gtsbotstates.research;
                                 }
                                 else
@@ -293,6 +295,7 @@ namespace Ledybot
                             attempts = 0;
                             listlength = (int)Program.helper.lastRead;
                             int dexnumber = 0;
+                            int principal = 0;
                             await Program.helper.waitNTRread(addr_PageEndStartRecord);
                             addr_PageEntry = Program.helper.lastRead;
                             await Program.helper.waitNTRread(0x32A6A7C4, (uint)(256 * 100));
@@ -301,7 +304,8 @@ namespace Ledybot
                             {
                                 Array.Copy(blockBytes, addr_PageEntry - 0x32A6A7C4, block, 0, 256);
                                 dexnumber = BitConverter.ToInt16(block, 0xC);
-                                if (dexnumber == dexNum)
+                                principal = BitConverter.ToInt32(block, 0x48);
+                                if (!Program.f1.blacklist.Contains(principal) && dexnumber == dexNum)
                                 {
                                     int gender = block[0xE];
                                     int level = block[0xF];
@@ -377,7 +381,7 @@ namespace Ledybot
                                     Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
                                     await Task.Delay(commandtime + delaytime + 500);
                                     Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
-                                    await Task.Delay(commandtime + delaytime);
+                                    await Task.Delay(commandtime + delaytime + 500);
                                     botState = (int)gtsbotstates.research;
                                 }
                                 else
@@ -427,17 +431,17 @@ namespace Ledybot
 
                             //optional: grab some trainer data
                             string szTrainerName = Encoding.Unicode.GetString(block, 0x4C, 20).Trim('\0');
-                            await Program.helper.waitNTRread(addr_PageEntry + 0x48);
                             byte[] principal = new byte[4];
                             Array.Copy(block, 0x48, principal, 0, 4);
                             byte checksum = Program.f1.calculateChecksum(principal);
-                            byte[] fc = new byte[5];
-                            Array.Copy(principal, 0, fc, 1, 4);
-                            fc[0] = checksum;
-                            string hex = Program.f1.ByteArrayToString(fc);
-                            long iFC = long.Parse(hex, NumberStyles.HexNumber);
+                            byte[] fc = new byte[8];
+                            Array.Copy(principal, 0, fc, 0, 4);
+                            fc[4] = checksum;
+                            long iFC = BitConverter.ToInt64(fc, 0);
+                            string szFC = iFC.ToString().PadLeft(12, '0');
 
-                            Program.f1.AppendListViewItem(szTrainerName, szNickname);
+                            Program.f1.blacklist.Add(BitConverter.ToInt32(principal, 0));
+                            Program.f1.AppendListViewItem(szTrainerName, szNickname, szFC);
                             //Inject the Pokemon to box1slot1
                             Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
                             Program.helper.quickbuton(Program.PKTable.keyA, commandtime);

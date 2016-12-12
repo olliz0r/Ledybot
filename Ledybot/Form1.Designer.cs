@@ -44,6 +44,7 @@
             this.Time = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Trainer = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.NickName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.FC = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btn_Export = new System.Windows.Forms.Button();
             this.cb_Spanish = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -182,7 +183,8 @@
             this.lv_log.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.Time,
             this.Trainer,
-            this.NickName});
+            this.NickName,
+            this.FC});
             this.lv_log.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lv_log.Location = new System.Drawing.Point(6, 198);
             this.lv_log.Name = "lv_log";
@@ -204,6 +206,11 @@
             // 
             this.NickName.Text = "Name";
             this.NickName.Width = 50;
+            // 
+            // FC
+            // 
+            this.FC.Text = "FC";
+            this.FC.Width = 65;
             // 
             // btn_Export
             // 
@@ -679,6 +686,7 @@
         private System.Windows.Forms.Button btn_EggStop;
         private System.Windows.Forms.Timer disconnectTimer;
         private System.Windows.Forms.Timer timer2;
+        private System.Windows.Forms.ColumnHeader FC;
     }
 }
 

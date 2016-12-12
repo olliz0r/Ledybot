@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -30,6 +31,8 @@ namespace Ledybot
         private bool botWorking = false;
         private bool botStop = false;
         private int botNumber = -1;
+
+        public ArrayList blacklist = new ArrayList();
 
         private GTSBot7 GTSBot7;
 
@@ -163,14 +166,14 @@ namespace Ledybot
             botNumber = -1;
         }
 
-        public void AppendListViewItem(string szTrainerName, string szNickname)
+        public void AppendListViewItem(string szTrainerName, string szNickname, string fc)
         {
             if (InvokeRequired)
             {
-                this.Invoke(new Action<string, string>(AppendListViewItem), new object[] { szTrainerName, szNickname });
+                this.Invoke(new Action<string, string, string>(AppendListViewItem), new object[] { szTrainerName, szNickname, fc });
                 return;
             }
-            string[] row = { DateTime.Now.ToString("h:mm:ss"), szTrainerName, szNickname };
+            string[] row = { DateTime.Now.ToString("h:mm:ss"), szTrainerName, szNickname, fc.Insert(4, "-").Insert(9, "-") };
             var listViewItem = new ListViewItem(row);
 
             lv_log.Items.Add(listViewItem);
@@ -409,9 +412,8 @@ namespace Ledybot
 
         public byte calculateChecksum(byte[] principal)
         {
-            byte[] newPrincipal = new byte[principal.Length];
-            Array.Copy(principal, newPrincipal, newPrincipal.Length);
-            Array.Reverse(newPrincipal);
+            byte[] newPrincipal = new byte[4];
+            Array.Copy(principal, newPrincipal, 4);
             using (SHA1Managed sha1 = new SHA1Managed())
             {
                 byte[] hash = sha1.ComputeHash(newPrincipal);
