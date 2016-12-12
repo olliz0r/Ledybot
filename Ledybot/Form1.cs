@@ -148,7 +148,7 @@ namespace Ledybot
             botWorking = true;
             botStop = false;
             botNumber = 3;
-            GTSBot7 = new GTSBot7(pid, tb_PokemonToFind.Text, tb_Default.Text, tb_Folder.Text, cb_Spanish.Checked, (int)nud_Dex.Value, cmb_Gender.SelectedIndex, cmb_Levels.SelectedIndex);
+            GTSBot7 = new GTSBot7(pid, tb_PokemonToFind.Text, tb_Default.Text, tb_Folder.Text, cb_Blacklist.Checked, (int)nud_Dex.Value, cmb_Gender.SelectedIndex, cmb_Levels.SelectedIndex);
             Task<int> Bot = GTSBot7.RunBot();
             int result = await Bot;
             if (botStop)
@@ -231,7 +231,7 @@ namespace Ledybot
             config.AppSettings.Settings["Deposited"].Value = tb_PokemonToFind.Text;
             config.AppSettings.Settings["Dex"].Value = nud_Dex.Value.ToString();
             config.AppSettings.Settings["Level"].Value = cmb_Levels.SelectedIndex.ToString();
-            config.AppSettings.Settings["Spanish"].Value = cb_Spanish.Checked.ToString();
+            config.AppSettings.Settings["Spanish"].Value = cb_Blacklist.Checked.ToString();
             config.AppSettings.Settings["Default"].Value = tb_Default.Text;
             config.AppSettings.Settings["Folder"].Value = tb_Folder.Text;
             config.AppSettings.Settings["Gender"].Value = cmb_Gender.SelectedIndex.ToString();
@@ -247,7 +247,7 @@ namespace Ledybot
             tb_PokemonToFind.Text = config.AppSettings.Settings["Deposited"].Value;
             nud_Dex.Value = Int32.Parse(config.AppSettings.Settings["Dex"].Value);
             cmb_Levels.SelectedIndex = Int32.Parse(config.AppSettings.Settings["Level"].Value);
-            cb_Spanish.Checked = Boolean.Parse(config.AppSettings.Settings["Spanish"].Value);
+            cb_Blacklist.Checked = Boolean.Parse(config.AppSettings.Settings["Spanish"].Value);
             tb_Default.Text = config.AppSettings.Settings["Default"].Value;
             tb_Folder.Text = config.AppSettings.Settings["Folder"].Value;
             cmb_Gender.SelectedIndex = Int32.Parse(config.AppSettings.Settings["Gender"].Value);

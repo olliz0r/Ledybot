@@ -31,7 +31,7 @@ namespace Ledybot
         private string szPk7Folder = "";
         private string szPID = "";
         private int iPID = 0;
-        private bool bSpanish = false;
+        private bool bBlacklist = false;
         private int dexNum = 0;
         private int genderIndex = 0;
         private int levelIndex = 0;
@@ -60,13 +60,13 @@ namespace Ledybot
         private uint addr_PageEntry = 0;
         private bool foundLastPage = false;
 
-        public GTSBot7(int iP, string szPtF = "", string szD = "", string szF = "", bool bSpanish = false, int dex = 0, int gender = 0, int level = 0)
+        public GTSBot7(int iP, string szPtF = "", string szD = "", string szF = "", bool bBlacklist = false, int dex = 0, int gender = 0, int level = 0)
         {
             this.szPokemonToFind = szPtF;
             this.szDefaultPk7 = szD;
             this.szPk7Folder = szF;
             this.iPID = iP;
-            this.bSpanish = bSpanish;
+            this.bBlacklist = bBlacklist;
             this.dexNum = dex;
             this.genderIndex = gender + 1;
             this.levelIndex = level + 1;
@@ -439,8 +439,10 @@ namespace Ledybot
                             fc[4] = checksum;
                             long iFC = BitConverter.ToInt64(fc, 0);
                             string szFC = iFC.ToString().PadLeft(12, '0');
-
-                            Program.f1.blacklist.Add(BitConverter.ToInt32(principal, 0));
+                            if(bBlacklist)
+                            {
+                                Program.f1.blacklist.Add(BitConverter.ToInt32(principal, 0));
+                            }
                             Program.f1.AppendListViewItem(szTrainerName, szNickname, szFC);
                             //Inject the Pokemon to box1slot1
                             Program.scriptHelper.write(0x330d9838, cloneshort, iPID);

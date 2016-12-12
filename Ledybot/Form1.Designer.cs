@@ -46,7 +46,7 @@
             this.NickName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.FC = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btn_Export = new System.Windows.Forms.Button();
-            this.cb_Spanish = new System.Windows.Forms.CheckBox();
+            this.cb_Blacklist = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
             this.nud_Dex = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
@@ -222,15 +222,15 @@
             this.btn_Export.UseVisualStyleBackColor = true;
             this.btn_Export.Click += new System.EventHandler(this.btn_Export_Click);
             // 
-            // cb_Spanish
+            // cb_Blacklist
             // 
-            this.cb_Spanish.AutoSize = true;
-            this.cb_Spanish.Location = new System.Drawing.Point(282, 77);
-            this.cb_Spanish.Name = "cb_Spanish";
-            this.cb_Spanish.Size = new System.Drawing.Size(64, 17);
-            this.cb_Spanish.TabIndex = 20;
-            this.cb_Spanish.Text = "Spanish";
-            this.cb_Spanish.UseVisualStyleBackColor = true;
+            this.cb_Blacklist.AutoSize = true;
+            this.cb_Blacklist.Location = new System.Drawing.Point(282, 77);
+            this.cb_Blacklist.Name = "cb_Blacklist";
+            this.cb_Blacklist.Size = new System.Drawing.Size(72, 17);
+            this.cb_Blacklist.TabIndex = 20;
+            this.cb_Blacklist.Text = "Black List";
+            this.cb_Blacklist.UseVisualStyleBackColor = true;
             // 
             // label6
             // 
@@ -343,7 +343,7 @@
             this.tp_GTS.Controls.Add(this.tb_Folder);
             this.tp_GTS.Controls.Add(this.label6);
             this.tp_GTS.Controls.Add(this.btn_Start);
-            this.tp_GTS.Controls.Add(this.cb_Spanish);
+            this.tp_GTS.Controls.Add(this.cb_Blacklist);
             this.tp_GTS.Controls.Add(this.btn_Stop);
             this.tp_GTS.Controls.Add(this.btn_Export);
             this.tp_GTS.Controls.Add(this.lv_log);
@@ -655,7 +655,7 @@
         private System.Windows.Forms.ColumnHeader Trainer;
         private System.Windows.Forms.ColumnHeader NickName;
         private System.Windows.Forms.Button btn_Export;
-        private System.Windows.Forms.CheckBox cb_Spanish;
+        private System.Windows.Forms.CheckBox cb_Blacklist;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.NumericUpDown nud_Dex;
         private System.Windows.Forms.Label label7;
