@@ -34,10 +34,6 @@
             this.btn_Connect = new System.Windows.Forms.Button();
             this.tb_PokemonToFind = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.tb_Default = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.tb_Folder = new System.Windows.Forms.TextBox();
             this.btn_Start = new System.Windows.Forms.Button();
             this.btn_Stop = new System.Windows.Forms.Button();
             this.lv_log = new System.Windows.Forms.ListView();
@@ -47,14 +43,9 @@
             this.FC = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btn_Export = new System.Windows.Forms.Button();
             this.cb_Blacklist = new System.Windows.Forms.CheckBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.nud_Dex = new System.Windows.Forms.NumericUpDown();
-            this.label7 = new System.Windows.Forms.Label();
-            this.cmb_Gender = new System.Windows.Forms.ComboBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.cmb_Levels = new System.Windows.Forms.ComboBox();
             this.tc_Control = new System.Windows.Forms.TabControl();
             this.tp_GTS = new System.Windows.Forms.TabPage();
+            this.btn_ShowPaths = new System.Windows.Forms.Button();
             this.tp_Injection = new System.Windows.Forms.TabPage();
             this.btn_Delete = new System.Windows.Forms.Button();
             this.nud_CountInjection = new System.Windows.Forms.NumericUpDown();
@@ -77,7 +68,6 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.disconnectTimer = new System.Windows.Forms.Timer(this.components);
             this.timer2 = new System.Windows.Forms.Timer(this.components);
-            ((System.ComponentModel.ISupportInitialize)(this.nud_Dex)).BeginInit();
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
             this.tp_Injection.SuspendLayout();
@@ -107,7 +97,7 @@
             // 
             // tb_PokemonToFind
             // 
-            this.tb_PokemonToFind.Location = new System.Drawing.Point(5, 19);
+            this.tb_PokemonToFind.Location = new System.Drawing.Point(6, 19);
             this.tb_PokemonToFind.Name = "tb_PokemonToFind";
             this.tb_PokemonToFind.Size = new System.Drawing.Size(100, 20);
             this.tb_PokemonToFind.TabIndex = 6;
@@ -122,44 +112,10 @@
             this.label1.TabIndex = 7;
             this.label1.Text = "Deposited Pokemon:";
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 111);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(68, 13);
-            this.label4.TabIndex = 12;
-            this.label4.Text = "Default .pk7:";
-            // 
-            // tb_Default
-            // 
-            this.tb_Default.Location = new System.Drawing.Point(5, 128);
-            this.tb_Default.Name = "tb_Default";
-            this.tb_Default.Size = new System.Drawing.Size(354, 20);
-            this.tb_Default.TabIndex = 13;
-            this.tb_Default.Text = "D:/Ledybot/pk7s/Ditto.pk7";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(9, 155);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(101, 13);
-            this.label5.TabIndex = 14;
-            this.label5.Text = "Specific .pk7 folder:";
-            // 
-            // tb_Folder
-            // 
-            this.tb_Folder.Location = new System.Drawing.Point(5, 171);
-            this.tb_Folder.Name = "tb_Folder";
-            this.tb_Folder.Size = new System.Drawing.Size(354, 20);
-            this.tb_Folder.TabIndex = 15;
-            this.tb_Folder.Text = "D:/Ledybot/pk7s";
-            // 
             // btn_Start
             // 
             this.btn_Start.Enabled = false;
-            this.btn_Start.Location = new System.Drawing.Point(154, 73);
+            this.btn_Start.Location = new System.Drawing.Point(147, 45);
             this.btn_Start.Name = "btn_Start";
             this.btn_Start.Size = new System.Drawing.Size(58, 23);
             this.btn_Start.TabIndex = 16;
@@ -170,7 +126,7 @@
             // btn_Stop
             // 
             this.btn_Stop.Enabled = false;
-            this.btn_Stop.Location = new System.Drawing.Point(218, 73);
+            this.btn_Stop.Location = new System.Drawing.Point(211, 45);
             this.btn_Stop.Name = "btn_Stop";
             this.btn_Stop.Size = new System.Drawing.Size(58, 23);
             this.btn_Stop.TabIndex = 17;
@@ -186,9 +142,9 @@
             this.NickName,
             this.FC});
             this.lv_log.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.lv_log.Location = new System.Drawing.Point(6, 198);
+            this.lv_log.Location = new System.Drawing.Point(6, 74);
             this.lv_log.Name = "lv_log";
-            this.lv_log.Size = new System.Drawing.Size(353, 262);
+            this.lv_log.Size = new System.Drawing.Size(353, 386);
             this.lv_log.TabIndex = 18;
             this.lv_log.UseCompatibleStateImageBehavior = false;
             this.lv_log.View = System.Windows.Forms.View.Details;
@@ -196,21 +152,22 @@
             // Time
             // 
             this.Time.Text = "Time";
-            this.Time.Width = 40;
+            this.Time.Width = 55;
             // 
             // Trainer
             // 
             this.Trainer.Text = "Trainer";
+            this.Trainer.Width = 73;
             // 
             // NickName
             // 
             this.NickName.Text = "Name";
-            this.NickName.Width = 50;
+            this.NickName.Width = 82;
             // 
             // FC
             // 
             this.FC.Text = "FC";
-            this.FC.Width = 65;
+            this.FC.Width = 199;
             // 
             // btn_Export
             // 
@@ -225,96 +182,12 @@
             // cb_Blacklist
             // 
             this.cb_Blacklist.AutoSize = true;
-            this.cb_Blacklist.Location = new System.Drawing.Point(282, 77);
+            this.cb_Blacklist.Location = new System.Drawing.Point(275, 49);
             this.cb_Blacklist.Name = "cb_Blacklist";
             this.cb_Blacklist.Size = new System.Drawing.Size(72, 17);
             this.cb_Blacklist.TabIndex = 20;
             this.cb_Blacklist.Text = "Black List";
             this.cb_Blacklist.UseVisualStyleBackColor = true;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(112, 3);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(29, 13);
-            this.label6.TabIndex = 22;
-            this.label6.Text = "Dex:";
-            // 
-            // nud_Dex
-            // 
-            this.nud_Dex.Location = new System.Drawing.Point(115, 19);
-            this.nud_Dex.Maximum = new decimal(new int[] {
-            802,
-            0,
-            0,
-            0});
-            this.nud_Dex.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nud_Dex.Name = "nud_Dex";
-            this.nud_Dex.Size = new System.Drawing.Size(47, 20);
-            this.nud_Dex.TabIndex = 23;
-            this.nud_Dex.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.nud_Dex.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(168, 3);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(48, 13);
-            this.label7.TabIndex = 24;
-            this.label7.Text = "Gender: ";
-            // 
-            // cmb_Gender
-            // 
-            this.cmb_Gender.FormattingEnabled = true;
-            this.cmb_Gender.Items.AddRange(new object[] {
-            "Male",
-            "Female"});
-            this.cmb_Gender.Location = new System.Drawing.Point(171, 19);
-            this.cmb_Gender.Name = "cmb_Gender";
-            this.cmb_Gender.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.cmb_Gender.Size = new System.Drawing.Size(59, 21);
-            this.cmb_Gender.TabIndex = 25;
-            this.cmb_Gender.Text = "Male";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(236, 3);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(36, 13);
-            this.label8.TabIndex = 26;
-            this.label8.Text = "Level:";
-            // 
-            // cmb_Levels
-            // 
-            this.cmb_Levels.FormattingEnabled = true;
-            this.cmb_Levels.Items.AddRange(new object[] {
-            "1 - 10",
-            "11 - 20",
-            "21 - 30",
-            "31 - 40",
-            "41 - 50",
-            "51 - 60",
-            "61 - 70",
-            "71 - 80",
-            "81 - 90",
-            "91 - Higher"});
-            this.cmb_Levels.Location = new System.Drawing.Point(239, 19);
-            this.cmb_Levels.Name = "cmb_Levels";
-            this.cmb_Levels.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.cmb_Levels.Size = new System.Drawing.Size(84, 21);
-            this.cmb_Levels.TabIndex = 27;
-            this.cmb_Levels.Text = "91 to Higher";
             // 
             // tc_Control
             // 
@@ -330,18 +203,9 @@
             // tp_GTS
             // 
             this.tp_GTS.AllowDrop = true;
+            this.tp_GTS.Controls.Add(this.btn_ShowPaths);
             this.tp_GTS.Controls.Add(this.label1);
-            this.tp_GTS.Controls.Add(this.cmb_Levels);
             this.tp_GTS.Controls.Add(this.tb_PokemonToFind);
-            this.tp_GTS.Controls.Add(this.label8);
-            this.tp_GTS.Controls.Add(this.label4);
-            this.tp_GTS.Controls.Add(this.cmb_Gender);
-            this.tp_GTS.Controls.Add(this.tb_Default);
-            this.tp_GTS.Controls.Add(this.label7);
-            this.tp_GTS.Controls.Add(this.label5);
-            this.tp_GTS.Controls.Add(this.nud_Dex);
-            this.tp_GTS.Controls.Add(this.tb_Folder);
-            this.tp_GTS.Controls.Add(this.label6);
             this.tp_GTS.Controls.Add(this.btn_Start);
             this.tp_GTS.Controls.Add(this.cb_Blacklist);
             this.tp_GTS.Controls.Add(this.btn_Stop);
@@ -354,8 +218,16 @@
             this.tp_GTS.TabIndex = 0;
             this.tp_GTS.Text = "GTS";
             this.tp_GTS.UseVisualStyleBackColor = true;
-            this.tp_GTS.DragDrop += new System.Windows.Forms.DragEventHandler(this.tp_GTS_DragDrop);
-            this.tp_GTS.DragEnter += new System.Windows.Forms.DragEventHandler(this.tp_GTS_DragEnter);
+            // 
+            // btn_ShowPaths
+            // 
+            this.btn_ShowPaths.Location = new System.Drawing.Point(5, 45);
+            this.btn_ShowPaths.Name = "btn_ShowPaths";
+            this.btn_ShowPaths.Size = new System.Drawing.Size(136, 23);
+            this.btn_ShowPaths.TabIndex = 28;
+            this.btn_ShowPaths.Text = "Giveaway Details";
+            this.btn_ShowPaths.UseVisualStyleBackColor = true;
+            this.btn_ShowPaths.Click += new System.EventHandler(this.btn_ShowPaths_Click);
             // 
             // tp_Injection
             // 
@@ -616,13 +488,16 @@
             this.Controls.Add(this.tc_Control);
             this.Controls.Add(this.btn_Connect);
             this.Controls.Add(this.tb_IP);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(394, 591);
+            this.MinimumSize = new System.Drawing.Size(394, 591);
             this.Name = "MainForm";
             this.Text = "Ledybot";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.nud_Dex)).EndInit();
             this.tc_Control.ResumeLayout(false);
             this.tp_GTS.ResumeLayout(false);
             this.tp_GTS.PerformLayout();
@@ -644,10 +519,6 @@
         private System.Windows.Forms.Button btn_Connect;
         private System.Windows.Forms.TextBox tb_PokemonToFind;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox tb_Default;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox tb_Folder;
         private System.Windows.Forms.Button btn_Start;
         private System.Windows.Forms.Button btn_Stop;
         private System.Windows.Forms.ListView lv_log;
@@ -656,12 +527,6 @@
         private System.Windows.Forms.ColumnHeader NickName;
         private System.Windows.Forms.Button btn_Export;
         private System.Windows.Forms.CheckBox cb_Blacklist;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.NumericUpDown nud_Dex;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.ComboBox cmb_Gender;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.ComboBox cmb_Levels;
         private System.Windows.Forms.TabControl tc_Control;
         private System.Windows.Forms.TabPage tp_GTS;
         private System.Windows.Forms.TabPage tp_Injection;
@@ -687,6 +552,7 @@
         private System.Windows.Forms.Timer disconnectTimer;
         private System.Windows.Forms.Timer timer2;
         private System.Windows.Forms.ColumnHeader FC;
+        private System.Windows.Forms.Button btn_ShowPaths;
     }
 }
 

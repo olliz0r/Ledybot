@@ -56,6 +56,18 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="GDInput.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GDInput.Designer.cs">
+      <DependentUpon>GDInput.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GiveawayDetails.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GiveawayDetails.Designer.cs">
+      <DependentUpon>GiveawayDetails.cs</DependentUpon>
+    </Compile>
     <Compile Include="GTSBot7.cs" />
     <Compile Include="LookupTable.cs" />
     <Compile Include="NTRClient.cs" />
@@ -67,6 +79,12 @@
     <Compile Include="Worker.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GDInput.resx">
+      <DependentUpon>GDInput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GiveawayDetails.resx">
+      <DependentUpon>GiveawayDetails.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

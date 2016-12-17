@@ -14,6 +14,7 @@ namespace Ledybot
         public static Boolean Connected = false;
         public static MainForm f1;
         public static LookupTable PKTable;
+        public static GiveawayDetails gd;
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -27,6 +28,7 @@ namespace Ledybot
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             f1 = new MainForm();
+            gd = new GiveawayDetails();
             Application.Run(f1);
         }
     }

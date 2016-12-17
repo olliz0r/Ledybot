@@ -37,6 +37,7 @@ namespace Ledybot
         private GTSBot7 GTSBot7;
 
         static Dictionary<uint, DataReadyWaiting> waitingForData = new Dictionary<uint, DataReadyWaiting>();
+        public Dictionary<int, Tuple<string, string, int, int>> giveawayDetails = new Dictionary<int, Tuple<string, string, int, int>>();
 
         public MainForm()
         {
@@ -143,12 +144,17 @@ namespace Ledybot
 
         private async void btn_Start_Click(object sender, EventArgs e)
         {
+            if(giveawayDetails.Count() == 0)
+            {
+                MessageBox.Show("No details are set!", "GTS Bot", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             btn_Stop.Enabled = true;
             btn_Start.Enabled = false;
             botWorking = true;
             botStop = false;
             botNumber = 3;
-            GTSBot7 = new GTSBot7(pid, tb_PokemonToFind.Text, tb_Default.Text, tb_Folder.Text, cb_Blacklist.Checked, (int)nud_Dex.Value, cmb_Gender.SelectedIndex, cmb_Levels.SelectedIndex);
+            GTSBot7 = new GTSBot7(pid, tb_PokemonToFind.Text, cb_Blacklist.Checked);
             Task<int> Bot = GTSBot7.RunBot();
             int result = await Bot;
             if (botStop)
@@ -156,7 +162,7 @@ namespace Ledybot
             switch (result)
             {
                 case 8:
-                    MessageBox.Show("Bot stopped by user", "Wonder Trade Bot", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Bot stopped by user", "GTS Bot", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;
                 default:
                     MessageBox.Show("An error has occurred.", "GTS Bot", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -225,32 +231,18 @@ namespace Ledybot
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            config.AppSettings.Settings["IP"].Value = tb_IP.Text;
-            config.AppSettings.Settings["Deposited"].Value = tb_PokemonToFind.Text;
-            config.AppSettings.Settings["Dex"].Value = nud_Dex.Value.ToString();
-            config.AppSettings.Settings["Level"].Value = cmb_Levels.SelectedIndex.ToString();
-            config.AppSettings.Settings["Spanish"].Value = cb_Blacklist.Checked.ToString();
-            config.AppSettings.Settings["Default"].Value = tb_Default.Text;
-            config.AppSettings.Settings["Folder"].Value = tb_Folder.Text;
-            config.AppSettings.Settings["Gender"].Value = cmb_Gender.SelectedIndex.ToString();
-            config.Save(ConfigurationSaveMode.Modified);
-            ConfigurationManager.RefreshSection("appSettings");
-
+        { 
+            Properties.Settings.Default.IP = tb_IP.Text;
+            Properties.Settings.Default.Deposited = tb_PokemonToFind.Text;
+            Properties.Settings.Default.Blacklist = cb_Blacklist.Checked;
+            Properties.Settings.Default.Save();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            tb_IP.Text = config.AppSettings.Settings["IP"].Value;
-            tb_PokemonToFind.Text = config.AppSettings.Settings["Deposited"].Value;
-            nud_Dex.Value = Int32.Parse(config.AppSettings.Settings["Dex"].Value);
-            cmb_Levels.SelectedIndex = Int32.Parse(config.AppSettings.Settings["Level"].Value);
-            cb_Blacklist.Checked = Boolean.Parse(config.AppSettings.Settings["Spanish"].Value);
-            tb_Default.Text = config.AppSettings.Settings["Default"].Value;
-            tb_Folder.Text = config.AppSettings.Settings["Folder"].Value;
-            cmb_Gender.SelectedIndex = Int32.Parse(config.AppSettings.Settings["Gender"].Value);
+            tb_IP.Text = Properties.Settings.Default.IP;
+            tb_PokemonToFind.Text = Properties.Settings.Default.Deposited;
+            cb_Blacklist.Checked = Properties.Settings.Default.Blacklist;
         }
 
         private void btn_BrowseInject_Click(object sender, EventArgs e)
@@ -343,25 +335,6 @@ namespace Ledybot
         private void nud_SlotInjection_ValueChanged(object sender, EventArgs e)
         {
             nud_CountInjection.Maximum = 32 * 30 - (Decimal.ToUInt32((nud_BoxInjection.Value - 1) * 30 + nud_SlotInjection.Value - 1));
-        }
-
-        private void tp_GTS_DragEnter(object sender, DragEventArgs e)
-        {
-            e.Effect = DragDropEffects.All;
-        }
-
-        private void tp_GTS_DragDrop(object sender, DragEventArgs e)
-        {
-            string input = ((string[])e.Data.GetData(DataFormats.FileDrop, false))[0];
-            if (File.GetAttributes(input).HasFlag(FileAttributes.Directory))
-            {
-                tb_Folder.Text = input;
-            }
-            else
-            {
-                tb_Default.Text = input;
-            }
-
         }
 
         private void tp_Injection_DragEnter(object sender, DragEventArgs e)
@@ -471,6 +444,11 @@ namespace Ledybot
         {
             Program.ntrClient.disconnect();
             Application.Exit();
+        }
+
+        private void btn_ShowPaths_Click(object sender, EventArgs e)
+        {
+            Program.gd.ShowDialog(this);
         }
     }
 

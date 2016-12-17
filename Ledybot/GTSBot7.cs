@@ -27,31 +27,21 @@ namespace Ledybot
         private uint addr_PageStartingIndex = 0x32A6A190;
 
         private string szPokemonToFind = "";
-        private string szDefaultPk7 = "";
-        private string szPk7Folder = "";
-        private string szPID = "";
         private int iPID = 0;
         private bool bBlacklist = false;
-        private int dexNum = 0;
         private int genderIndex = 0;
         private int levelIndex = 0;
-
-        private uint eggOff = 0x3313EDD8;
-        private uint currentIndex = 0x305ea384;
-        private uint pageStartingIndex = 0x32A6A190;
+        private int dexnumber = 0;
 
         public bool botstop = false;
-        public string finishmessage;
         private int botState = 0;
         public int botresult = 0;
         private int attempts = 0;
         long dataready;
         private bool taskresultbool;
         Task<bool> waitTaskbool;
-        Task<long> waitTaskint;
         private int commandtime = 250;
         private int delaytime = 150;
-        private int maxreconnect = 10;
 
         private int listlength = 0;
         private int startIndex = 0;
@@ -60,16 +50,13 @@ namespace Ledybot
         private uint addr_PageEntry = 0;
         private bool foundLastPage = false;
 
-        public GTSBot7(int iP, string szPtF = "", string szD = "", string szF = "", bool bBlacklist = false, int dex = 0, int gender = 0, int level = 0)
+        private Tuple<string, string, int, int> details;
+
+        public GTSBot7(int iP, string szPtF = "", bool bBlacklist = false)
         {
             this.szPokemonToFind = szPtF;
-            this.szDefaultPk7 = szD;
-            this.szPk7Folder = szF;
             this.iPID = iP;
             this.bBlacklist = bBlacklist;
-            this.dexNum = dex;
-            this.genderIndex = gender + 1;
-            this.levelIndex = level + 1;
         }
 
         public async Task<int> RunBot()
@@ -168,7 +155,7 @@ namespace Ledybot
                                     await Task.Delay(commandtime + delaytime);
                                     Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
                                     await Task.Delay(commandtime + delaytime);
-                                    await Task.Delay(2750);
+                                    await Task.Delay(3000);
                                     Program.helper.quicktouch(10, 10, commandtime);
                                     await Task.Delay(commandtime + delaytime);
                                     Program.helper.quicktouch(10, 10, commandtime);
@@ -195,7 +182,7 @@ namespace Ledybot
                             foundLastPage = true;
                             attempts = 0;
                             listlength = (int)Program.helper.lastRead;
-                            int dexnumber = 0;
+                            dexnumber = 0;
                             int principal = 0;
                             await Program.helper.waitNTRread(addr_PageEndStartRecord);
                             addr_PageEntry = Program.helper.lastRead;
@@ -206,12 +193,14 @@ namespace Ledybot
                                 Array.Copy(blockBytes, addr_PageEntry - 0x32A6A7C4, block, 0, 256);
                                 dexnumber = BitConverter.ToInt16(block, 0xC);
                                 principal = BitConverter.ToInt32(block, 0x48);
-                                if(!Program.f1.blacklist.Contains(principal) && dexnumber == dexNum)
+                                if(!Program.f1.blacklist.Contains(principal) && Program.f1.giveawayDetails.ContainsKey(dexnumber))
                                 {
+                                    Program.f1.giveawayDetails.TryGetValue(dexnumber, out details);
                                     int gender = block[0xE];
                                     int level = block[0xF];
-                                    if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
+                                    if ((gender == 0 || gender == details.Item3) && (level == 0 || level == details.Item4))
                                     {
+
                                         tradeIndex = i - 1;
                                         botState = (int)gtsbotstates.trade;
                                         break;
@@ -273,7 +262,7 @@ namespace Ledybot
                             startIndex += 100;
                             Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
                             await Task.Delay(commandtime + delaytime);
-                            await Task.Delay(2750);
+                            await Task.Delay(3000);
                             Program.helper.quicktouch(10, 10, commandtime);
                             await Task.Delay(commandtime + delaytime);
                             Program.helper.quicktouch(10, 10, commandtime);
@@ -294,7 +283,7 @@ namespace Ledybot
                             foundLastPage = true;
                             attempts = 0;
                             listlength = (int)Program.helper.lastRead;
-                            int dexnumber = 0;
+                            dexnumber = 0;
                             int principal = 0;
                             await Program.helper.waitNTRread(addr_PageEndStartRecord);
                             addr_PageEntry = Program.helper.lastRead;
@@ -305,11 +294,12 @@ namespace Ledybot
                                 Array.Copy(blockBytes, addr_PageEntry - 0x32A6A7C4, block, 0, 256);
                                 dexnumber = BitConverter.ToInt16(block, 0xC);
                                 principal = BitConverter.ToInt32(block, 0x48);
-                                if (!Program.f1.blacklist.Contains(principal) && dexnumber == dexNum)
+                                if (!Program.f1.blacklist.Contains(principal) && Program.f1.giveawayDetails.ContainsKey(dexnumber))
                                 {
+                                    Program.f1.giveawayDetails.TryGetValue(dexnumber, out details);
                                     int gender = block[0xE];
                                     int level = block[0xF];
-                                    if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
+                                    if ((gender == 0 || gender == details.Item3) && (level == 0 || level == details.Item4))
                                     {
                                         tradeIndex = i - 1;
                                         botState = (int)gtsbotstates.trade;
@@ -364,7 +354,7 @@ namespace Ledybot
                                         await Task.Delay(commandtime + delaytime);
                                         Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
                                         await Task.Delay(commandtime + delaytime);
-                                        await Task.Delay(2750);
+                                        await Task.Delay(3000);
                                         Program.helper.quicktouch(10, 10, commandtime);
                                         await Task.Delay(commandtime + delaytime);
                                         Program.helper.quicktouch(10, 10, commandtime);
@@ -396,7 +386,7 @@ namespace Ledybot
                                         await Task.Delay(commandtime + delaytime);
                                         Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
                                         await Task.Delay(commandtime + delaytime);
-                                        await Task.Delay(2750);
+                                        await Task.Delay(3000);
                                         Program.helper.quicktouch(10, 10, commandtime);
                                         await Task.Delay(commandtime + delaytime);
                                         Program.helper.quicktouch(10, 10, commandtime);
@@ -418,8 +408,9 @@ namespace Ledybot
                         {
                             string szNickname = Encoding.Unicode.GetString(block, 0x14, 20).Trim('\0');
 
-                            string szPath = this.szDefaultPk7;
-                            string szFileToFind = this.szPk7Folder + szNickname + ".pk7";
+                            
+                            string szPath = details.Item1;
+                            string szFileToFind = details.Item2 + szNickname + ".pk7";
                             if (File.Exists(szFileToFind))
                             {
                                 szPath = szFileToFind;
