@@ -18,12 +18,13 @@ namespace Ledybot
         public string specific = "";
         public int gender = 0;
         public int level = 0;
+        public int count = -1;
 
         private void btn_BrowseDefault_Click(object sender, EventArgs e)
         {
             OpenFileDialog dg = new OpenFileDialog();
             dg.InitialDirectory = @Application.StartupPath;
-            dg.Title = "Select an EKX/PKX file";
+            dg.Title = "Select a PK7 file";
             dg.Filter = "Gen 7 pokémon files|*.pk7";
             if(dg.ShowDialog() == DialogResult.OK)
             {
@@ -34,7 +35,6 @@ namespace Ledybot
         private void btn_BrowseSpecific_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.RootFolder = Environment.SpecialFolder.MyDocuments;
             if(fbd.ShowDialog() == DialogResult.OK)
             {
                 tb_Specific.Text = fbd.SelectedPath + "\\";
@@ -48,6 +48,7 @@ namespace Ledybot
             specific = tb_Specific.Text;
             gender = cmb_Gender.SelectedIndex;
             level = cmb_Levels.SelectedIndex;
+            count = (int) nud_Count.Value;
             this.DialogResult = DialogResult.OK;
             this.Close();
         }

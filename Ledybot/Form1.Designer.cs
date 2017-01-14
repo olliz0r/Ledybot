@@ -45,6 +45,8 @@
             this.cb_Blacklist = new System.Windows.Forms.CheckBox();
             this.tc_Control = new System.Windows.Forms.TabControl();
             this.tp_GTS = new System.Windows.Forms.TabPage();
+            this.cb_Reddit = new System.Windows.Forms.CheckBox();
+            this.btn_Banlist = new System.Windows.Forms.Button();
             this.btn_ShowPaths = new System.Windows.Forms.Button();
             this.tp_Injection = new System.Windows.Forms.TabPage();
             this.btn_Delete = new System.Windows.Forms.Button();
@@ -68,6 +70,7 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.disconnectTimer = new System.Windows.Forms.Timer(this.components);
             this.timer2 = new System.Windows.Forms.Timer(this.components);
+            this.tb_thread = new System.Windows.Forms.TextBox();
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
             this.tp_Injection.SuspendLayout();
@@ -144,7 +147,7 @@
             this.lv_log.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lv_log.Location = new System.Drawing.Point(6, 74);
             this.lv_log.Name = "lv_log";
-            this.lv_log.Size = new System.Drawing.Size(353, 386);
+            this.lv_log.Size = new System.Drawing.Size(355, 386);
             this.lv_log.TabIndex = 18;
             this.lv_log.UseCompatibleStateImageBehavior = false;
             this.lv_log.View = System.Windows.Forms.View.Details;
@@ -203,6 +206,9 @@
             // tp_GTS
             // 
             this.tp_GTS.AllowDrop = true;
+            this.tp_GTS.Controls.Add(this.tb_thread);
+            this.tp_GTS.Controls.Add(this.cb_Reddit);
+            this.tp_GTS.Controls.Add(this.btn_Banlist);
             this.tp_GTS.Controls.Add(this.btn_ShowPaths);
             this.tp_GTS.Controls.Add(this.label1);
             this.tp_GTS.Controls.Add(this.tb_PokemonToFind);
@@ -218,6 +224,26 @@
             this.tp_GTS.TabIndex = 0;
             this.tp_GTS.Text = "GTS";
             this.tp_GTS.UseVisualStyleBackColor = true;
+            // 
+            // cb_Reddit
+            // 
+            this.cb_Reddit.AutoSize = true;
+            this.cb_Reddit.Location = new System.Drawing.Point(275, 23);
+            this.cb_Reddit.Name = "cb_Reddit";
+            this.cb_Reddit.Size = new System.Drawing.Size(57, 17);
+            this.cb_Reddit.TabIndex = 30;
+            this.cb_Reddit.Text = "Reddit";
+            this.cb_Reddit.UseVisualStyleBackColor = true;
+            // 
+            // btn_Banlist
+            // 
+            this.btn_Banlist.Location = new System.Drawing.Point(112, 17);
+            this.btn_Banlist.Name = "btn_Banlist";
+            this.btn_Banlist.Size = new System.Drawing.Size(75, 23);
+            this.btn_Banlist.TabIndex = 29;
+            this.btn_Banlist.Text = "Ban List";
+            this.btn_Banlist.UseVisualStyleBackColor = true;
+            this.btn_Banlist.Click += new System.EventHandler(this.btn_Banlist_Click);
             // 
             // btn_ShowPaths
             // 
@@ -479,6 +505,13 @@
             // 
             this.disconnectTimer.Tick += new System.EventHandler(this.disconnectTimer_Tick);
             // 
+            // tb_thread
+            // 
+            this.tb_thread.Location = new System.Drawing.Point(193, 19);
+            this.tb_thread.Name = "tb_thread";
+            this.tb_thread.Size = new System.Drawing.Size(76, 20);
+            this.tb_thread.TabIndex = 31;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -553,6 +586,9 @@
         private System.Windows.Forms.Timer timer2;
         private System.Windows.Forms.ColumnHeader FC;
         private System.Windows.Forms.Button btn_ShowPaths;
+        private System.Windows.Forms.Button btn_Banlist;
+        private System.Windows.Forms.CheckBox cb_Reddit;
+        private System.Windows.Forms.TextBox tb_thread;
     }
 }
 

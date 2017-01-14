@@ -1,14 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -32,12 +30,12 @@ namespace Ledybot
         private bool botStop = false;
         private int botNumber = -1;
 
-        public ArrayList blacklist = new ArrayList();
-
         private GTSBot7 GTSBot7;
 
+        public ArrayList banlist = new ArrayList();
         static Dictionary<uint, DataReadyWaiting> waitingForData = new Dictionary<uint, DataReadyWaiting>();
-        public Dictionary<int, Tuple<string, string, int, int>> giveawayDetails = new Dictionary<int, Tuple<string, string, int, int>>();
+        public ArrayList commented = new ArrayList();
+        public Dictionary<int, Tuple<string, string, int, int, int, ArrayList>> giveawayDetails = new Dictionary<int, Tuple<string, string, int, int, int, ArrayList>>();
 
         public MainForm()
         {
@@ -90,7 +88,7 @@ namespace Ledybot
                 string splitlog = log.Substring(log.IndexOf(", pname: niji_loc") - 8, log.Length - log.IndexOf(", pname: niji_loc"));
                 pid = Convert.ToInt32("0x" + splitlog.Substring(0, 8), 16);
                 Program.helper.pid = pid;
-                Program.scriptHelper.write(0x3DFFD0, BitConverter.GetBytes(0xE3A01000), pid);
+                Program.scriptHelper.write(0x3E14C0, BitConverter.GetBytes(0xE3A01000), pid);
                 MessageBox.Show("Connection Successful!");
             }
         }
@@ -144,30 +142,37 @@ namespace Ledybot
 
         private async void btn_Start_Click(object sender, EventArgs e)
         {
-            if(giveawayDetails.Count() == 0)
+            if (giveawayDetails.Count() == 0)
             {
                 MessageBox.Show("No details are set!", "GTS Bot", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             btn_Stop.Enabled = true;
             btn_Start.Enabled = false;
+            Program.gd.disableButtons();
             botWorking = true;
             botStop = false;
             botNumber = 3;
-            GTSBot7 = new GTSBot7(pid, tb_PokemonToFind.Text, cb_Blacklist.Checked);
+            GTSBot7 = new GTSBot7(pid, tb_PokemonToFind.Text, cb_Blacklist.Checked, cb_Reddit.Checked);
             Task<int> Bot = GTSBot7.RunBot();
             int result = await Bot;
             if (botStop)
                 result = 8;
             switch (result)
             {
+                case 1:
+                    MessageBox.Show("All Pokemon Traded.", "GTS Bot", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    break;
                 case 8:
-                    MessageBox.Show("Bot stopped by user", "GTS Bot", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Bot stopped by user.", "GTS Bot", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;
                 default:
                     MessageBox.Show("An error has occurred.", "GTS Bot", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
+            Program.gd.enableButtons();
+            btn_Stop.Enabled = false;
+            btn_Start.Enabled = true;
             botWorking = false;
             botNumber = -1;
         }
@@ -231,7 +236,7 @@ namespace Ledybot
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        { 
+        {
             Properties.Settings.Default.IP = tb_IP.Text;
             Properties.Settings.Default.Deposited = tb_PokemonToFind.Text;
             Properties.Settings.Default.Blacklist = cb_Blacklist.Checked;
@@ -307,6 +312,7 @@ namespace Ledybot
             else
             {
                 MessageBox.Show("You are already disconnected!");
+                undoButtons();
             }
         }
 
@@ -442,6 +448,8 @@ namespace Ledybot
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
+            Program.gd.saveDetails();
+            Program.bld.saveDetails();
             Program.ntrClient.disconnect();
             Application.Exit();
         }
@@ -449,6 +457,33 @@ namespace Ledybot
         private void btn_ShowPaths_Click(object sender, EventArgs e)
         {
             Program.gd.ShowDialog(this);
+        }
+
+        private void btn_Banlist_Click(object sender, EventArgs e)
+        {
+            Program.bld.ShowDialog(this);
+        }
+
+        public void updateJSON()
+        {
+            if (tb_thread.Text == "")
+            {
+                return;
+            }
+            var json = "";
+            using (WebClient wc = new WebClient())
+            {
+                json = wc.DownloadString("https://www.reddit.com/r/PokemonPlaza/comments/" + tb_thread.Text + ".json?limt=1000&showmore=true");
+            }
+            List<DataJSON> data = JsonConvert.DeserializeObject<List<DataJSON>>(json);
+            foreach (ChildrenData cd in data[1].data.children)
+            {
+                string fc = cd.data.flair.Substring(cd.data.flair.IndexOf('-', 4) - 4, 14);
+                if (!commented.Contains(fc))
+                {
+                    commented.Add(fc);
+                }
+            }
         }
     }
 
@@ -466,5 +501,31 @@ namespace Ledybot
             this.arguments = arguments_;
         }
     }
+
+    public class DataJSON
+    {
+
+        [JsonProperty("data")]
+        public MainData data { get; set; }
+    }
+
+    public class MainData
+    {
+        [JsonProperty("children")]
+        public List<ChildrenData> children { get; set; }
+    }
+
+    public class ChildrenData
+    {
+        [JsonProperty("data")]
+        public CommentData data { get; set; }
+    }
+
+    public class CommentData
+    {
+        [JsonProperty("author_flair_text")]
+        public string flair { get; set; }
+    }
+
 
 }
