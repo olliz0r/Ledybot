@@ -33,7 +33,7 @@ namespace Ledybot
                 details.ReadXml(Application.StartupPath + "\\giveawaydetails.xml");
             }
 
-            foreach(DataRow row in details.Rows)
+            foreach (DataRow row in details.Rows)
             {
                 Program.f1.giveawayDetails.Add((int)row[0], new Tuple<string, string, int, int, int, ArrayList>(row[1].ToString(), row[2].ToString(), (int)row[3], (int)row[4], (int)row[5], new ArrayList()));
             }
@@ -52,7 +52,7 @@ namespace Ledybot
             GDInput input = new GDInput();
             if (input.ShowDialog(this) == DialogResult.OK)
             {
-                if (input.specific != "")
+                if (input.def != "" || input.specific != "")
                 {
                     if (Program.f1.giveawayDetails.ContainsKey(input.dex))
                     {
@@ -66,6 +66,8 @@ namespace Ledybot
                             }
                         }
                     }
+                    if (input.specific != "")
+                        Directory.CreateDirectory(input.specific);
                     details.Rows.Add(input.dex, input.def, input.specific, input.gender + 1, input.level + 1, input.count, 0);
                     Program.f1.giveawayDetails.Add(input.dex, new Tuple<string, string, int, int, int, ArrayList>(input.def, input.specific, input.gender + 1, input.level + 1, input.count, new ArrayList()));
                 }
@@ -82,7 +84,10 @@ namespace Ledybot
                 {
                     DataRow dr = details.Rows[i];
                     if (dr[0].ToString() == row.Cells[0].Value.ToString())
+                    {
                         dr.Delete();
+                        break;
+                    }
                 }
             }
         }

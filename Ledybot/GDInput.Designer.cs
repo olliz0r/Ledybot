@@ -60,7 +60,6 @@
             // 
             this.tb_Specific.Location = new System.Drawing.Point(12, 186);
             this.tb_Specific.Name = "tb_Specific";
-            this.tb_Specific.ReadOnly = true;
             this.tb_Specific.Size = new System.Drawing.Size(114, 20);
             this.tb_Specific.TabIndex = 7;
             // 

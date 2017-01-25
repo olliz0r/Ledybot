@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Ledybot
@@ -67,7 +68,69 @@ namespace Ledybot
             }
             else
             {
-                tb_Default.Text = input;
+                if(Path.GetExtension(input) == ".pk7")
+                {
+                    //byte[] pkmEncrypted = 
+                    Program.pkhex.Data = System.IO.File.ReadAllBytes(input);
+                    nud_DexNumber.Value = Program.pkhex.Species;
+                    int level = Program.PKTable.getLevel(Program.pkhex.Species, (int) Program.pkhex.EXP);
+                    int gender = Program.pkhex.Gender;
+                    if(level < 11)
+                    {
+                        cmb_Levels.SelectedIndex = 0;
+                    }
+                    else if(level < 21)
+                    {
+                        cmb_Levels.SelectedIndex = 1;
+                    }
+                    else if(level < 31)
+                    {
+                        cmb_Levels.SelectedIndex = 2;
+                    }
+                    else if(level < 41)
+                    {
+                        cmb_Levels.SelectedIndex = 3;
+                    }
+                    else if(level < 51)
+                    {
+                        cmb_Levels.SelectedIndex = 4;
+                    }
+                    else if(level < 61)
+                    {
+                        cmb_Levels.SelectedIndex = 5;
+                    }
+                    else if(level < 71)
+                    {
+                        cmb_Levels.SelectedIndex = 6;
+                    }
+                    else if(level < 81)
+                    {
+                        cmb_Levels.SelectedIndex = 7;
+                    }
+                    else if(level < 91)
+                    {
+                        cmb_Levels.SelectedIndex = 8;
+                    }
+                    else
+                    {
+                        cmb_Levels.SelectedIndex = 9;
+                    }
+                    switch(gender)
+                    {
+                        case 0:
+                            cmb_Gender.SelectedIndex = 0;
+                            break;
+                        case 1:
+                            cmb_Gender.SelectedIndex = 1;
+                            break;
+                        default:
+                            cmb_Gender.SelectedIndex = 0;
+                            break;
+                    }
+                    tb_Default.Text = input;
+                    tb_Specific.Text = Path.GetDirectoryName(input) + "\\" + Path.GetFileNameWithoutExtension(input) + "\\";
+                }
+                
             }
         }
     }

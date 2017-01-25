@@ -11,6 +11,7 @@ namespace Ledybot
         public static Boolean Connected = false;
         public static MainForm f1;
         public static LookupTable PKTable;
+        public static PKHeX pkhex;
         public static GiveawayDetails gd;
         public static BanlistDetails bld;
         /// <summary>
@@ -23,6 +24,7 @@ namespace Ledybot
             scriptHelper = new ScriptHelper();
             helper = new RemoteControl();
             PKTable = new LookupTable();
+            pkhex = new PKHeX();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             f1 = new MainForm();
