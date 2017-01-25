@@ -177,14 +177,14 @@ namespace Ledybot
             botNumber = -1;
         }
 
-        public void AppendListViewItem(string szTrainerName, string szNickname, string fc)
+        public void AppendListViewItem(string szTrainerName, string szNickname, string szSent, string fc)
         {
             if (InvokeRequired)
             {
-                this.Invoke(new Action<string, string, string>(AppendListViewItem), new object[] { szTrainerName, szNickname, fc });
+                this.Invoke(new Action<string, string, string, string>(AppendListViewItem), new object[] { szTrainerName, szNickname, szSent, fc });
                 return;
             }
-            string[] row = { DateTime.Now.ToString("h:mm:ss"), szTrainerName, szNickname, fc.Insert(4, "-").Insert(9, "-") };
+            string[] row = { DateTime.Now.ToString("h:mm:ss"), szTrainerName, szNickname, szSent, fc.Insert(4, "-").Insert(9, "-") };
             var listViewItem = new ListViewItem(row);
 
             lv_log.Items.Add(listViewItem);
@@ -240,6 +240,9 @@ namespace Ledybot
             Properties.Settings.Default.IP = tb_IP.Text;
             Properties.Settings.Default.Deposited = tb_PokemonToFind.Text;
             Properties.Settings.Default.Blacklist = cb_Blacklist.Checked;
+            Properties.Settings.Default.Reddit = cb_Reddit.Checked;
+            Properties.Settings.Default.Thread = tb_thread.Text;
+            Properties.Settings.Default.Subreddit = tb_Subreddit.Text;
             Properties.Settings.Default.Save();
         }
 
@@ -248,6 +251,9 @@ namespace Ledybot
             tb_IP.Text = Properties.Settings.Default.IP;
             tb_PokemonToFind.Text = Properties.Settings.Default.Deposited;
             cb_Blacklist.Checked = Properties.Settings.Default.Blacklist;
+            cb_Reddit.Checked = Properties.Settings.Default.Reddit;
+            tb_thread.Text = Properties.Settings.Default.Thread;
+            tb_Subreddit.Text = Properties.Settings.Default.Subreddit;
         }
 
         private void btn_BrowseInject_Click(object sender, EventArgs e)
@@ -470,19 +476,29 @@ namespace Ledybot
             {
                 return;
             }
-            var json = "";
-            using (WebClient wc = new WebClient())
+            try
             {
-                json = wc.DownloadString("https://www.reddit.com/r/PokemonPlaza/comments/" + tb_thread.Text + ".json?limt=1000&showmore=true");
-            }
-            List<DataJSON> data = JsonConvert.DeserializeObject<List<DataJSON>>(json);
-            foreach (ChildrenData cd in data[1].data.children)
-            {
-                string fc = cd.data.flair.Substring(cd.data.flair.IndexOf('-', 4) - 4, 14);
-                if (!commented.Contains(fc))
+                using (WebClient wc = new WebClient())
                 {
-                    commented.Add(fc);
+                    wc.DownloadStringCompleted += (sender, e) =>
+                    {
+                        List<DataJSON> data = JsonConvert.DeserializeObject<List<DataJSON>>(e.Result);
+                        foreach (ChildrenData cd in data[1].data.children)
+                        {
+                            string fc = (cd.data.flair != null && cd.data.flair.Length >= 14 ? cd.data.flair.Substring(cd.data.flair.IndexOf('-', 4) - 4, 14) : "").Replace("-", "");
+                            if (!commented.Contains(fc) && fc != "")
+                            {
+                                commented.Add(fc);
+                            }
+                        }
+                    };
+
+                    wc.DownloadStringAsync(new Uri("https://www.reddit.com/r/" + tb_Subreddit.Text + "/comments/" + tb_thread.Text + ".json?limt=1000&showmore=true"));
                 }
+            }
+            catch
+            {
+
             }
         }
     }

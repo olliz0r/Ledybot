@@ -12,7 +12,7 @@ namespace Ledybot
     class GTSBot7
     {
 
-        public enum gtsbotstates { botstart, startsearch, openpokemonwanted, openwhatpokemon, typepokemon, presssearch, startfind, findfromend, findfromstart, trade, research, botexit, updatecomments };
+        public enum gtsbotstates { botstart, startsearch, openpokemonwanted, openwhatpokemon, typepokemon, presssearch, startfind, findfromend, findfromstart, trade, research, botexit, updatecomments, quicksearch };
 
         private uint addr_PageSize = 0x32A6A1A4;
         private uint addr_PageEndStartRecord = 0x32A6A68C;
@@ -211,7 +211,7 @@ namespace Ledybot
                                     fc[4] = checksum;
                                     long iFC = BitConverter.ToInt64(fc, 0);
                                     szFC = iFC.ToString().PadLeft(12, '0');
-                                    if (Program.f1.commented.Contains(szFC) && !details.Item6.Contains(BitConverter.ToInt32(principal, 0)) && !Program.f1.banlist.Contains(szFC))
+                                    if ((!bReddit || Program.f1.commented.Contains(szFC)) && !details.Item6.Contains(BitConverter.ToInt32(principal, 0)) && !Program.f1.banlist.Contains(szFC))
                                     {
                                         int gender = block[0xE];
                                         int level = block[0xF];
@@ -334,7 +334,7 @@ namespace Ledybot
                                     fc[4] = checksum;
                                     long iFC = BitConverter.ToInt64(fc, 0);
                                     szFC = iFC.ToString().PadLeft(12, '0');
-                                    if (Program.f1.commented.Contains(szFC) && !details.Item6.Contains(BitConverter.ToInt32(principal, 0)) && !Program.f1.banlist.Contains(szFC))
+                                    if ((!bReddit || Program.f1.commented.Contains(szFC)) && !details.Item6.Contains(BitConverter.ToInt32(principal, 0)) && !Program.f1.banlist.Contains(szFC))
                                     {
                                         int gender = block[0xE];
                                         int level = block[0xF];
@@ -371,7 +371,7 @@ namespace Ledybot
                             //}
                             if (tradeIndex == -1)
                             {
-                                if (listlength < 100)
+                                if (listlength < 100 && startIndex >= 200)
                                 {
                                     for (int i = 0; i < listlength; i++)
                                     {
@@ -420,29 +420,9 @@ namespace Ledybot
                                         botState = (int)gtsbotstates.research;
                                     }
                                 }
-                                else
+                                else if (startIndex < 200) 
                                 {
-                                    waitTaskbool = Program.helper.waitNTRwrite(addr_PageStartingIndex, 100000, iPID);
-                                    if (await waitTaskbool)
-                                    {
-                                        startIndex -= 100;
-                                        Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
-                                        await Task.Delay(commandtime + delaytime);
-                                        Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
-                                        await Task.Delay(commandtime + delaytime);
-                                        Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
-                                        await Task.Delay(commandtime + delaytime);
-                                        await Task.Delay(3000);
-                                        Program.helper.quicktouch(10, 10, commandtime);
-                                        await Task.Delay(commandtime + delaytime + 250);
-                                        Program.helper.quicktouch(10, 10, commandtime);
-                                        await Task.Delay(commandtime + delaytime + 250);
-                                        Program.helper.quicktouch(10, 10, commandtime);
-                                        await Task.Delay(commandtime + delaytime + 250);
-                                        Program.helper.quicktouch(10, 10, commandtime);
-                                        await Task.Delay(commandtime + delaytime + 250);
-                                        botState = (int)gtsbotstates.findfromstart;
-                                    }
+                                    botState = (int)gtsbotstates.quicksearch;
                                 }
                             }
                         }
@@ -472,7 +452,7 @@ namespace Ledybot
                             {
                                 details.Item6.Add(BitConverter.ToInt32(principal, 0));
                             }
-                            Program.f1.AppendListViewItem(szTrainerName, szNickname, szFC);
+                            Program.f1.AppendListViewItem(szTrainerName, szNickname, dexnumber.ToString(), szFC);
                             //Inject the Pokemon to box1slot1
                             Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
                             Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
@@ -495,7 +475,16 @@ namespace Ledybot
                                         break;
                                     }
                                 }
+                            }
 
+                            foreach (System.Data.DataRow row in Program.gd.details.Rows)
+                            {
+                                if (row[0].ToString() == dexnumber.ToString())
+                                {
+                                    int amount = int.Parse(row[6].ToString()) + 1;
+                                    row[6] = amount;
+                                    break;
+                                }
                             }
 
                             await Task.Delay(10250);
@@ -541,6 +530,13 @@ namespace Ledybot
                                 botState = (int)gtsbotstates.research;
                             }
                         }
+                        break;
+                    case (int)gtsbotstates.quicksearch:
+                        Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
+                        await Task.Delay(commandtime + delaytime + 500);
+                        await Program.helper.waittouch(160, 185);
+                        await Task.Delay(2250);
+                        botState = (int)gtsbotstates.findfromstart;
                         break;
                     case (int)gtsbotstates.research:
                         Program.helper.quicktouch(128, 64, commandtime);

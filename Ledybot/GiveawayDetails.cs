@@ -26,6 +26,7 @@ namespace Ledybot
             details.Columns.Add("Gender Index", typeof(int));
             details.Columns.Add("Level Index", typeof(int));
             details.Columns.Add("Count", typeof(int));
+            details.Columns.Add("Traded", typeof(int));
 
             if (File.Exists(Application.StartupPath + "\\giveawaydetails.xml"))
             {
@@ -65,7 +66,7 @@ namespace Ledybot
                             }
                         }
                     }
-                    details.Rows.Add(input.dex, input.def, input.specific, input.gender + 1, input.level + 1, input.count);
+                    details.Rows.Add(input.dex, input.def, input.specific, input.gender + 1, input.level + 1, input.count, 0);
                     Program.f1.giveawayDetails.Add(input.dex, new Tuple<string, string, int, int, int, ArrayList>(input.def, input.specific, input.gender + 1, input.level + 1, input.count, new ArrayList()));
                 }
             }

@@ -58,5 +58,41 @@ namespace Ledybot.Properties {
                 this["Deposited"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5p3kgb")]
+        public string Thread {
+            get {
+                return ((string)(this["Thread"]));
+            }
+            set {
+                this["Thread"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Reddit {
+            get {
+                return ((bool)(this["Reddit"]));
+            }
+            set {
+                this["Reddit"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("PokemonPlaza")]
+        public string Subreddit {
+            get {
+                return ((string)(this["Subreddit"]));
+            }
+            set {
+                this["Subreddit"] = value;
+            }
+        }
     }
 }

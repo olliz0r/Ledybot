@@ -40,11 +40,13 @@
             this.Time = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Trainer = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.NickName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.dexSent = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.FC = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btn_Export = new System.Windows.Forms.Button();
             this.cb_Blacklist = new System.Windows.Forms.CheckBox();
             this.tc_Control = new System.Windows.Forms.TabControl();
             this.tp_GTS = new System.Windows.Forms.TabPage();
+            this.tb_thread = new System.Windows.Forms.TextBox();
             this.cb_Reddit = new System.Windows.Forms.CheckBox();
             this.btn_Banlist = new System.Windows.Forms.Button();
             this.btn_ShowPaths = new System.Windows.Forms.Button();
@@ -70,7 +72,9 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.disconnectTimer = new System.Windows.Forms.Timer(this.components);
             this.timer2 = new System.Windows.Forms.Timer(this.components);
-            this.tb_thread = new System.Windows.Forms.TextBox();
+            this.tb_Settings = new System.Windows.Forms.TabPage();
+            this.label4 = new System.Windows.Forms.Label();
+            this.tb_Subreddit = new System.Windows.Forms.TextBox();
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
             this.tp_Injection.SuspendLayout();
@@ -78,6 +82,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nud_SlotInjection)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_BoxInjection)).BeginInit();
             this.tp_Breeding.SuspendLayout();
+            this.tb_Settings.SuspendLayout();
             this.SuspendLayout();
             // 
             // tb_IP
@@ -143,11 +148,12 @@
             this.Time,
             this.Trainer,
             this.NickName,
+            this.dexSent,
             this.FC});
             this.lv_log.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lv_log.Location = new System.Drawing.Point(6, 74);
             this.lv_log.Name = "lv_log";
-            this.lv_log.Size = new System.Drawing.Size(355, 386);
+            this.lv_log.Size = new System.Drawing.Size(353, 386);
             this.lv_log.TabIndex = 18;
             this.lv_log.UseCompatibleStateImageBehavior = false;
             this.lv_log.View = System.Windows.Forms.View.Details;
@@ -165,12 +171,16 @@
             // NickName
             // 
             this.NickName.Text = "Name";
-            this.NickName.Width = 82;
+            this.NickName.Width = 49;
+            // 
+            // dexSent
+            // 
+            this.dexSent.Text = "Dex Sent";
             // 
             // FC
             // 
             this.FC.Text = "FC";
-            this.FC.Width = 199;
+            this.FC.Width = 110;
             // 
             // btn_Export
             // 
@@ -197,6 +207,7 @@
             this.tc_Control.Controls.Add(this.tp_GTS);
             this.tc_Control.Controls.Add(this.tp_Injection);
             this.tc_Control.Controls.Add(this.tp_Breeding);
+            this.tc_Control.Controls.Add(this.tb_Settings);
             this.tc_Control.Location = new System.Drawing.Point(1, 33);
             this.tc_Control.Name = "tc_Control";
             this.tc_Control.SelectedIndex = 0;
@@ -224,6 +235,13 @@
             this.tp_GTS.TabIndex = 0;
             this.tp_GTS.Text = "GTS";
             this.tp_GTS.UseVisualStyleBackColor = true;
+            // 
+            // tb_thread
+            // 
+            this.tb_thread.Location = new System.Drawing.Point(193, 19);
+            this.tb_thread.Name = "tb_thread";
+            this.tb_thread.Size = new System.Drawing.Size(76, 20);
+            this.tb_thread.TabIndex = 31;
             // 
             // cb_Reddit
             // 
@@ -505,12 +523,33 @@
             // 
             this.disconnectTimer.Tick += new System.EventHandler(this.disconnectTimer_Tick);
             // 
-            // tb_thread
+            // tb_Settings
             // 
-            this.tb_thread.Location = new System.Drawing.Point(193, 19);
-            this.tb_thread.Name = "tb_thread";
-            this.tb_thread.Size = new System.Drawing.Size(76, 20);
-            this.tb_thread.TabIndex = 31;
+            this.tb_Settings.Controls.Add(this.tb_Subreddit);
+            this.tb_Settings.Controls.Add(this.label4);
+            this.tb_Settings.Location = new System.Drawing.Point(4, 22);
+            this.tb_Settings.Name = "tb_Settings";
+            this.tb_Settings.Padding = new System.Windows.Forms.Padding(3);
+            this.tb_Settings.Size = new System.Drawing.Size(369, 495);
+            this.tb_Settings.TabIndex = 3;
+            this.tb_Settings.Text = "Settings";
+            this.tb_Settings.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 9);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(55, 13);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Subreddit:";
+            // 
+            // tb_Subreddit
+            // 
+            this.tb_Subreddit.Location = new System.Drawing.Point(68, 6);
+            this.tb_Subreddit.Name = "tb_Subreddit";
+            this.tb_Subreddit.Size = new System.Drawing.Size(293, 20);
+            this.tb_Subreddit.TabIndex = 1;
             // 
             // MainForm
             // 
@@ -541,6 +580,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.nud_BoxInjection)).EndInit();
             this.tp_Breeding.ResumeLayout(false);
             this.tp_Breeding.PerformLayout();
+            this.tb_Settings.ResumeLayout(false);
+            this.tb_Settings.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -589,6 +630,10 @@
         private System.Windows.Forms.Button btn_Banlist;
         private System.Windows.Forms.CheckBox cb_Reddit;
         private System.Windows.Forms.TextBox tb_thread;
+        private System.Windows.Forms.ColumnHeader dexSent;
+        private System.Windows.Forms.TabPage tb_Settings;
+        private System.Windows.Forms.TextBox tb_Subreddit;
+        private System.Windows.Forms.Label label4;
     }
 }
 
