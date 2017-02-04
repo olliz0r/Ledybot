@@ -37,6 +37,7 @@
             // 
             // dgv_Details
             // 
+            this.dgv_Details.AllowDrop = true;
             this.dgv_Details.AllowUserToAddRows = false;
             this.dgv_Details.AllowUserToDeleteRows = false;
             this.dgv_Details.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -44,6 +45,8 @@
             this.dgv_Details.Name = "dgv_Details";
             this.dgv_Details.Size = new System.Drawing.Size(492, 281);
             this.dgv_Details.TabIndex = 0;
+            this.dgv_Details.DragDrop += new System.Windows.Forms.DragEventHandler(this.dgv_Details_DragDrop);
+            this.dgv_Details.DragEnter += new System.Windows.Forms.DragEventHandler(this.dgv_Details_DragEnter);
             // 
             // btn_Add
             // 

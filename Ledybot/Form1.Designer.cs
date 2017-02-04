@@ -67,14 +67,16 @@
             this.btn_EggStart = new System.Windows.Forms.Button();
             this.label11 = new System.Windows.Forms.Label();
             this.btn_EggAvailable = new System.Windows.Forms.Button();
+            this.tb_Settings = new System.Windows.Forms.TabPage();
+            this.tb_Subreddit = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.ofd_Injection = new System.Windows.Forms.OpenFileDialog();
             this.btn_Disconnect = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.disconnectTimer = new System.Windows.Forms.Timer(this.components);
             this.timer2 = new System.Windows.Forms.Timer(this.components);
-            this.tb_Settings = new System.Windows.Forms.TabPage();
-            this.label4 = new System.Windows.Forms.Label();
-            this.tb_Subreddit = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.nud_DefaultCount = new System.Windows.Forms.NumericUpDown();
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
             this.tp_Injection.SuspendLayout();
@@ -83,6 +85,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nud_BoxInjection)).BeginInit();
             this.tp_Breeding.SuspendLayout();
             this.tb_Settings.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_DefaultCount)).BeginInit();
             this.SuspendLayout();
             // 
             // tb_IP
@@ -499,6 +502,36 @@
             this.btn_EggAvailable.UseVisualStyleBackColor = true;
             this.btn_EggAvailable.Click += new System.EventHandler(this.btn_EggAvailable_Click);
             // 
+            // tb_Settings
+            // 
+            this.tb_Settings.Controls.Add(this.nud_DefaultCount);
+            this.tb_Settings.Controls.Add(this.label5);
+            this.tb_Settings.Controls.Add(this.tb_Subreddit);
+            this.tb_Settings.Controls.Add(this.label4);
+            this.tb_Settings.Location = new System.Drawing.Point(4, 22);
+            this.tb_Settings.Name = "tb_Settings";
+            this.tb_Settings.Padding = new System.Windows.Forms.Padding(3);
+            this.tb_Settings.Size = new System.Drawing.Size(369, 495);
+            this.tb_Settings.TabIndex = 3;
+            this.tb_Settings.Text = "Settings";
+            this.tb_Settings.UseVisualStyleBackColor = true;
+            // 
+            // tb_Subreddit
+            // 
+            this.tb_Subreddit.Location = new System.Drawing.Point(68, 6);
+            this.tb_Subreddit.Name = "tb_Subreddit";
+            this.tb_Subreddit.Size = new System.Drawing.Size(293, 20);
+            this.tb_Subreddit.TabIndex = 1;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 9);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(55, 13);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Subreddit:";
+            // 
             // ofd_Injection
             // 
             this.ofd_Injection.FileName = "Pokemon.pk7";
@@ -523,33 +556,37 @@
             // 
             this.disconnectTimer.Tick += new System.EventHandler(this.disconnectTimer_Tick);
             // 
-            // tb_Settings
+            // label5
             // 
-            this.tb_Settings.Controls.Add(this.tb_Subreddit);
-            this.tb_Settings.Controls.Add(this.label4);
-            this.tb_Settings.Location = new System.Drawing.Point(4, 22);
-            this.tb_Settings.Name = "tb_Settings";
-            this.tb_Settings.Padding = new System.Windows.Forms.Padding(3);
-            this.tb_Settings.Size = new System.Drawing.Size(369, 495);
-            this.tb_Settings.TabIndex = 3;
-            this.tb_Settings.Text = "Settings";
-            this.tb_Settings.UseVisualStyleBackColor = true;
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(7, 34);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(75, 13);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "Default Count:";
             // 
-            // label4
+            // nud_DefaultCount
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(7, 9);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(55, 13);
-            this.label4.TabIndex = 0;
-            this.label4.Text = "Subreddit:";
-            // 
-            // tb_Subreddit
-            // 
-            this.tb_Subreddit.Location = new System.Drawing.Point(68, 6);
-            this.tb_Subreddit.Name = "tb_Subreddit";
-            this.tb_Subreddit.Size = new System.Drawing.Size(293, 20);
-            this.tb_Subreddit.TabIndex = 1;
+            this.nud_DefaultCount.Location = new System.Drawing.Point(241, 32);
+            this.nud_DefaultCount.Maximum = new decimal(new int[] {
+            99999999,
+            0,
+            0,
+            0});
+            this.nud_DefaultCount.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.nud_DefaultCount.Name = "nud_DefaultCount";
+            this.nud_DefaultCount.Size = new System.Drawing.Size(120, 20);
+            this.nud_DefaultCount.TabIndex = 3;
+            this.nud_DefaultCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nud_DefaultCount.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
             // 
             // MainForm
             // 
@@ -582,6 +619,7 @@
             this.tp_Breeding.PerformLayout();
             this.tb_Settings.ResumeLayout(false);
             this.tb_Settings.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_DefaultCount)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -634,6 +672,8 @@
         private System.Windows.Forms.TabPage tb_Settings;
         private System.Windows.Forms.TextBox tb_Subreddit;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.NumericUpDown nud_DefaultCount;
+        private System.Windows.Forms.Label label5;
     }
 }
 
