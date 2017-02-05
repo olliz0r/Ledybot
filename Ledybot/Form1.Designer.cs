@@ -68,6 +68,8 @@
             this.label11 = new System.Windows.Forms.Label();
             this.btn_EggAvailable = new System.Windows.Forms.Button();
             this.tb_Settings = new System.Windows.Forms.TabPage();
+            this.nud_DefaultCount = new System.Windows.Forms.NumericUpDown();
+            this.label5 = new System.Windows.Forms.Label();
             this.tb_Subreddit = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.ofd_Injection = new System.Windows.Forms.OpenFileDialog();
@@ -75,8 +77,8 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.disconnectTimer = new System.Windows.Forms.Timer(this.components);
             this.timer2 = new System.Windows.Forms.Timer(this.components);
-            this.label5 = new System.Windows.Forms.Label();
-            this.nud_DefaultCount = new System.Windows.Forms.NumericUpDown();
+            this.btn_Import = new System.Windows.Forms.Button();
+            this.btn_Clear = new System.Windows.Forms.Button();
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
             this.tp_Injection.SuspendLayout();
@@ -187,7 +189,7 @@
             // 
             // btn_Export
             // 
-            this.btn_Export.Location = new System.Drawing.Point(5, 467);
+            this.btn_Export.Location = new System.Drawing.Point(6, 466);
             this.btn_Export.Name = "btn_Export";
             this.btn_Export.Size = new System.Drawing.Size(354, 23);
             this.btn_Export.TabIndex = 19;
@@ -214,12 +216,14 @@
             this.tc_Control.Location = new System.Drawing.Point(1, 33);
             this.tc_Control.Name = "tc_Control";
             this.tc_Control.SelectedIndex = 0;
-            this.tc_Control.Size = new System.Drawing.Size(377, 521);
+            this.tc_Control.Size = new System.Drawing.Size(377, 587);
             this.tc_Control.TabIndex = 28;
             // 
             // tp_GTS
             // 
             this.tp_GTS.AllowDrop = true;
+            this.tp_GTS.Controls.Add(this.btn_Clear);
+            this.tp_GTS.Controls.Add(this.btn_Import);
             this.tp_GTS.Controls.Add(this.tb_thread);
             this.tp_GTS.Controls.Add(this.cb_Reddit);
             this.tp_GTS.Controls.Add(this.btn_Banlist);
@@ -234,7 +238,7 @@
             this.tp_GTS.Location = new System.Drawing.Point(4, 22);
             this.tp_GTS.Name = "tp_GTS";
             this.tp_GTS.Padding = new System.Windows.Forms.Padding(3);
-            this.tp_GTS.Size = new System.Drawing.Size(369, 495);
+            this.tp_GTS.Size = new System.Drawing.Size(369, 561);
             this.tp_GTS.TabIndex = 0;
             this.tp_GTS.Text = "GTS";
             this.tp_GTS.UseVisualStyleBackColor = true;
@@ -516,6 +520,38 @@
             this.tb_Settings.Text = "Settings";
             this.tb_Settings.UseVisualStyleBackColor = true;
             // 
+            // nud_DefaultCount
+            // 
+            this.nud_DefaultCount.Location = new System.Drawing.Point(241, 32);
+            this.nud_DefaultCount.Maximum = new decimal(new int[] {
+            99999999,
+            0,
+            0,
+            0});
+            this.nud_DefaultCount.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.nud_DefaultCount.Name = "nud_DefaultCount";
+            this.nud_DefaultCount.Size = new System.Drawing.Size(120, 20);
+            this.nud_DefaultCount.TabIndex = 3;
+            this.nud_DefaultCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nud_DefaultCount.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(7, 34);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(75, 13);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "Default Count:";
+            // 
             // tb_Subreddit
             // 
             this.tb_Subreddit.Location = new System.Drawing.Point(68, 6);
@@ -556,43 +592,31 @@
             // 
             this.disconnectTimer.Tick += new System.EventHandler(this.disconnectTimer_Tick);
             // 
-            // label5
+            // btn_Import
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(7, 34);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(75, 13);
-            this.label5.TabIndex = 2;
-            this.label5.Text = "Default Count:";
+            this.btn_Import.Location = new System.Drawing.Point(6, 495);
+            this.btn_Import.Name = "btn_Import";
+            this.btn_Import.Size = new System.Drawing.Size(354, 23);
+            this.btn_Import.TabIndex = 32;
+            this.btn_Import.Text = "Import";
+            this.btn_Import.UseVisualStyleBackColor = true;
+            this.btn_Import.Click += new System.EventHandler(this.btn_Import_Click);
             // 
-            // nud_DefaultCount
+            // btn_Clear
             // 
-            this.nud_DefaultCount.Location = new System.Drawing.Point(241, 32);
-            this.nud_DefaultCount.Maximum = new decimal(new int[] {
-            99999999,
-            0,
-            0,
-            0});
-            this.nud_DefaultCount.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
-            this.nud_DefaultCount.Name = "nud_DefaultCount";
-            this.nud_DefaultCount.Size = new System.Drawing.Size(120, 20);
-            this.nud_DefaultCount.TabIndex = 3;
-            this.nud_DefaultCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.nud_DefaultCount.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
+            this.btn_Clear.Location = new System.Drawing.Point(6, 524);
+            this.btn_Clear.Name = "btn_Clear";
+            this.btn_Clear.Size = new System.Drawing.Size(354, 23);
+            this.btn_Clear.TabIndex = 33;
+            this.btn_Clear.Text = "Clear";
+            this.btn_Clear.UseVisualStyleBackColor = true;
+            this.btn_Clear.Click += new System.EventHandler(this.btn_Clear_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(378, 552);
+            this.ClientSize = new System.Drawing.Size(378, 620);
             this.Controls.Add(this.btn_Disconnect);
             this.Controls.Add(this.tc_Control);
             this.Controls.Add(this.btn_Connect);
@@ -600,8 +624,6 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(394, 591);
-            this.MinimumSize = new System.Drawing.Size(394, 591);
             this.Name = "MainForm";
             this.Text = "Ledybot";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
@@ -674,6 +696,8 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown nud_DefaultCount;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button btn_Import;
+        private System.Windows.Forms.Button btn_Clear;
     }
 }
 

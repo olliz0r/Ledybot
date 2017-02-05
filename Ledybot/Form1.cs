@@ -44,7 +44,6 @@ namespace Ledybot
             Program.ntrClient.InfoReady += getGame;
             delLastLog = new LogDelegate(lastLog);
             InitializeComponent();
-
             ofd_Injection.Title = "Select an EKX/PKX file";
             ofd_Injection.Filter = "Gen 7 pokémon files|*.pk7";
             string path = @Application.StartupPath;
@@ -233,6 +232,33 @@ namespace Ledybot
                 result.Append(String.Format("\"{0}\"", columnValue(i)));
             }
             result.AppendLine();
+        }
+
+        private void ImportCSV()
+        {
+            FileStream srcFS;
+            srcFS = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "\\export.csv", FileMode.Open);
+            StreamReader srcSR = new StreamReader(srcFS, System.Text.Encoding.Default);
+            srcSR.ReadLine();
+            do
+            {
+                string ins = srcSR.ReadLine();
+                if (ins != null)
+                {
+                    string[] columns = ins.Replace("\"", "").Split(',');
+
+                    ListViewItem lvi = new ListViewItem(columns[0]);
+
+                    for (int i = 1; i < columns.Count(); i++)
+                    {
+                        lvi.SubItems.Add(columns[i]);
+                    }
+
+                    lv_log.Items.Add(lvi);
+                }
+                else break;
+            } while (true);
+            srcSR.Close();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -500,6 +526,16 @@ namespace Ledybot
             {
 
             }
+        }
+
+        private void btn_Import_Click(object sender, EventArgs e)
+        {
+            ImportCSV();
+        }
+
+        private void btn_Clear_Click(object sender, EventArgs e)
+        {
+            lv_log.Items.Clear();
         }
     }
 
