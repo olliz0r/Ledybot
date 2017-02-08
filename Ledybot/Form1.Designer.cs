@@ -40,12 +40,14 @@
             this.Time = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Trainer = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.NickName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.dexSent = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.pkmnSent = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.FC = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btn_Export = new System.Windows.Forms.Button();
             this.cb_Blacklist = new System.Windows.Forms.CheckBox();
             this.tc_Control = new System.Windows.Forms.TabControl();
             this.tp_GTS = new System.Windows.Forms.TabPage();
+            this.btn_Clear = new System.Windows.Forms.Button();
+            this.btn_Import = new System.Windows.Forms.Button();
             this.tb_thread = new System.Windows.Forms.TextBox();
             this.cb_Reddit = new System.Windows.Forms.CheckBox();
             this.btn_Banlist = new System.Windows.Forms.Button();
@@ -77,8 +79,8 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.disconnectTimer = new System.Windows.Forms.Timer(this.components);
             this.timer2 = new System.Windows.Forms.Timer(this.components);
-            this.btn_Import = new System.Windows.Forms.Button();
-            this.btn_Clear = new System.Windows.Forms.Button();
+            this.Country = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.subRegion = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
             this.tp_Injection.SuspendLayout();
@@ -153,7 +155,9 @@
             this.Time,
             this.Trainer,
             this.NickName,
-            this.dexSent,
+            this.Country,
+            this.subRegion,
+            this.pkmnSent,
             this.FC});
             this.lv_log.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lv_log.Location = new System.Drawing.Point(6, 74);
@@ -178,9 +182,10 @@
             this.NickName.Text = "Name";
             this.NickName.Width = 49;
             // 
-            // dexSent
+            // pkmnSent
             // 
-            this.dexSent.Text = "Dex Sent";
+            this.pkmnSent.Text = "Pokemon Sent";
+            this.pkmnSent.Width = 62;
             // 
             // FC
             // 
@@ -243,6 +248,26 @@
             this.tp_GTS.Text = "GTS";
             this.tp_GTS.UseVisualStyleBackColor = true;
             // 
+            // btn_Clear
+            // 
+            this.btn_Clear.Location = new System.Drawing.Point(6, 524);
+            this.btn_Clear.Name = "btn_Clear";
+            this.btn_Clear.Size = new System.Drawing.Size(354, 23);
+            this.btn_Clear.TabIndex = 33;
+            this.btn_Clear.Text = "Clear";
+            this.btn_Clear.UseVisualStyleBackColor = true;
+            this.btn_Clear.Click += new System.EventHandler(this.btn_Clear_Click);
+            // 
+            // btn_Import
+            // 
+            this.btn_Import.Location = new System.Drawing.Point(6, 495);
+            this.btn_Import.Name = "btn_Import";
+            this.btn_Import.Size = new System.Drawing.Size(354, 23);
+            this.btn_Import.TabIndex = 32;
+            this.btn_Import.Text = "Import";
+            this.btn_Import.UseVisualStyleBackColor = true;
+            this.btn_Import.Click += new System.EventHandler(this.btn_Import_Click);
+            // 
             // tb_thread
             // 
             this.tb_thread.Location = new System.Drawing.Point(193, 19);
@@ -297,7 +322,7 @@
             this.tp_Injection.Location = new System.Drawing.Point(4, 22);
             this.tp_Injection.Name = "tp_Injection";
             this.tp_Injection.Padding = new System.Windows.Forms.Padding(3);
-            this.tp_Injection.Size = new System.Drawing.Size(369, 495);
+            this.tp_Injection.Size = new System.Drawing.Size(369, 561);
             this.tp_Injection.TabIndex = 1;
             this.tp_Injection.Text = "Injection";
             this.tp_Injection.UseVisualStyleBackColor = true;
@@ -459,7 +484,7 @@
             this.tp_Breeding.Controls.Add(this.btn_EggAvailable);
             this.tp_Breeding.Location = new System.Drawing.Point(4, 22);
             this.tp_Breeding.Name = "tp_Breeding";
-            this.tp_Breeding.Size = new System.Drawing.Size(369, 495);
+            this.tp_Breeding.Size = new System.Drawing.Size(369, 561);
             this.tp_Breeding.TabIndex = 2;
             this.tp_Breeding.Text = "Breeding";
             this.tp_Breeding.UseVisualStyleBackColor = true;
@@ -515,7 +540,7 @@
             this.tb_Settings.Location = new System.Drawing.Point(4, 22);
             this.tb_Settings.Name = "tb_Settings";
             this.tb_Settings.Padding = new System.Windows.Forms.Padding(3);
-            this.tb_Settings.Size = new System.Drawing.Size(369, 495);
+            this.tb_Settings.Size = new System.Drawing.Size(369, 561);
             this.tb_Settings.TabIndex = 3;
             this.tb_Settings.Text = "Settings";
             this.tb_Settings.UseVisualStyleBackColor = true;
@@ -592,25 +617,13 @@
             // 
             this.disconnectTimer.Tick += new System.EventHandler(this.disconnectTimer_Tick);
             // 
-            // btn_Import
+            // Country
             // 
-            this.btn_Import.Location = new System.Drawing.Point(6, 495);
-            this.btn_Import.Name = "btn_Import";
-            this.btn_Import.Size = new System.Drawing.Size(354, 23);
-            this.btn_Import.TabIndex = 32;
-            this.btn_Import.Text = "Import";
-            this.btn_Import.UseVisualStyleBackColor = true;
-            this.btn_Import.Click += new System.EventHandler(this.btn_Import_Click);
+            this.Country.Text = "Country";
             // 
-            // btn_Clear
+            // subRegion
             // 
-            this.btn_Clear.Location = new System.Drawing.Point(6, 524);
-            this.btn_Clear.Name = "btn_Clear";
-            this.btn_Clear.Size = new System.Drawing.Size(354, 23);
-            this.btn_Clear.TabIndex = 33;
-            this.btn_Clear.Text = "Clear";
-            this.btn_Clear.UseVisualStyleBackColor = true;
-            this.btn_Clear.Click += new System.EventHandler(this.btn_Clear_Click);
+            this.subRegion.Text = "Sub Region";
             // 
             // MainForm
             // 
@@ -690,7 +703,7 @@
         private System.Windows.Forms.Button btn_Banlist;
         private System.Windows.Forms.CheckBox cb_Reddit;
         private System.Windows.Forms.TextBox tb_thread;
-        private System.Windows.Forms.ColumnHeader dexSent;
+        private System.Windows.Forms.ColumnHeader pkmnSent;
         private System.Windows.Forms.TabPage tb_Settings;
         private System.Windows.Forms.TextBox tb_Subreddit;
         private System.Windows.Forms.Label label4;
@@ -698,6 +711,8 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button btn_Import;
         private System.Windows.Forms.Button btn_Clear;
+        private System.Windows.Forms.ColumnHeader Country;
+        private System.Windows.Forms.ColumnHeader subRegion;
     }
 }
 

@@ -448,11 +448,18 @@ namespace Ledybot
 
                             //optional: grab some trainer data
                             string szTrainerName = Encoding.Unicode.GetString(block, 0x4C, 20).Trim('\0');
+                            int countryIndex = BitConverter.ToInt16(block, 0x68);
+                            string country = "-";
+                            Program.f1.countries.TryGetValue(countryIndex, out country);
+                            Program.f1.getSubRegions(countryIndex);
+                            int subRegionIndex = BitConverter.ToInt16(block, 0x6A);
+                            string subregion = "-";
+                            Program.f1.regions.TryGetValue(subRegionIndex, out subregion);
                             if (bBlacklist)
                             {
                                 details.Item6.Add(BitConverter.ToInt32(principal, 0));
                             }
-                            Program.f1.AppendListViewItem(szTrainerName, szNickname, dexnumber.ToString(), szFC);
+                            Program.f1.AppendListViewItem(szTrainerName, szNickname, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC);
                             //Inject the Pokemon to box1slot1
                             Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
                             Program.helper.quickbuton(Program.PKTable.keyA, commandtime);

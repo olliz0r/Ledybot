@@ -36,6 +36,8 @@ namespace Ledybot
         static Dictionary<uint, DataReadyWaiting> waitingForData = new Dictionary<uint, DataReadyWaiting>();
         public ArrayList commented = new ArrayList();
         public Dictionary<int, Tuple<string, string, int, int, int, ArrayList>> giveawayDetails = new Dictionary<int, Tuple<string, string, int, int, int, ArrayList>>();
+        public Dictionary<int, string> countries = new Dictionary<int, string>();
+        public Dictionary<int, string> regions = new Dictionary<int, string>();
 
         public MainForm()
         {
@@ -48,7 +50,7 @@ namespace Ledybot
             ofd_Injection.Filter = "Gen 7 pokémon files|*.pk7";
             string path = @Application.StartupPath;
             ofd_Injection.InitialDirectory = path;
-
+            getCountries();
             btn_Disconnect.Enabled = false;
         }
 
@@ -89,6 +91,30 @@ namespace Ledybot
                 Program.helper.pid = pid;
                 Program.scriptHelper.write(0x3E14C0, BitConverter.GetBytes(0xE3A01000), pid);
                 MessageBox.Show("Connection Successful!");
+            }
+        }
+
+        public void getCountries()
+        {
+            string[] inputCSV = getStringList("countries");
+            // Gather our data from the input file
+            for (int i = 1; i < inputCSV.Length; i++)
+            {
+                string[] countryData = inputCSV[i].Split(',');
+                countries.Add(int.Parse(countryData[0]), countryData[2]);
+            }
+        }
+
+        public void getSubRegions(int country)
+        {
+            regions.Clear();
+
+            string[] inputCSV = getStringList("sr_" + country.ToString("000"));
+
+            for(int i = 1; i < inputCSV.Length; i++)
+            {
+                string[] regionData = inputCSV[i].Split(',');
+                regions.Add(int.Parse(regionData[0]), regionData[2]);
             }
         }
 
@@ -176,14 +202,14 @@ namespace Ledybot
             botNumber = -1;
         }
 
-        public void AppendListViewItem(string szTrainerName, string szNickname, string szSent, string fc)
+        public void AppendListViewItem(string szTrainerName, string szNickname, string szCountry, string szSubRegion, string szSent, string fc)
         {
             if (InvokeRequired)
             {
-                this.Invoke(new Action<string, string, string, string>(AppendListViewItem), new object[] { szTrainerName, szNickname, szSent, fc });
+                this.Invoke(new Action<string, string, string, string, string, string>(AppendListViewItem), new object[] { szTrainerName, szNickname, szCountry, szSubRegion, szSent, fc });
                 return;
             }
-            string[] row = { DateTime.Now.ToString("h:mm:ss"), szTrainerName, szNickname, szSent, fc.Insert(4, "-").Insert(9, "-") };
+            string[] row = { DateTime.Now.ToString("h:mm:ss"), szTrainerName, szNickname, szCountry, szSubRegion, szSent, fc.Insert(4, "-").Insert(9, "-") };
             var listViewItem = new ListViewItem(row);
 
             lv_log.Items.Add(listViewItem);
@@ -536,6 +562,16 @@ namespace Ledybot
         private void btn_Clear_Click(object sender, EventArgs e)
         {
             lv_log.Items.Clear();
+        }
+
+        public static string[] getStringList(string f)
+        {
+            object txt = Properties.Resources.ResourceManager.GetObject(f); // Fetch File, \n to list.
+            if (txt == null) return new string[0];
+            string[] rawlist = ((string)txt).Split('\n');
+            for (int i = 0; i < rawlist.Length; i++)
+                rawlist[i] = rawlist[i].Trim();
+            return rawlist;
         }
     }
 
