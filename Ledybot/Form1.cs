@@ -23,6 +23,7 @@ namespace Ledybot
         public PKHeX dumpedPKHeX = new PKHeX();
 
         public uint boxOff = 0x330D9838;
+        public uint wcOff = 0x331397E4;
         public uint partyOff = 0x34195E10;
         private uint eggOff = 0x3313EDD8;
 
@@ -48,8 +49,11 @@ namespace Ledybot
             InitializeComponent();
             ofd_Injection.Title = "Select an EKX/PKX file";
             ofd_Injection.Filter = "Gen 7 pokémon files|*.pk7";
+            ofd_WCInjection.Title = "Select a WC7 file";
+            ofd_WCInjection.Filter = "Gen 7 wondercard files|*.wc7";
             string path = @Application.StartupPath;
             ofd_Injection.InitialDirectory = path;
+            ofd_WCInjection.InitialDirectory = path;
             getCountries();
             btn_Disconnect.Enabled = false;
         }
@@ -111,7 +115,7 @@ namespace Ledybot
 
             string[] inputCSV = getStringList("sr_" + country.ToString("000"));
 
-            for(int i = 1; i < inputCSV.Length; i++)
+            for (int i = 1; i < inputCSV.Length; i++)
             {
                 string[] regionData = inputCSV[i].Split(',');
                 regions.Add(int.Parse(regionData[0]), regionData[2]);
@@ -125,6 +129,8 @@ namespace Ledybot
             btn_Start.Enabled = true;
             btn_Inject.Enabled = true;
             btn_Delete.Enabled = true;
+            btn_WCInject.Enabled = true;
+            btn_WCDelete.Enabled = true;
             btn_EggAvailable.Enabled = true;
             btn_EggStart.Enabled = true;
         }
@@ -137,6 +143,8 @@ namespace Ledybot
             btn_Stop.Enabled = false;
             btn_Inject.Enabled = false;
             btn_Delete.Enabled = false;
+            btn_WCInject.Enabled = false;
+            btn_WCDelete.Enabled = false;
             btn_EggAvailable.Enabled = false;
             btn_EggStart.Enabled = false;
             btn_EggStop.Enabled = false;
@@ -572,6 +580,44 @@ namespace Ledybot
             for (int i = 0; i < rawlist.Length; i++)
                 rawlist[i] = rawlist[i].Trim();
             return rawlist;
+        }
+
+        private void btn_WCInject_Click(object sender, EventArgs e)
+        {
+            if (tb_WCInjection.Text == "")
+            {
+                MessageBox.Show("Please select a file!", "Ledybot", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            byte[] wc = System.IO.File.ReadAllBytes(tb_WCInjection.Text);
+            uint slotIndex = Decimal.ToUInt32(nud_SlotWCInjection.Value) - 1;
+
+            uint offset = wcOff + slotIndex * 264;
+            Program.scriptHelper.write(offset, wc, pid);
+            MessageBox.Show("Injection Successful!");
+        }
+
+        private void btn_WCDelete_Click(object sender, EventArgs e)
+        {
+            byte[] cloneshort = new byte[264];
+            for(int i = 0; i < cloneshort.Length; i++)
+            {
+                cloneshort[i] = 0x0;
+            }
+            uint slotIndex = Decimal.ToUInt32(nud_SlotWCInjection.Value) - 1;
+
+            uint offset = wcOff + slotIndex * 264;
+            Program.scriptHelper.write(offset, cloneshort, pid);
+            MessageBox.Show("Deletion Successful!");
+        }
+
+        private void btn_BrowseWCInject_Click(object sender, EventArgs e)
+        {
+            if (ofd_WCInjection.ShowDialog() == DialogResult.OK)
+            {
+                tb_WCInjection.Text = ofd_WCInjection.FileName;
+                ofd_WCInjection.InitialDirectory = Path.GetDirectoryName(ofd_WCInjection.FileName);
+            }
         }
     }
 

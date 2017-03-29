@@ -23,8 +23,8 @@ namespace Ledybot
         private void btn_Save_Click(object sender, EventArgs e)
         {
             input += nud_FC1.Value.ToString().PadLeft(4, '0');
-            input += "-" + nud_FC2.Value.ToString().PadLeft(4, '0');
-            input += "-" + nud_FC3.Value.ToString().PadLeft(4, '0');
+            input += nud_FC2.Value.ToString().PadLeft(4, '0');
+            input += nud_FC3.Value.ToString().PadLeft(4, '0');
             this.DialogResult = DialogResult.OK;
             this.Close();
         }

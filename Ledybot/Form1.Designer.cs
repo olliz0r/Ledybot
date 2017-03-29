@@ -40,6 +40,8 @@
             this.Time = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Trainer = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.NickName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.Country = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.subRegion = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.pkmnSent = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.FC = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btn_Export = new System.Windows.Forms.Button();
@@ -53,6 +55,13 @@
             this.btn_Banlist = new System.Windows.Forms.Button();
             this.btn_ShowPaths = new System.Windows.Forms.Button();
             this.tp_Injection = new System.Windows.Forms.TabPage();
+            this.btn_WCDelete = new System.Windows.Forms.Button();
+            this.btn_WCInject = new System.Windows.Forms.Button();
+            this.nud_SlotWCInjection = new System.Windows.Forms.NumericUpDown();
+            this.label7 = new System.Windows.Forms.Label();
+            this.btn_BrowseWCInject = new System.Windows.Forms.Button();
+            this.tb_WCInjection = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
             this.btn_Delete = new System.Windows.Forms.Button();
             this.nud_CountInjection = new System.Windows.Forms.NumericUpDown();
             this.label10 = new System.Windows.Forms.Label();
@@ -79,11 +88,11 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.disconnectTimer = new System.Windows.Forms.Timer(this.components);
             this.timer2 = new System.Windows.Forms.Timer(this.components);
-            this.Country = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.subRegion = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ofd_WCInjection = new System.Windows.Forms.OpenFileDialog();
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
             this.tp_Injection.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_SlotWCInjection)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_CountInjection)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_SlotInjection)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_BoxInjection)).BeginInit();
@@ -181,6 +190,14 @@
             // 
             this.NickName.Text = "Name";
             this.NickName.Width = 49;
+            // 
+            // Country
+            // 
+            this.Country.Text = "Country";
+            // 
+            // subRegion
+            // 
+            this.subRegion.Text = "Sub Region";
             // 
             // pkmnSent
             // 
@@ -308,6 +325,13 @@
             // tp_Injection
             // 
             this.tp_Injection.AllowDrop = true;
+            this.tp_Injection.Controls.Add(this.btn_WCDelete);
+            this.tp_Injection.Controls.Add(this.btn_WCInject);
+            this.tp_Injection.Controls.Add(this.nud_SlotWCInjection);
+            this.tp_Injection.Controls.Add(this.label7);
+            this.tp_Injection.Controls.Add(this.btn_BrowseWCInject);
+            this.tp_Injection.Controls.Add(this.tb_WCInjection);
+            this.tp_Injection.Controls.Add(this.label12);
             this.tp_Injection.Controls.Add(this.btn_Delete);
             this.tp_Injection.Controls.Add(this.nud_CountInjection);
             this.tp_Injection.Controls.Add(this.label10);
@@ -328,6 +352,87 @@
             this.tp_Injection.UseVisualStyleBackColor = true;
             this.tp_Injection.DragDrop += new System.Windows.Forms.DragEventHandler(this.tp_Injection_DragDrop);
             this.tp_Injection.DragEnter += new System.Windows.Forms.DragEventHandler(this.tp_Injection_DragEnter);
+            // 
+            // btn_WCDelete
+            // 
+            this.btn_WCDelete.Enabled = false;
+            this.btn_WCDelete.Location = new System.Drawing.Point(6, 258);
+            this.btn_WCDelete.Name = "btn_WCDelete";
+            this.btn_WCDelete.Size = new System.Drawing.Size(354, 23);
+            this.btn_WCDelete.TabIndex = 21;
+            this.btn_WCDelete.Text = "Delete";
+            this.btn_WCDelete.UseVisualStyleBackColor = true;
+            this.btn_WCDelete.Click += new System.EventHandler(this.btn_WCDelete_Click);
+            // 
+            // btn_WCInject
+            // 
+            this.btn_WCInject.Enabled = false;
+            this.btn_WCInject.Location = new System.Drawing.Point(6, 229);
+            this.btn_WCInject.Name = "btn_WCInject";
+            this.btn_WCInject.Size = new System.Drawing.Size(354, 23);
+            this.btn_WCInject.TabIndex = 18;
+            this.btn_WCInject.Text = "Inject";
+            this.btn_WCInject.UseVisualStyleBackColor = true;
+            this.btn_WCInject.Click += new System.EventHandler(this.btn_WCInject_Click);
+            // 
+            // nud_SlotWCInjection
+            // 
+            this.nud_SlotWCInjection.Location = new System.Drawing.Point(8, 202);
+            this.nud_SlotWCInjection.Maximum = new decimal(new int[] {
+            48,
+            0,
+            0,
+            0});
+            this.nud_SlotWCInjection.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_SlotWCInjection.Name = "nud_SlotWCInjection";
+            this.nud_SlotWCInjection.Size = new System.Drawing.Size(38, 20);
+            this.nud_SlotWCInjection.TabIndex = 17;
+            this.nud_SlotWCInjection.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nud_SlotWCInjection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(5, 185);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(28, 13);
+            this.label7.TabIndex = 15;
+            this.label7.Text = "Slot:";
+            // 
+            // btn_BrowseWCInject
+            // 
+            this.btn_BrowseWCInject.Location = new System.Drawing.Point(290, 162);
+            this.btn_BrowseWCInject.Name = "btn_BrowseWCInject";
+            this.btn_BrowseWCInject.Size = new System.Drawing.Size(75, 20);
+            this.btn_BrowseWCInject.TabIndex = 13;
+            this.btn_BrowseWCInject.Text = "Browse";
+            this.btn_BrowseWCInject.UseVisualStyleBackColor = true;
+            this.btn_BrowseWCInject.Click += new System.EventHandler(this.btn_BrowseWCInject_Click);
+            // 
+            // tb_WCInjection
+            // 
+            this.tb_WCInjection.Location = new System.Drawing.Point(6, 162);
+            this.tb_WCInjection.Name = "tb_WCInjection";
+            this.tb_WCInjection.ReadOnly = true;
+            this.tb_WCInjection.Size = new System.Drawing.Size(279, 20);
+            this.tb_WCInjection.TabIndex = 12;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(3, 146);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(28, 13);
+            this.label12.TabIndex = 11;
+            this.label12.Text = "WC:";
             // 
             // btn_Delete
             // 
@@ -617,13 +722,9 @@
             // 
             this.disconnectTimer.Tick += new System.EventHandler(this.disconnectTimer_Tick);
             // 
-            // Country
+            // ofd_WCInjection
             // 
-            this.Country.Text = "Country";
-            // 
-            // subRegion
-            // 
-            this.subRegion.Text = "Sub Region";
+            this.ofd_WCInjection.FileName = "WC.wc7";
             // 
             // MainForm
             // 
@@ -647,6 +748,7 @@
             this.tp_GTS.PerformLayout();
             this.tp_Injection.ResumeLayout(false);
             this.tp_Injection.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_SlotWCInjection)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_CountInjection)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_SlotInjection)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_BoxInjection)).EndInit();
@@ -713,6 +815,14 @@
         private System.Windows.Forms.Button btn_Clear;
         private System.Windows.Forms.ColumnHeader Country;
         private System.Windows.Forms.ColumnHeader subRegion;
+        private System.Windows.Forms.Button btn_WCDelete;
+        private System.Windows.Forms.Button btn_WCInject;
+        private System.Windows.Forms.NumericUpDown nud_SlotWCInjection;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Button btn_BrowseWCInject;
+        private System.Windows.Forms.TextBox tb_WCInjection;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.OpenFileDialog ofd_WCInjection;
     }
 }
 
