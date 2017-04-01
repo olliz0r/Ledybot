@@ -32,6 +32,7 @@ namespace Ledybot
         private int botNumber = -1;
 
         private GTSBot7 GTSBot7;
+        public EggBot eggbot;
 
         public ArrayList banlist = new ArrayList();
         static Dictionary<uint, DataReadyWaiting> waitingForData = new Dictionary<uint, DataReadyWaiting>();
@@ -170,8 +171,7 @@ namespace Ledybot
             }
         }
 
-        Thread workerThread = null;
-        Worker workerObject = null;
+        EggBot workerObject = null;
 
         private async void btn_Start_Click(object sender, EventArgs e)
         {
@@ -358,13 +358,15 @@ namespace Ledybot
             if (Program.Connected)
             {
 
-                if (workerThread != null && workerObject != null)
-                {
-                    workerObject.RequestStop();
-                    workerThread.Abort();
 
-                    workerObject = null;
-                    workerThread = null;
+                if(GTSBot7 != null)
+                {
+                    GTSBot7.RequestStop();
+                }
+
+                if(eggbot != null)
+                {
+                    eggbot.RequestStop();
                 }
 
                 Program.scriptHelper.disconnect();
@@ -481,29 +483,19 @@ namespace Ledybot
             Program.scriptHelper.write(eggOff, data, pid);
         }
 
-        private void btn_EggStart_Click(object sender, EventArgs e)
+        private async void btn_EggStart_Click(object sender, EventArgs e)
         {
-            workerObject = new Worker();
-            workerObject.setValues(1, pid);
-            //workerThread = new Thread(workerObject.DoWork);
-            workerThread.Start();
+            eggbot = new EggBot(pid);
             btn_EggStop.Enabled = true;
             btn_EggStart.Enabled = false;
+            await eggbot.RunBot();
         }
 
         private void btn_EggStop_Click(object sender, EventArgs e)
         {
-            if (workerThread != null && workerObject != null)
-            {
-                workerObject.RequestStop();
-                workerThread.Abort();
-
-                workerObject = null;
-                workerThread = null;
-
-                btn_EggStart.Enabled = true;
-                btn_EggStop.Enabled = false;
-            }
+            eggbot.RequestStop();
+            btn_EggStart.Enabled = true;
+            btn_EggStop.Enabled = false;
         }
 
         private void disconnectTimer_Tick(object sender, EventArgs e)
@@ -600,7 +592,7 @@ namespace Ledybot
         private void btn_WCDelete_Click(object sender, EventArgs e)
         {
             byte[] cloneshort = new byte[264];
-            for(int i = 0; i < cloneshort.Length; i++)
+            for (int i = 0; i < cloneshort.Length; i++)
             {
                 cloneshort[i] = 0x0;
             }
