@@ -68,7 +68,7 @@ namespace Ledybot
                         botState = (int)gtsbotstates.research;
                         break;
                     case (int)gtsbotstates.startsearch:
-                        Program.helper.quicktouch(128, 64, commandtime);
+                        Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
                         await Task.Delay(commandtime + delaytime);
                         botState = (int)gtsbotstates.openpokemonwanted;
                         break;
@@ -546,7 +546,7 @@ namespace Ledybot
                         botState = (int)gtsbotstates.findfromstart;
                         break;
                     case (int)gtsbotstates.research:
-                        Program.helper.quicktouch(128, 64, commandtime);
+                        Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
                         await Task.Delay(commandtime + delaytime + 1000);
                         await Program.helper.waittouch(160, 185);
                         await Task.Delay(2250);
