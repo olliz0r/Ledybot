@@ -12,7 +12,7 @@ namespace Ledybot
     class GTSBot7
     {
 
-        public enum gtsbotstates { botstart, startsearch, openpokemonwanted, openwhatpokemon, typepokemon, presssearch, startfind, findfromend, findfromstart, trade, research, botexit, updatecomments, quicksearch };
+        public enum gtsbotstates { botstart, startsearch, openpokemonwanted, openwhatpokemon, typepokemon, presssearch, startfind, findfromend, findfromstart, trade, research, botexit, updatecomments, quicksearch, panic };
 
         private uint addr_PageSize = 0x32A6A1A4; //How many entries are on the current GTS page
         private uint addr_PageEndStartRecord = 0x32A6A68C; //This address holds the address to the last block in the entry-block-list
@@ -23,6 +23,17 @@ namespace Ledybot
 
         private uint addr_box1slot1 = 0x330d9838; //To inject the pokemon into box1slot1
         private uint addr_SearchPokemonNameField = 0x301118D4; //Holds the currently typed in name in the "search pokemon" window
+
+        private uint addr_currentScreen = 0x00674802; //Hopefully a address to tell us in what screen we are (roughly)
+
+        private int val_PlazaScreen = 0x00;
+        private int val_Quit_SeekScreen = 0x3F2B;
+        private int val_SearchScreen = 0x4128; //also in the box during selecting etc
+        private int val_WhatPkmnScreen = 0x4160;
+        private int val_GTSListScreen = 0x4180;
+        private int val_BoxScreen = 0x4120;
+        private int val_system = 0x41A8; //during error, saving, early sending
+        private int val_duringTrade = 0x3FD5; //trade is split in several steps, sometimes even 0x00
 
         private string szPokemonToFind = "";
         private int iPID = 0;
@@ -50,6 +61,14 @@ namespace Ledybot
 
         private Tuple<string, string, int, int, int, ArrayList> details;
 
+        private async Task<bool> isCorrectWindow(int expectedScreen)
+        {
+            await Program.helper.waitNTRread(addr_currentScreen);
+            int screenID = (int)Program.helper.lastRead;
+
+            return expectedScreen == screenID;
+        }
+
         public GTSBot7(int iP, string szPtF = "", bool bBlacklist = false, bool bReddit = false, bool bSearchFromBack = true)
         {
             this.szPokemonToFind = szPtF;
@@ -61,6 +80,7 @@ namespace Ledybot
 
         public async Task<int> RunBot()
         {
+            bool correctScreen = true;
             while (!botstop)
             {
                 switch (botState)
@@ -76,12 +96,24 @@ namespace Ledybot
                         break;
                     case (int)gtsbotstates.startsearch:
                         //Seek/Deposite pokemon screen
-                        Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
+                        correctScreen = await isCorrectWindow(val_Quit_SeekScreen);
+                        if (!correctScreen)
+                        {
+                            botState = (int)gtsbotstates.panic;
+                            break;
+                        }
+                        await Program.helper.waittouch(160, 80);
                         await Task.Delay(commandtime + delaytime);
                         botState = (int)gtsbotstates.openpokemonwanted;
                         break;
                     case (int)gtsbotstates.openpokemonwanted:
                         //Pokemon wanted screen
+                        correctScreen = await isCorrectWindow(val_SearchScreen);
+                        if (!correctScreen)
+                        {
+                            botState = (int)gtsbotstates.panic;
+                            break;
+                        }
                         await Task.Delay(500);
                         Program.helper.quicktouch(128, 50, commandtime);
                         await Task.Delay(commandtime + delaytime);
@@ -129,6 +161,12 @@ namespace Ledybot
                         }
                         break;
                     case (int)gtsbotstates.presssearch:
+                        correctScreen = await isCorrectWindow(val_SearchScreen);
+                        if (!correctScreen)
+                        {
+                            botState = (int)gtsbotstates.panic;
+                            break;
+                        }
                         //Pokemon wanted screen again, this time with filled out information
                         await Task.Delay(2000);
                         waitTaskbool = Program.helper.waittouch(160, 185);
@@ -145,6 +183,12 @@ namespace Ledybot
                         }
                         break;
                     case (int)gtsbotstates.findfromstart:
+                        correctScreen = await isCorrectWindow(val_GTSListScreen);
+                        if (!correctScreen)
+                        {
+                            botState = (int)gtsbotstates.panic;
+                            break;
+                        }
                         //GTS entry list screen, cursor at position 1
                         await Program.helper.waitNTRread(addr_PageSize);
 
@@ -289,6 +333,12 @@ namespace Ledybot
 
                         break;
                     case (int)gtsbotstates.findfromend:
+                        correctScreen = await isCorrectWindow(val_GTSListScreen);
+                        if (!correctScreen)
+                        {
+                            botState = (int)gtsbotstates.panic;
+                            break;
+                        }
                         //also GTS entry list screen, but cursor is at the end of the list in this case
                         await Program.helper.waitNTRread(addr_PageSize);
 
@@ -554,6 +604,61 @@ namespace Ledybot
                         break;
                     case (int)gtsbotstates.botexit:
                         botstop = true;
+                        break;
+                    case (int)gtsbotstates.panic:
+                        //recover from weird state here
+                        await Program.helper.waitNTRread(addr_currentScreen);
+                        int screenID = (int)Program.helper.lastRead;
+
+                        if(screenID == val_PlazaScreen)
+                        {
+                            await Program.helper.waittouch(200, 120);
+                            await Task.Delay(1000);
+                            await Program.helper.waittouch(200, 120);
+                            await Task.Delay(8000);
+                            correctScreen = await isCorrectWindow(val_Quit_SeekScreen);
+                            if (correctScreen)
+                            {
+                                botState = (int)gtsbotstates.startsearch;
+                                break;
+                            }else
+                            {
+                                botState = (int)gtsbotstates.botexit;
+                                break;
+                            }
+                        }
+                        else if(screenID == val_Quit_SeekScreen)
+                        {
+                            //press b, press where seek button would be, press b again -> guaranteed seek screen
+                            Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
+                            await Task.Delay(commandtime + delaytime + 500);
+                            await Program.helper.waittouch(160, 80);
+                            await Task.Delay(2250);
+                            Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
+                            await Task.Delay(commandtime + delaytime + 500);
+                            botState = (int)gtsbotstates.startsearch;
+                            break;
+                        }
+                        else // if(screenID == val_SearchScreen || screenID == val_BoxScreen || screenID == val_GTSListScreen)
+                        {
+                            //spam b a lot and hope we get to val_quit_seekscreen like this
+                            for (int i = 0; i < 10; i++)
+                            {
+                                Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
+                                await Task.Delay(commandtime + delaytime + 500);
+                                await Task.Delay(1000);
+                            }
+                            correctScreen = await isCorrectWindow(val_Quit_SeekScreen);
+                            if (correctScreen)
+                            {
+                                botState = (int)gtsbotstates.panic;
+                                break;
+                            }else
+                            {
+                                botState = (int)gtsbotstates.botexit;
+                                break;
+                            }
+                        }
                         break;
                     default:
                         botresult = -1;

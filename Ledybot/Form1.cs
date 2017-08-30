@@ -303,6 +303,8 @@ namespace Ledybot
             Properties.Settings.Default.Reddit = cb_Reddit.Checked;
             Properties.Settings.Default.Thread = tb_thread.Text;
             Properties.Settings.Default.Subreddit = tb_Subreddit.Text;
+            Properties.Settings.Default.RBFront = rb_front.Checked;
+            Properties.Settings.Default.RBBack = rb_back.Checked;
             Properties.Settings.Default.Save();
         }
 
@@ -314,6 +316,8 @@ namespace Ledybot
             cb_Reddit.Checked = Properties.Settings.Default.Reddit;
             tb_thread.Text = Properties.Settings.Default.Thread;
             tb_Subreddit.Text = Properties.Settings.Default.Subreddit;
+            rb_front.Checked = Properties.Settings.Default.RBFront;
+            rb_back.Checked = Properties.Settings.Default.RBBack;
         }
 
         private void btn_BrowseInject_Click(object sender, EventArgs e)

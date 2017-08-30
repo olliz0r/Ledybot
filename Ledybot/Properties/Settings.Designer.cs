@@ -94,5 +94,29 @@ namespace Ledybot.Properties {
                 this["Subreddit"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RBFront {
+            get {
+                return ((bool)(this["RBFront"]));
+            }
+            set {
+                this["RBFront"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool RBBack {
+            get {
+                return ((bool)(this["RBBack"]));
+            }
+            set {
+                this["RBBack"] = value;
+            }
+        }
     }
 }

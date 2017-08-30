@@ -20,5 +20,11 @@
     <Setting Name="Subreddit" Type="System.String" Scope="User">
       <Value Profile="(Default)">PokemonPlaza</Value>
     </Setting>
+    <Setting Name="RBFront" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="RBBack" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
