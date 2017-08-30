@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -7,26 +8,83 @@ using System.Windows.Forms;
 
 namespace Ledybot
 {
-    public class NTRClient
+
+    class readMemRequest
+    {
+        public string fileName;
+        public bool isCallback;
+
+        public readMemRequest(string fileName_)
+        {
+            this.fileName = fileName_;
+            this.isCallback = false;
+        }
+
+        public readMemRequest()
+        {
+            this.fileName = null;
+            this.isCallback = true;
+        }
+    };
+
+    public class DataReadyEventArgs : EventArgs
+    {
+        public uint seq;
+        public byte[] data;
+
+        public DataReadyEventArgs(uint seq_, byte[] data_)
+        {
+            this.seq = seq_;
+            this.data = data_;
+        }
+    }
+
+    public class InfoReadyEventArgs : EventArgs
+    {
+        public string info;
+
+        public InfoReadyEventArgs(string info_)
+        {
+            this.info = info_;
+        }
+    }
+
+    class NTR
     {
         public String host;
         public int port;
         public TcpClient tcp;
         public NetworkStream netStream;
         public Thread packetRecvThread;
-        UInt32 lastReadMemSeq;
-        string lastReadMemFileName;
         private object syncLock = new object();
-        public object retValLock = new object();
-        int heartbeatSendable;
-        int timeout;
+        public int heartbeatSendable;
+        public event EventHandler<DataReadyEventArgs> DataReady;
+        public event EventHandler Connected;
+        public event EventHandler<InfoReadyEventArgs> InfoReady;
+        UInt32 lastReadMemSeq;
+
+        protected virtual void OnDataReady(DataReadyEventArgs e)
+        {
+            DataReady?.Invoke(this, e);
+        }
+
+        protected virtual void OnConnected(EventArgs e)
+        {
+            Connected?.Invoke(this, e);
+        }
+
+        protected virtual void OnInfoReady(InfoReadyEventArgs e)
+        {
+            InfoReady?.Invoke(this, e);
+        }
+
+
         public delegate void logHandler(string msg);
+        public event logHandler onLogArrival;
         UInt32 currentSeq;
+        public Dictionary<UInt32, readMemRequest> pendingReadMem = new Dictionary<UInt32, readMemRequest>();
         public volatile int progress = -1;
 
-        public string retVal;
-        public bool retDone;
-        
 
         int readNetworkStream(NetworkStream stream, byte[] buf, int length)
         {
@@ -49,7 +107,8 @@ namespace Ledybot
                     return 0;
                 }
                 index += len;
-            } while (index < length);
+            }
+            while (index < length);
             progress = -1;
             return length;
         }
@@ -85,9 +144,14 @@ namespace Ledybot
                     }
                     t += 4;
                     UInt32 dataLen = BitConverter.ToUInt32(buf, t);
+                    if (cmd != 0)
+                    {
+                        log(String.Format("packet: cmd = {0}, dataLen = {1}", cmd, dataLen));
+                    }
 
                     if (magic != 0x12345678)
                     {
+                        log(String.Format("broken protocol: magic = {0}, seq = {1}", magic, seq));
                         break;
                     }
 
@@ -98,7 +162,8 @@ namespace Ledybot
                             byte[] dataBuf = new byte[dataLen];
                             readNetworkStream(stream, dataBuf, dataBuf.Length);
                             string logMsg = Encoding.UTF8.GetString(dataBuf);
-                            //Console.WriteLine(logMsg);
+                            OnInfoReady(new InfoReadyEventArgs(logMsg));
+                            log(logMsg);
                         }
                         lock (syncLock)
                         {
@@ -113,12 +178,59 @@ namespace Ledybot
                         handlePacket(cmd, seq, dataBuf);
                     }
                 }
-                catch
+                catch (Exception e)
                 {
+                    log(e.Message);
                     break;
                 }
             }
+
+            log("Server disconnected.");
             disconnect(false);
+        }
+
+        string byteToHex(byte[] datBuf, int type)
+        {
+            string r = "";
+            for (int i = 0; i < datBuf.Length; i++)
+            {
+                r += datBuf[i].ToString("X2") + " ";
+            }
+            return r;
+        }
+
+        void handleReadMem(UInt32 seq, byte[] dataBuf)
+        {
+            readMemRequest requestDetails;
+            if (!pendingReadMem.TryGetValue(seq, out requestDetails))
+            {
+                log("seq not in pending readmems, ignored");
+                return;
+            }
+            pendingReadMem.Remove(seq);
+
+            if (requestDetails.fileName != null)
+            {
+                string fileName = requestDetails.fileName;
+                FileStream fs = new FileStream(fileName, FileMode.Create);
+                fs.Write(dataBuf, 0, dataBuf.Length);
+                fs.Close();
+                log("dump saved into " + fileName + " successfully");
+                return;
+            }
+            else if (requestDetails.isCallback)
+            {
+                //Copies the data, truncates if necessary
+                byte[] dataBufCopy = new byte[dataBuf.Length];
+                dataBuf.CopyTo(dataBufCopy, 0);
+                DataReadyEventArgs e = new DataReadyEventArgs(seq, dataBufCopy);
+                OnDataReady(e);
+            }
+            else
+            {
+                log(byteToHex(dataBuf, 0));
+            }
+
         }
 
         void handlePacket(UInt32 cmd, UInt32 seq, byte[] dataBuf)
@@ -129,102 +241,37 @@ namespace Ledybot
             }
         }
 
-        void handleReadMem(UInt32 seq, byte[] dataBuf)
-        {
-            if (seq != lastReadMemSeq)
-            {
-                //log("seq != lastReadMemSeq, ignored");
-                return;
-            }
-            lastReadMemSeq = 0;
-
-            int i = 0;
-            int iBufferlength = dataBuf.Length;
-            for (i = 0; i < dataBuf.Length; i++)
-            {
-                if (i % 2 == 0)
-                {
-                    if (dataBuf[i] == 0x00)
-                    {
-                        iBufferlength = i;
-                        break;
-                    }
-                }
-            }
-            byte[] actualBuffer = new byte[iBufferlength];
-            for(i = 0; i < actualBuffer.Length; i++)
-            {
-                actualBuffer[i] = dataBuf[i];
-            }
-
-            string szResult = Encoding.Unicode.GetString(actualBuffer);
-
-            //t.BeginInvoke((MethodInvoker)delegate () { t.Text = szResult; ; });
-            lock (retValLock)
-            {
-                retVal = szResult;
-                retDone = true;
-            }
-            return;
-            //log(byteToHex(dataBuf, 0));
-
-        }
-
-        public void sendReadMemPacket(UInt32 addr, UInt32 size, UInt32 pid, string fileName)
-        {
-            sendEmptyPacket(9, pid, addr, size);
-            lastReadMemSeq = currentSeq;
-            lastReadMemFileName = fileName;
-        }
-
-        public void sendEmptyPacket(UInt32 cmd, UInt32 arg0 = 0, UInt32 arg1 = 0, UInt32 arg2 = 0, UInt32 arg3 = 0, UInt32 arg4 = 0)
-        {
-            UInt32[] args = new UInt32[16];
-
-            args[0] = arg0;
-            args[1] = arg1;
-            args[2] = arg2;
-            args[3] = arg3;
-            args[4] = arg4;
-            sendPacket(0, cmd, args, 0);
-        }
-
         public void setServer(String serverHost, int serverPort)
         {
             host = serverHost;
             port = serverPort;
         }
 
-        public Boolean connectToServer()
+
+        public void connectToServer()
         {
             if (tcp != null)
             {
                 disconnect();
             }
-            tcp = new TcpClient();
-            tcp.NoDelay = true;
             try
             {
-                if (tcp.ConnectAsync(host, port).Wait(1000))
-                {
-                    currentSeq = 0;
-                    netStream = tcp.GetStream();
-                    heartbeatSendable = 1;
-                    packetRecvThread = new Thread(new ThreadStart(packetRecvThreadStart));
-                    packetRecvThread.Start();
-                    Program.Connected = true;
-                }
-                else
-                {
-                    Program.Connected = false;
-                }
+                tcp = new TcpClient();
+                tcp.NoDelay = true;
+                tcp.Connect(host, port);
+                currentSeq = 0;
+                netStream = tcp.GetStream();
+                heartbeatSendable = 1;
+                packetRecvThread = new Thread(new ThreadStart(packetRecvThreadStart));
+                packetRecvThread.Start();
+                log("Server connected.");
+                OnConnected(null);
             }
             catch
             {
-                Program.Connected = false;
+                MessageBox.Show("Could not connect, make sure the IP is correct, you're running NTR and you're online in-game!", "Connection Failed");
             }
 
-            return Program.Connected;
         }
 
         public void disconnect(bool waitPacketThread = true)
@@ -243,7 +290,10 @@ namespace Ledybot
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                log(ex.Message);
+            }
             tcp = null;
             Program.Connected = false;
         }
@@ -272,13 +322,20 @@ namespace Ledybot
             }
             t += 4;
             BitConverter.GetBytes(dataLen).CopyTo(buf, t);
-            try
-            {
-                netStream.Write(buf, 0, buf.Length);
-            }
-            catch (Exception)
-            {
-            }
+            netStream.Write(buf, 0, buf.Length);
+        }
+
+        public void sendReadMemPacket(UInt32 addr, UInt32 size, UInt32 pid, string fileName)
+        {
+            sendEmptyPacket(9, pid, addr, size);
+            pendingReadMem.Add(currentSeq, new readMemRequest(fileName));
+        }
+
+        public uint sendReadMemPacket(UInt32 addr, UInt32 size, UInt32 pid)
+        {
+            sendEmptyPacket(9, pid, addr, size);
+            pendingReadMem.Add(currentSeq, new readMemRequest());
+            return currentSeq;
         }
 
         public void sendWriteMemPacket(UInt32 addr, UInt32 pid, byte[] buf)
@@ -291,9 +348,20 @@ namespace Ledybot
             netStream.Write(buf, 0, buf.Length);
         }
 
+        public void sendWriteMemPacketByte(UInt32 addr, UInt32 pid, byte buf)
+        {
+            UInt32[] args = new UInt32[16];
+            args[0] = pid;
+            args[1] = addr;
+            args[2] = (UInt32)1;
+            sendPacket(1, 10, args, args[2]);
+            netStream.WriteByte(buf);
+        }
+
+
         public void sendHeartbeatPacket()
         {
-            if (Program.Connected)
+            if (tcp != null)
             {
                 lock (syncLock)
                 {
@@ -302,17 +370,61 @@ namespace Ledybot
                         heartbeatSendable = 0;
                         sendPacket(0, 0, null, 0);
                     }
-                    else
-                    {
-                        timeout++;
-                        if (timeout == 5)
-                        {
-                            disconnect(false);
-                        }
-                    }
                 }
             }
 
         }
+
+        public void sendHelloPacket()
+        {
+            sendPacket(0, 3, null, 0);
+        }
+
+        public void sendReloadPacket()
+        {
+            sendPacket(0, 4, null, 0);
+        }
+
+        public void sendEmptyPacket(UInt32 cmd, UInt32 arg0 = 0, UInt32 arg1 = 0, UInt32 arg2 = 0)
+        {
+            UInt32[] args = new UInt32[16];
+
+            args[0] = arg0;
+            args[1] = arg1;
+            args[2] = arg2;
+            sendPacket(0, cmd, args, 0);
+        }
+
+
+
+        public void sendSaveFilePacket(string fileName, byte[] fileData)
+        {
+            byte[] fileNameBuf = new byte[0x200];
+            Encoding.UTF8.GetBytes(fileName).CopyTo(fileNameBuf, 0);
+            sendPacket(1, 1, null, (UInt32)(fileNameBuf.Length + fileData.Length));
+            netStream.Write(fileNameBuf, 0, fileNameBuf.Length);
+            netStream.Write(fileData, 0, fileData.Length);
+        }
+
+        public void log(String msg)
+        {
+            if (onLogArrival != null)
+            {
+                onLogArrival.Invoke(msg);
+            }
+
+            try
+            {
+                Program.f1.BeginInvoke(Program.f1.delLastLog, msg);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+        }
+
+
     }
+
 }

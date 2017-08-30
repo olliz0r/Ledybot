@@ -1,7 +1,24 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Ledybot.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="IP" Type="System.String" Scope="User">
+      <Value Profile="(Default)">192.168.1.</Value>
+    </Setting>
+    <Setting Name="Blacklist" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="Deposited" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Ledyba</Value>
+    </Setting>
+    <Setting Name="Thread" Type="System.String" Scope="User">
+      <Value Profile="(Default)">5p3kgb</Value>
+    </Setting>
+    <Setting Name="Reddit" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="Subreddit" Type="System.String" Scope="User">
+      <Value Profile="(Default)">PokemonPlaza</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

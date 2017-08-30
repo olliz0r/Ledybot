@@ -1,24 +1,86 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ledybot
 {
+
     public class ScriptHelper
     {
-        public uint left = 0xFDF;
-        public uint right = 0xFEF;
-        public uint up = 0xFBF;
-        public uint down = 0xF7F;
-        public uint start = 0xFF7;
-        public uint Abtn = 0xFFE;
-        public uint Bbtn = 0xFFD;
+        public void bpadd(uint addr, string type = "code.once")
+        {
+            uint num = 0;
+            if (type == "code")
+            {
+                num = 1;
+            }
+            if (type == "code.once")
+            {
+                num = 2;
+            }
+            if (num != 0)
+            {
+                Program.ntrClient.sendEmptyPacket(11, num, addr, 1);
+            }
+        }
 
-        public uint searchBtn = 0x01B618E0;
-        
-        public Boolean connect(string host, int port)
+        public void remoteplay()
+        {
+            Program.ntrClient.sendEmptyPacket(901);
+            Program.ntrClient.log("Will be disconnected in 10 seconds to enhance performance.");
+            Program.f1.startAutoDisconnect();
+        }
+
+        public void bpdis(uint id)
+        {
+            Program.ntrClient.sendEmptyPacket(11, id, 0, 3);
+        }
+
+        public void bpena(uint id)
+        {
+            Program.ntrClient.sendEmptyPacket(11, id, 0, 2);
+        }
+
+        public void resume()
+        {
+            Program.ntrClient.sendEmptyPacket(11, 0, 0, 4);
+        }
+
+        public void connect(string host, int port)
         {
             Program.ntrClient.setServer(host, port);
-            return Program.ntrClient.connectToServer();
+            Program.ntrClient.connectToServer();
+        }
+
+        public void reload()
+        {
+            Program.ntrClient.sendReloadPacket();
+        }
+
+        public void listprocess()
+        {
+            Program.ntrClient.sendEmptyPacket(5);
+        }
+
+        public void listthread(int pid)
+        {
+            Program.ntrClient.sendEmptyPacket(7, (uint)pid);
+        }
+
+        public void attachprocess(int pid, uint patchAddr = 0)
+        {
+            Program.ntrClient.sendEmptyPacket(6, (uint)pid, patchAddr);
+        }
+
+        public void queryhandle(int pid)
+        {
+            Program.ntrClient.sendEmptyPacket(12, (uint)pid);
+        }
+
+        public void memlayout(int pid)
+        {
+            Program.ntrClient.sendEmptyPacket(8, (uint)pid);
         }
 
         public void disconnect()
@@ -26,103 +88,43 @@ namespace Ledybot
             Program.ntrClient.disconnect();
         }
 
+        public void sayhello()
+        {
+            Program.ntrClient.sendHelloPacket();
+        }
+
+        public void data(uint addr, uint size = 0x100, int pid = -1, string filename = null)
+        {
+            if (filename == null && size > 1024)
+            {
+                size = 1024;
+            }
+            Program.ntrClient.sendReadMemPacket(addr, size, (uint)pid, filename);
+        }
+
+        public uint data(uint addr, uint size = 0x100, int pid = -1)
+        {
+            return Program.ntrClient.sendReadMemPacket(addr, size, (uint)pid);
+        }
+
         public void write(uint addr, byte[] buf, int pid = -1)
         {
             Program.ntrClient.sendWriteMemPacket(addr, (uint)pid, buf);
         }
 
-        public void press(uint buttons)
+        public void writebyte(uint addr, byte buf, int pid = -1)
         {
-            byte[] data = new byte[12];
-            uint oldbuttons = buttons;
-            uint oldtouch = 0x2000000;
-            uint oldcpad = 0x800800;
-            data[0x00] = (byte)(oldbuttons & 0xFF);
-            data[0x01] = (byte)((oldbuttons >> 0x08) & 0xFF);
-            data[0x02] = (byte)((oldbuttons >> 0x10) & 0xFF);
-            data[0x03] = (byte)((oldbuttons >> 0x18) & 0xFF);
-
-            //Touch
-            data[0x04] = (byte)(oldtouch & 0xFF);
-            data[0x05] = (byte)((oldtouch >> 0x08) & 0xFF);
-            data[0x06] = (byte)((oldtouch >> 0x10) & 0xFF);
-            data[0x07] = (byte)((oldtouch >> 0x18) & 0xFF);
-
-            //CPad
-            data[0x08] = (byte)(oldcpad & 0xFF);
-            data[0x09] = (byte)((oldcpad >> 0x08) & 0xFF);
-            data[0x0A] = (byte)((oldcpad >> 0x10) & 0xFF);
-            data[0x0B] = (byte)((oldcpad >> 0x18) & 0xFF);
-
-            Program.scriptHelper.write(0x10DF20, data, 0x10);
-            Thread.Sleep(150);
-            oldbuttons = 0xFFF;
-            data[0x00] = (byte)(oldbuttons & 0xFF);
-            data[0x01] = (byte)((oldbuttons >> 0x08) & 0xFF);
-            data[0x02] = (byte)((oldbuttons >> 0x10) & 0xFF);
-            data[0x03] = (byte)((oldbuttons >> 0x18) & 0xFF);
-
-            this.write(0x10DF20, data, 0x10);
+            Program.ntrClient.sendWriteMemPacketByte(addr, (uint)pid, buf);
         }
 
-        public void touch(uint touch)
+        public void sendfile(String localPath, String remotePath)
         {
-            byte[] data = new byte[12];
-            uint oldbuttons = 0xFFF;
-            uint oldtouch = touch;
-            uint oldcpad = 0x800800;
-            data[0x00] = (byte)(oldbuttons & 0xFF);
-            data[0x01] = (byte)((oldbuttons >> 0x08) & 0xFF);
-            data[0x02] = (byte)((oldbuttons >> 0x10) & 0xFF);
-            data[0x03] = (byte)((oldbuttons >> 0x18) & 0xFF);
-
-            //Touch
-            data[0x04] = (byte)(oldtouch & 0xFF);
-            data[0x05] = (byte)((oldtouch >> 0x08) & 0xFF);
-            data[0x06] = (byte)((oldtouch >> 0x10) & 0xFF);
-            data[0x07] = (byte)((oldtouch >> 0x18) & 0xFF);
-
-            //CPad
-            data[0x08] = (byte)(oldcpad & 0xFF);
-            data[0x09] = (byte)((oldcpad >> 0x08) & 0xFF);
-            data[0x0A] = (byte)((oldcpad >> 0x10) & 0xFF);
-            data[0x0B] = (byte)((oldcpad >> 0x18) & 0xFF);
-
-            Program.scriptHelper.write(0x10DF20, data, 0x10);
-            Thread.Sleep(150);
-            oldtouch = 0x2000000;
-            data[0x04] = (byte)(oldtouch & 0xFF);
-            data[0x05] = (byte)((oldtouch >> 0x08) & 0xFF);
-            data[0x06] = (byte)((oldtouch >> 0x10) & 0xFF);
-            data[0x07] = (byte)((oldtouch >> 0x18) & 0xFF);
-
-            Program.scriptHelper.write(0x10DF20, data, 0x10);
-
+            FileStream fs = new FileStream(localPath, FileMode.Open);
+            byte[] buf = new byte[fs.Length];
+            fs.Read(buf, 0, buf.Length);
+            fs.Close();
+            Program.ntrClient.sendSaveFilePacket(remotePath, buf);
         }
-
-        public string readSafe(UInt32 addr, UInt32 byteCount, int pid)
-        {
-            lock (Program.ntrClient.retValLock)
-            {
-                Program.ntrClient.retDone = false;
-            }
-            bool waiting = true;
-            Program.ntrClient.sendReadMemPacket(addr, byteCount, (uint)pid, "C:/temp.txt");
-            string szReturn = "";
-            while (waiting)
-            {
-                Thread.Sleep(100);
-                lock (Program.ntrClient.retValLock)
-                {
-                    if (Program.ntrClient.retDone)
-                    {
-                        waiting = false;
-                        szReturn = Program.ntrClient.retVal;
-                    }
-                }
-            }
-            return szReturn;
-        }
-
     }
+
 }
