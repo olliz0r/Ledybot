@@ -16,6 +16,7 @@ namespace Ledybot
 
         private uint addr_PageSize = 0x32A6A1A4;
         private uint addr_PageEndStartRecord = 0x32A6A68C;
+        private uint addr_PageStartStartRecord = 0x32A6A690;
         private uint addr_PageCurrentView = 0x305ea384;
         private uint addr_PageStartingIndex = 0x32A6A190;
 
@@ -23,6 +24,7 @@ namespace Ledybot
         private int iPID = 0;
         private bool bBlacklist = false;
         private bool bReddit = false;
+        private bool fromBack = false;
         private int dexnumber = 0;
         private string szFC = "";
         private byte[] principal = new byte[4];
@@ -44,12 +46,13 @@ namespace Ledybot
 
         private Tuple<string, string, int, int, int, ArrayList> details;
 
-        public GTSBot7(int iP, string szPtF = "", bool bBlacklist = false, bool bReddit = false)
+        public GTSBot7(int iP, string szPtF = "", bool bBlacklist = false, bool bReddit = false, bool bSearchFromBack = true)
         {
             this.szPokemonToFind = szPtF;
             this.iPID = iP;
             this.bBlacklist = bBlacklist;
             this.bReddit = bReddit;
+            this.fromBack = bSearchFromBack;
         }
 
         public async Task<int> RunBot()
@@ -138,7 +141,7 @@ namespace Ledybot
                         attempts = 0;
                         listlength = (int)Program.helper.lastRead;
 
-                        if (listlength == 100 && !foundLastPage)
+                        if (listlength == 100 && !foundLastPage && fromBack)
                         {
                             waitTaskbool = Program.helper.waitNTRread(addr_PageStartingIndex);
                             if (await waitTaskbool)
@@ -182,11 +185,32 @@ namespace Ledybot
                             attempts = 0;
                             listlength = (int)Program.helper.lastRead;
                             dexnumber = 0;
-                            await Program.helper.waitNTRread(addr_PageEndStartRecord);
+                            if (fromBack)
+                            {
+                                await Program.helper.waitNTRread(addr_PageEndStartRecord);
+                            }else
+                            {
+                                await Program.helper.waitNTRread(addr_PageStartStartRecord);
+                            }
                             addr_PageEntry = Program.helper.lastRead;
                             await Program.helper.waitNTRread(0x32A6A7C4, (uint)(256 * 100));
                             byte[] blockBytes = Program.helper.lastArray;
-                            for (int i = listlength; i > 0; i--)
+                            int iStartIndex, iEndIndex, iDirection, iNextPrevBlockOffest;
+                            if (fromBack)
+                            {
+                                iStartIndex = listlength;
+                                iEndIndex = 0;
+                                iDirection = -1;
+                                iNextPrevBlockOffest = 0;
+                            }
+                            else
+                            {
+                                iStartIndex = 1;
+                                iEndIndex = listlength + 1;
+                                iDirection = 1;
+                                iNextPrevBlockOffest = 4;
+                            }
+                            for (int i = iStartIndex; i * iDirection < iEndIndex; i += iDirection)
                             {
                                 Array.Copy(blockBytes, addr_PageEntry - 0x32A6A7C4, block, 0, 256);
                                 dexnumber = BitConverter.ToInt16(block, 0xC);
@@ -200,7 +224,7 @@ namespace Ledybot
                                         string szFileToFind = details.Item2 + szNickname + ".pk7";
                                         if (!File.Exists(szFileToFind))
                                         {
-                                            addr_PageEntry = BitConverter.ToUInt32(block, 0);
+                                            addr_PageEntry = BitConverter.ToUInt32(block, iNextPrevBlockOffest);
                                             continue;
                                         }
                                     }
@@ -223,28 +247,8 @@ namespace Ledybot
                                         }
                                     }
                                 }
-                                addr_PageEntry = BitConverter.ToUInt32(block, 0);
+                                addr_PageEntry = BitConverter.ToUInt32(block, iNextPrevBlockOffest);
                             }
-                            //for (int i = listlength; i > 0; i--)
-                            //{
-                            //    await Program.helper.waitNTRread(addr_PageEntry + 0xC, 2);
-                            //    dexnumber = BitConverter.ToInt16(Program.helper.lastArray, 0);
-                            //    if (dexnumber == dexNum)
-                            //    {
-                            //        await Program.helper.waitNTRread(addr_PageEntry + 0xE, 1);
-                            //        int gender = Program.helper.lastArray[0];
-                            //        await Program.helper.waitNTRread(addr_PageEntry + 0xF, 1);
-                            //        int level = Program.helper.lastArray[0];
-                            //        if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
-                            //        {
-                            //            tradeIndex = i - 1;
-                            //            botState = (int)gtsbotstates.trade;
-                            //            break;
-                            //        }
-                            //    }
-                            //    await Program.helper.waitNTRread(addr_PageEntry);
-                            //    addr_PageEntry = Program.helper.lastRead;
-                            //}
                             if (tradeIndex == -1)
                             {
                                 if (startIndex == 0)
@@ -349,26 +353,6 @@ namespace Ledybot
                                 addr_PageEntry = BitConverter.ToUInt32(block, 0);
 
                             }
-                            //for (int i = listlength; i > 0; i--)
-                            //{
-                            //    await Program.helper.waitNTRread(addr_PageEntry + 0xC, 2);
-                            //    dexnumber = BitConverter.ToInt16(Program.helper.lastArray, 0);
-                            //    if (dexnumber == dexNum)
-                            //    {
-                            //        await Program.helper.waitNTRread(addr_PageEntry + 0xE, 1);
-                            //        int gender = Program.helper.lastArray[0];
-                            //        await Program.helper.waitNTRread(addr_PageEntry + 0xF, 1);
-                            //        int level = Program.helper.lastArray[0];
-                            //        if ((gender == 0 || gender == genderIndex) && (level == 0 || level == (levelIndex)))
-                            //        {
-                            //            tradeIndex = i - 1;
-                            //            botState = (int)gtsbotstates.trade;
-                            //            break;
-                            //        }
-                            //    }
-                            //    await Program.helper.waitNTRread(addr_PageEntry);
-                            //    addr_PageEntry = Program.helper.lastRead;
-                            //}
                             if (tradeIndex == -1)
                             {
                                 if (listlength < 100 && startIndex >= 200)

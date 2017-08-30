@@ -79,6 +79,9 @@
             this.label11 = new System.Windows.Forms.Label();
             this.btn_EggAvailable = new System.Windows.Forms.Button();
             this.tb_Settings = new System.Windows.Forms.TabPage();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.rb_front = new System.Windows.Forms.RadioButton();
+            this.rb_back = new System.Windows.Forms.RadioButton();
             this.nud_DefaultCount = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.tb_Subreddit = new System.Windows.Forms.TextBox();
@@ -98,6 +101,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nud_BoxInjection)).BeginInit();
             this.tp_Breeding.SuspendLayout();
             this.tb_Settings.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_DefaultCount)).BeginInit();
             this.SuspendLayout();
             // 
@@ -638,6 +642,7 @@
             // 
             // tb_Settings
             // 
+            this.tb_Settings.Controls.Add(this.groupBox1);
             this.tb_Settings.Controls.Add(this.nud_DefaultCount);
             this.tb_Settings.Controls.Add(this.label5);
             this.tb_Settings.Controls.Add(this.tb_Subreddit);
@@ -649,6 +654,39 @@
             this.tb_Settings.TabIndex = 3;
             this.tb_Settings.Text = "Settings";
             this.tb_Settings.UseVisualStyleBackColor = true;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.rb_front);
+            this.groupBox1.Controls.Add(this.rb_back);
+            this.groupBox1.Location = new System.Drawing.Point(10, 51);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(351, 70);
+            this.groupBox1.TabIndex = 4;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Trade direction";
+            // 
+            // rb_front
+            // 
+            this.rb_front.AutoSize = true;
+            this.rb_front.Location = new System.Drawing.Point(7, 44);
+            this.rb_front.Name = "rb_front";
+            this.rb_front.Size = new System.Drawing.Size(87, 17);
+            this.rb_front.TabIndex = 1;
+            this.rb_front.Text = "from the front";
+            this.rb_front.UseVisualStyleBackColor = true;
+            // 
+            // rb_back
+            // 
+            this.rb_back.AutoSize = true;
+            this.rb_back.Checked = true;
+            this.rb_back.Location = new System.Drawing.Point(7, 20);
+            this.rb_back.Name = "rb_back";
+            this.rb_back.Size = new System.Drawing.Size(90, 17);
+            this.rb_back.TabIndex = 0;
+            this.rb_back.TabStop = true;
+            this.rb_back.Text = "from the back";
+            this.rb_back.UseVisualStyleBackColor = true;
             // 
             // nud_DefaultCount
             // 
@@ -756,6 +794,8 @@
             this.tp_Breeding.PerformLayout();
             this.tb_Settings.ResumeLayout(false);
             this.tb_Settings.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_DefaultCount)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -823,6 +863,9 @@
         private System.Windows.Forms.TextBox tb_WCInjection;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.OpenFileDialog ofd_WCInjection;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.RadioButton rb_front;
+        private System.Windows.Forms.RadioButton rb_back;
     }
 }
 
