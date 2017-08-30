@@ -14,11 +14,15 @@ namespace Ledybot
 
         public enum gtsbotstates { botstart, startsearch, openpokemonwanted, openwhatpokemon, typepokemon, presssearch, startfind, findfromend, findfromstart, trade, research, botexit, updatecomments, quicksearch };
 
-        private uint addr_PageSize = 0x32A6A1A4;
-        private uint addr_PageEndStartRecord = 0x32A6A68C;
-        private uint addr_PageStartStartRecord = 0x32A6A690;
-        private uint addr_PageCurrentView = 0x305ea384;
-        private uint addr_PageStartingIndex = 0x32A6A190;
+        private uint addr_PageSize = 0x32A6A1A4; //How many entries are on the current GTS page
+        private uint addr_PageEndStartRecord = 0x32A6A68C; //This address holds the address to the last block in the entry-block-list
+        private uint addr_PageStartStartRecord = 0x32A6A690; //This address holds the address to the first block in the entry block-list
+        private uint addr_PageCurrentView = 0x305ea384; //Current selected entry in the list
+        private uint addr_PageStartingIndex = 0x32A6A190; //To determine on which page we are, 0 = first page, 100 = second page, etc
+        private uint addr_ListOfAllPageEntries = 0x32A6A7C4; //Startingaddress of all up to 100 trade entries of the current page
+
+        private uint addr_box1slot1 = 0x330d9838; //To inject the pokemon into box1slot1
+        private uint addr_SearchPokemonNameField = 0x301118D4; //Holds the currently typed in name in the "search pokemon" window
 
         private string szPokemonToFind = "";
         private int iPID = 0;
@@ -71,17 +75,20 @@ namespace Ledybot
                         botState = (int)gtsbotstates.research;
                         break;
                     case (int)gtsbotstates.startsearch:
+                        //Seek/Deposite pokemon screen
                         Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
                         await Task.Delay(commandtime + delaytime);
                         botState = (int)gtsbotstates.openpokemonwanted;
                         break;
                     case (int)gtsbotstates.openpokemonwanted:
+                        //Pokemon wanted screen
                         await Task.Delay(500);
                         Program.helper.quicktouch(128, 50, commandtime);
                         await Task.Delay(commandtime + delaytime);
                         botState = (int)gtsbotstates.openwhatpokemon;
                         break;
                     case (int)gtsbotstates.openwhatpokemon:
+                        //A - Z screen
                         await Task.Delay(500);
                         Program.helper.quickbuton(Program.PKTable.DpadUP, commandtime);
                         await Task.Delay(commandtime + delaytime);
@@ -90,6 +97,7 @@ namespace Ledybot
                         botState = (int)gtsbotstates.typepokemon;
                         break;
                     case (int)gtsbotstates.typepokemon:
+                        //What kind of pokemon do you want screen
                         await Task.Delay(3000);
                         byte[] name = new byte[this.szPokemonToFind.Length * 2];
                         for (int i = 0; i < szPokemonToFind.Length; i++)
@@ -98,7 +106,7 @@ namespace Ledybot
                             name[i * 2 + 1] = 0x00;
                         }
                         //I like this solution so much
-                        waitTaskbool = Program.helper.waitNTRwrite(0x301118D4, name, iPID);
+                        waitTaskbool = Program.helper.waitNTRwrite(addr_SearchPokemonNameField, name, iPID);
                         if (await waitTaskbool)
                         {
                             attempts = 0;
@@ -121,6 +129,7 @@ namespace Ledybot
                         }
                         break;
                     case (int)gtsbotstates.presssearch:
+                        //Pokemon wanted screen again, this time with filled out information
                         await Task.Delay(2000);
                         waitTaskbool = Program.helper.waittouch(160, 185);
                         if (await waitTaskbool)
@@ -136,6 +145,7 @@ namespace Ledybot
                         }
                         break;
                     case (int)gtsbotstates.findfromstart:
+                        //GTS entry list screen, cursor at position 1
                         await Program.helper.waitNTRread(addr_PageSize);
 
                         attempts = 0;
@@ -193,7 +203,7 @@ namespace Ledybot
                                 await Program.helper.waitNTRread(addr_PageStartStartRecord);
                             }
                             addr_PageEntry = Program.helper.lastRead;
-                            await Program.helper.waitNTRread(0x32A6A7C4, (uint)(256 * 100));
+                            await Program.helper.waitNTRread(addr_ListOfAllPageEntries, (uint)(256 * 100));
                             byte[] blockBytes = Program.helper.lastArray;
                             int iStartIndex, iEndIndex, iDirection, iNextPrevBlockOffest;
                             if (fromBack)
@@ -212,7 +222,7 @@ namespace Ledybot
                             }
                             for (int i = iStartIndex; i * iDirection < iEndIndex; i += iDirection)
                             {
-                                Array.Copy(blockBytes, addr_PageEntry - 0x32A6A7C4, block, 0, 256);
+                                Array.Copy(blockBytes, addr_PageEntry - addr_ListOfAllPageEntries, block, 0, 256);
                                 dexnumber = BitConverter.ToInt16(block, 0xC);
                                 if (Program.f1.giveawayDetails.ContainsKey(dexnumber))
                                 {
@@ -279,6 +289,7 @@ namespace Ledybot
 
                         break;
                     case (int)gtsbotstates.findfromend:
+                        //also GTS entry list screen, but cursor is at the end of the list in this case
                         await Program.helper.waitNTRread(addr_PageSize);
 
                         attempts = 0;
@@ -312,11 +323,11 @@ namespace Ledybot
                             dexnumber = 0;
                             await Program.helper.waitNTRread(addr_PageEndStartRecord);
                             addr_PageEntry = Program.helper.lastRead;
-                            await Program.helper.waitNTRread(0x32A6A7C4, (uint)(256 * 100));
+                            await Program.helper.waitNTRread(addr_ListOfAllPageEntries, (uint)(256 * 100));
                             byte[] blockBytes = Program.helper.lastArray;
                             for (int i = listlength; i > 0; i--)
                             {
-                                Array.Copy(blockBytes, addr_PageEntry - 0x32A6A7C4, block, 0, 256);
+                                Array.Copy(blockBytes, addr_PageEntry - addr_ListOfAllPageEntries, block, 0, 256);
                                 dexnumber = BitConverter.ToInt16(block, 0xC);
                                 if (Program.f1.giveawayDetails.ContainsKey(dexnumber))
                                 {
@@ -413,6 +424,8 @@ namespace Ledybot
 
                         break;
                     case (int)gtsbotstates.trade:
+                        //still in GTS list screen
+                        //write index we want to trade
                         waitTaskbool = Program.helper.waitNTRwrite(addr_PageCurrentView, BitConverter.GetBytes(tradeIndex), iPID);
                         if (await waitTaskbool)
                         {
@@ -445,7 +458,8 @@ namespace Ledybot
                             }
                             Program.f1.AppendListViewItem(szTrainerName, szNickname, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC);
                             //Inject the Pokemon to box1slot1
-                            Program.scriptHelper.write(0x330d9838, cloneshort, iPID);
+                            Program.scriptHelper.write(addr_box1slot1, cloneshort, iPID);
+                            //spam a to trade pokemon
                             Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
                             await Task.Delay(commandtime + delaytime + 2500);
                             Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
@@ -477,7 +491,7 @@ namespace Ledybot
                                     break;
                                 }
                             }
-
+                            //during the trade spam a/b to get back to the start screen in case of "this pokemon has been traded"
                             await Task.Delay(10250);
                             Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
                             await Task.Delay(commandtime + delaytime);
@@ -523,6 +537,7 @@ namespace Ledybot
                         }
                         break;
                     case (int)gtsbotstates.quicksearch:
+                        //end of list reach, press b and "search" again to reach GTS list again
                         Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
                         await Task.Delay(commandtime + delaytime + 500);
                         await Program.helper.waittouch(160, 185);
@@ -530,6 +545,7 @@ namespace Ledybot
                         botState = (int)gtsbotstates.findfromstart;
                         break;
                     case (int)gtsbotstates.research:
+                        //press a and "search" again to reach GTS list again
                         Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
                         await Task.Delay(commandtime + delaytime + 1000);
                         await Program.helper.waittouch(160, 185);
