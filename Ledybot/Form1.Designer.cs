@@ -94,6 +94,8 @@
             this.disconnectTimer = new System.Windows.Forms.Timer(this.components);
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.ofd_WCInjection = new System.Windows.Forms.OpenFileDialog();
+            this.label8 = new System.Windows.Forms.Label();
+            this.tb_consoleName = new System.Windows.Forms.TextBox();
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
             this.tp_Injection.SuspendLayout();
@@ -645,6 +647,8 @@
             // 
             // tb_Settings
             // 
+            this.tb_Settings.Controls.Add(this.tb_consoleName);
+            this.tb_Settings.Controls.Add(this.label8);
             this.tb_Settings.Controls.Add(this.tb_waittime);
             this.tb_Settings.Controls.Add(this.label6);
             this.tb_Settings.Controls.Add(this.groupBox1);
@@ -786,6 +790,23 @@
             // 
             this.ofd_WCInjection.FileName = "WC.wc7";
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(8, 157);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(79, 13);
+            this.label8.TabIndex = 7;
+            this.label8.Text = "Console Name:";
+            // 
+            // tb_consoleName
+            // 
+            this.tb_consoleName.Location = new System.Drawing.Point(94, 157);
+            this.tb_consoleName.Name = "tb_consoleName";
+            this.tb_consoleName.Size = new System.Drawing.Size(267, 20);
+            this.tb_consoleName.TabIndex = 8;
+            this.tb_consoleName.Text = "Ledybot";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -890,6 +911,8 @@
         private System.Windows.Forms.RadioButton rb_back;
         private System.Windows.Forms.TextBox tb_waittime;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox tb_consoleName;
+        private System.Windows.Forms.Label label8;
     }
 }
 

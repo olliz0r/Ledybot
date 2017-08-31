@@ -29,5 +29,8 @@
     <Setting Name="Waittime" Type="System.String" Scope="User">
       <Value Profile="(Default)">1000</Value>
     </Setting>
+    <Setting Name="ConsoleName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Ledybot</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

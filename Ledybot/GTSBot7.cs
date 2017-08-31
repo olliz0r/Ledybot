@@ -6,6 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net.Sockets;
+using System.Threading;
+using System.Net;
 
 namespace Ledybot
 {
@@ -13,6 +16,12 @@ namespace Ledybot
     {
 
         //private System.IO.StreamWriter file = new StreamWriter(@"C:\Temp\ledylog.txt");
+
+        private TcpClient client = new TcpClient();
+        private string consoleName = "Ledybot";
+        private IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3000);
+
+
 
         public enum gtsbotstates { botstart, startsearch, openpokemonwanted, openwhatpokemon, typepokemon, presssearch, startfind, findfromend, findfromstart, trade, research, botexit, updatecomments, quicksearch, panic };
 
@@ -75,7 +84,33 @@ namespace Ledybot
             return expectedScreen == screenID;
         }
 
-        public GTSBot7(int iP, string szPtF = "", bool bBlacklist = false, bool bReddit = false, bool bSearchFromBack = true, string waittime = "1000")
+        private Boolean canThisTrade(byte[] principal, string consoleName, string trainerName, string country, string region, string pokemon)
+        {
+
+            NetworkStream clientStream = client.GetStream();
+            byte[] buffer = new byte[4096];
+            byte[] messageID = { 0x00 };
+            string szmessage = consoleName + '\t' + trainerName + '\t' + country + '\t' + region + '\t' + pokemon + '\t';
+            byte[] toSend = Encoding.UTF8.GetBytes(szmessage);
+
+            buffer = messageID.Concat(principal).Concat(toSend).ToArray();
+            clientStream.Write(buffer, 0, buffer.Length);
+            clientStream.Flush();
+            byte[] message = new byte[4096];
+            try
+            {
+                //blocks until a client sends a message
+                int bytesRead = clientStream.Read(message, 0, 4096);
+                return message[0] == 0x01;
+            }
+            catch
+            {
+                return false;
+                //a socket error has occured
+            }
+        }
+
+        public GTSBot7(int iP, string szPtF = "", bool bBlacklist = false, bool bReddit = false, bool bSearchFromBack = true, string waittime = "1000", string consoleName = "Ledybot")
         {
             this.szPokemonToFind = szPtF;
             this.iPID = iP;
@@ -83,13 +118,20 @@ namespace Ledybot
             this.bReddit = bReddit;
             this.fromBack = bSearchFromBack;
             this.o3dswaittime = Int32.Parse(waittime);
+            client.Connect(serverEndPoint);
+            this.consoleName = consoleName;
         }
 
         public async Task<int> RunBot()
         {
             bool correctScreen = true;
+            int panicAttempts = 0;
             while (!botstop)
             {
+                if(botState != (int)gtsbotstates.panic)
+                {
+                    panicAttempts = 0;
+                }
                 switch (botState)
                 {
                     case (int)gtsbotstates.botstart:
@@ -302,7 +344,27 @@ namespace Ledybot
                                     fc[4] = checksum;
                                     long iFC = BitConverter.ToInt64(fc, 0);
                                     szFC = iFC.ToString().PadLeft(12, '0');
-                                    if ((!bReddit || Program.f1.commented.Contains(szFC)) && !details.Item6.Contains(BitConverter.ToInt32(principal, 0)) && !Program.f1.banlist.Contains(szFC))
+
+                                    int gender = block[0xE];
+                                    int level = block[0xF];
+                                    if ((gender == 0 || gender == details.Item3) && (level == 0 || level == details.Item4))
+                                    {
+                                        string szTrainerName = Encoding.Unicode.GetString(block, 0x4C, 20).Trim('\0');
+                                        int countryIndex = BitConverter.ToInt16(block, 0x68);
+                                        string country = "-";
+                                        Program.f1.countries.TryGetValue(countryIndex, out country);
+                                        Program.f1.getSubRegions(countryIndex);
+                                        int subRegionIndex = BitConverter.ToInt16(block, 0x6A);
+                                        string subregion = "-";
+                                        Program.f1.regions.TryGetValue(subRegionIndex, out subregion);
+                                        if (canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1]))
+                                        {
+                                            tradeIndex = i - 1;
+                                            botState = (int)gtsbotstates.trade;
+                                            break;
+                                        }
+                                    }
+                                    /*if ((!bReddit || Program.f1.commented.Contains(szFC)) && !details.Item6.Contains(BitConverter.ToInt32(principal, 0)) && !Program.f1.banlist.Contains(szFC))
                                     {
                                         int gender = block[0xE];
                                         int level = block[0xF];
@@ -312,7 +374,7 @@ namespace Ledybot
                                             botState = (int)gtsbotstates.trade;
                                             break;
                                         }
-                                    }
+                                    }*/
                                 }
                                 addr_PageEntry = BitConverter.ToUInt32(block, iNextPrevBlockOffest);
                             }
@@ -412,6 +474,26 @@ namespace Ledybot
                                     fc[4] = checksum;
                                     long iFC = BitConverter.ToInt64(fc, 0);
                                     szFC = iFC.ToString().PadLeft(12, '0');
+                                    int gender = block[0xE];
+                                    int level = block[0xF];
+                                    if ((gender == 0 || gender == details.Item3) && (level == 0 || level == details.Item4))
+                                    {
+                                        string szTrainerName = Encoding.Unicode.GetString(block, 0x4C, 20).Trim('\0');
+                                        int countryIndex = BitConverter.ToInt16(block, 0x68);
+                                        string country = "-";
+                                        Program.f1.countries.TryGetValue(countryIndex, out country);
+                                        Program.f1.getSubRegions(countryIndex);
+                                        int subRegionIndex = BitConverter.ToInt16(block, 0x6A);
+                                        string subregion = "-";
+                                        Program.f1.regions.TryGetValue(subRegionIndex, out subregion);
+                                        if (canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1]))
+                                        {
+                                            tradeIndex = i - 1;
+                                            botState = (int)gtsbotstates.trade;
+                                            break;
+                                        }
+                                    }
+                                    /*
                                     if ((!bReddit || Program.f1.commented.Contains(szFC)) && !details.Item6.Contains(BitConverter.ToInt32(principal, 0)) && !Program.f1.banlist.Contains(szFC))
                                     {
                                         int gender = block[0xE];
@@ -422,7 +504,7 @@ namespace Ledybot
                                             botState = (int)gtsbotstates.trade;
                                             break;
                                         }
-                                    }
+                                    }*/
                                 }
                                 addr_PageEntry = BitConverter.ToUInt32(block, 0);
 
@@ -700,6 +782,12 @@ namespace Ledybot
                                 }
                                 else
                                 {
+                                    if(panicAttempts == 0)
+                                    {
+                                        panicAttempts++;
+                                        botState = (int)gtsbotstates.panic;
+                                        break;
+                                    }
                                     botState = (int)gtsbotstates.botexit;
                                     break;
                                 }

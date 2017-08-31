@@ -130,5 +130,17 @@ namespace Ledybot.Properties {
                 this["Waittime"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Ledybot")]
+        public string ConsoleName {
+            get {
+                return ((string)(this["ConsoleName"]));
+            }
+            set {
+                this["ConsoleName"] = value;
+            }
+        }
     }
 }
