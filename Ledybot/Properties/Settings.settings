@@ -12,10 +12,10 @@
       <Value Profile="(Default)">Ledyba</Value>
     </Setting>
     <Setting Name="Thread" Type="System.String" Scope="User">
-      <Value Profile="(Default)">5p3kgb</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Reddit" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="Subreddit" Type="System.String" Scope="User">
       <Value Profile="(Default)">PokemonPlaza</Value>
@@ -25,6 +25,9 @@
     </Setting>
     <Setting Name="RBBack" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="Waittime" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1000</Value>
     </Setting>
   </Settings>
 </SettingsFile>

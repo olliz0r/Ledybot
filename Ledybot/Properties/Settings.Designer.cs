@@ -61,7 +61,7 @@ namespace Ledybot.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5p3kgb")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string Thread {
             get {
                 return ((string)(this["Thread"]));
@@ -73,7 +73,7 @@ namespace Ledybot.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool Reddit {
             get {
                 return ((bool)(this["Reddit"]));
@@ -116,6 +116,18 @@ namespace Ledybot.Properties {
             }
             set {
                 this["RBBack"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        public string Waittime {
+            get {
+                return ((string)(this["Waittime"]));
+            }
+            set {
+                this["Waittime"] = value;
             }
         }
     }

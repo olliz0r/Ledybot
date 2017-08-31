@@ -12,6 +12,8 @@ namespace Ledybot
     class GTSBot7
     {
 
+        //private System.IO.StreamWriter file = new StreamWriter(@"C:\Temp\ledylog.txt");
+
         public enum gtsbotstates { botstart, startsearch, openpokemonwanted, openwhatpokemon, typepokemon, presssearch, startfind, findfromend, findfromstart, trade, research, botexit, updatecomments, quicksearch, panic };
 
         private uint addr_PageSize = 0x32A6A1A4; //How many entries are on the current GTS page
@@ -51,6 +53,7 @@ namespace Ledybot
         Task<bool> waitTaskbool;
         private int commandtime = 250;
         private int delaytime = 150;
+        private int o3dswaittime = 1000;
 
         private int listlength = 0;
         private int startIndex = 0;
@@ -63,19 +66,23 @@ namespace Ledybot
 
         private async Task<bool> isCorrectWindow(int expectedScreen)
         {
+            await Task.Delay(o3dswaittime);
             await Program.helper.waitNTRread(addr_currentScreen);
             int screenID = (int)Program.helper.lastRead;
 
+            //file.WriteLine("Checkscreen: " + expectedScreen + " - " + screenID + " botstate:" + botState);
+            //file.Flush();
             return expectedScreen == screenID;
         }
 
-        public GTSBot7(int iP, string szPtF = "", bool bBlacklist = false, bool bReddit = false, bool bSearchFromBack = true)
+        public GTSBot7(int iP, string szPtF = "", bool bBlacklist = false, bool bReddit = false, bool bSearchFromBack = true, string waittime = "1000")
         {
             this.szPokemonToFind = szPtF;
             this.iPID = iP;
             this.bBlacklist = bBlacklist;
             this.bReddit = bReddit;
             this.fromBack = bSearchFromBack;
+            this.o3dswaittime = Int32.Parse(waittime);
         }
 
         public async Task<int> RunBot()
@@ -131,6 +138,12 @@ namespace Ledybot
                     case (int)gtsbotstates.typepokemon:
                         //What kind of pokemon do you want screen
                         await Task.Delay(3000);
+                        correctScreen = await isCorrectWindow(val_WhatPkmnScreen);
+                        if (!correctScreen)
+                        {
+                            botState = (int)gtsbotstates.panic;
+                            break;
+                        }
                         byte[] name = new byte[this.szPokemonToFind.Length * 2];
                         for (int i = 0; i < szPokemonToFind.Length; i++)
                         {
@@ -511,7 +524,7 @@ namespace Ledybot
                             Program.scriptHelper.write(addr_box1slot1, cloneshort, iPID);
                             //spam a to trade pokemon
                             Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
-                            await Task.Delay(commandtime + delaytime + 2500);
+                            await Task.Delay(commandtime + delaytime + 2500 +o3dswaittime);
                             Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
                             await Task.Delay(commandtime + delaytime);
                             Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
@@ -610,7 +623,7 @@ namespace Ledybot
                         await Program.helper.waitNTRread(addr_currentScreen);
                         int screenID = (int)Program.helper.lastRead;
 
-                        if(screenID == val_PlazaScreen)
+                        if (screenID == val_PlazaScreen)
                         {
                             await Program.helper.waittouch(200, 120);
                             await Task.Delay(1000);
@@ -621,13 +634,14 @@ namespace Ledybot
                             {
                                 botState = (int)gtsbotstates.startsearch;
                                 break;
-                            }else
+                            }
+                            else
                             {
                                 botState = (int)gtsbotstates.botexit;
                                 break;
                             }
                         }
-                        else if(screenID == val_Quit_SeekScreen)
+                        else if (screenID == val_Quit_SeekScreen)
                         {
                             //press b, press where seek button would be, press b again -> guaranteed seek screen
                             Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
@@ -639,10 +653,24 @@ namespace Ledybot
                             botState = (int)gtsbotstates.startsearch;
                             break;
                         }
+                        else if (screenID == val_WhatPkmnScreen)
+                        {
+                            //can only exit this one by pressing the ok button
+                            waitTaskbool = Program.helper.waitbutton(Program.PKTable.keySTART);
+                            if (await waitTaskbool)
+                            {
+                                waitTaskbool = Program.helper.waitbutton(Program.PKTable.keyA);
+                                if (await waitTaskbool)
+                                {
+                                    botState = (int)gtsbotstates.panic;
+                                    break;
+                                }
+                            }
+                        }
                         else // if(screenID == val_SearchScreen || screenID == val_BoxScreen || screenID == val_GTSListScreen)
                         {
                             //spam b a lot and hope we get to val_quit_seekscreen like this
-                            for (int i = 0; i < 10; i++)
+                            for (int i = 0; i < 5; i++)
                             {
                                 Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
                                 await Task.Delay(commandtime + delaytime + 500);
@@ -653,10 +681,28 @@ namespace Ledybot
                             {
                                 botState = (int)gtsbotstates.panic;
                                 break;
-                            }else
+                            }
+                            else
                             {
-                                botState = (int)gtsbotstates.botexit;
-                                break;
+                                Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
+                                await Task.Delay(commandtime + delaytime + 500);
+                                for (int i = 0; i < 5; i++)
+                                {
+                                    Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
+                                    await Task.Delay(commandtime + delaytime + 500);
+                                    await Task.Delay(1000);
+                                }
+                                correctScreen = await isCorrectWindow(val_Quit_SeekScreen);
+                                if (correctScreen)
+                                {
+                                    botState = (int)gtsbotstates.panic;
+                                    break;
+                                }
+                                else
+                                {
+                                    botState = (int)gtsbotstates.botexit;
+                                    break;
+                                }
                             }
                         }
                         break;

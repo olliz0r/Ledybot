@@ -186,7 +186,7 @@ namespace Ledybot
             botWorking = true;
             botStop = false;
             botNumber = 3;
-            GTSBot7 = new GTSBot7(pid, tb_PokemonToFind.Text, cb_Blacklist.Checked, cb_Reddit.Checked, rb_back.Checked);
+            GTSBot7 = new GTSBot7(pid, tb_PokemonToFind.Text, cb_Blacklist.Checked, cb_Reddit.Checked, rb_back.Checked, tb_waittime.Text);
             Task<int> Bot = GTSBot7.RunBot();
             int result = await Bot;
             if (botStop)
@@ -305,6 +305,7 @@ namespace Ledybot
             Properties.Settings.Default.Subreddit = tb_Subreddit.Text;
             Properties.Settings.Default.RBFront = rb_front.Checked;
             Properties.Settings.Default.RBBack = rb_back.Checked;
+            Properties.Settings.Default.Waittime = tb_waittime.Text;
             Properties.Settings.Default.Save();
         }
 
@@ -318,6 +319,7 @@ namespace Ledybot
             tb_Subreddit.Text = Properties.Settings.Default.Subreddit;
             rb_front.Checked = Properties.Settings.Default.RBFront;
             rb_back.Checked = Properties.Settings.Default.RBBack;
+            tb_waittime.Text = Properties.Settings.Default.Waittime;
         }
 
         private void btn_BrowseInject_Click(object sender, EventArgs e)

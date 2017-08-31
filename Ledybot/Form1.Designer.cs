@@ -79,6 +79,8 @@
             this.label11 = new System.Windows.Forms.Label();
             this.btn_EggAvailable = new System.Windows.Forms.Button();
             this.tb_Settings = new System.Windows.Forms.TabPage();
+            this.tb_waittime = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.rb_front = new System.Windows.Forms.RadioButton();
             this.rb_back = new System.Windows.Forms.RadioButton();
@@ -172,6 +174,7 @@
             this.subRegion,
             this.pkmnSent,
             this.FC});
+            this.lv_log.ForeColor = System.Drawing.SystemColors.WindowText;
             this.lv_log.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lv_log.Location = new System.Drawing.Point(6, 74);
             this.lv_log.Name = "lv_log";
@@ -642,6 +645,8 @@
             // 
             // tb_Settings
             // 
+            this.tb_Settings.Controls.Add(this.tb_waittime);
+            this.tb_Settings.Controls.Add(this.label6);
             this.tb_Settings.Controls.Add(this.groupBox1);
             this.tb_Settings.Controls.Add(this.nud_DefaultCount);
             this.tb_Settings.Controls.Add(this.label5);
@@ -654,6 +659,23 @@
             this.tb_Settings.TabIndex = 3;
             this.tb_Settings.Text = "Settings";
             this.tb_Settings.UseVisualStyleBackColor = true;
+            // 
+            // tb_waittime
+            // 
+            this.tb_waittime.Location = new System.Drawing.Point(132, 128);
+            this.tb_waittime.Name = "tb_waittime";
+            this.tb_waittime.Size = new System.Drawing.Size(229, 20);
+            this.tb_waittime.TabIndex = 6;
+            this.tb_waittime.Text = "1000";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(8, 128);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(118, 13);
+            this.label6.TabIndex = 5;
+            this.label6.Text = "extra waittime (for o3ds)";
             // 
             // groupBox1
             // 
@@ -866,6 +888,8 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.RadioButton rb_front;
         private System.Windows.Forms.RadioButton rb_back;
+        private System.Windows.Forms.TextBox tb_waittime;
+        private System.Windows.Forms.Label label6;
     }
 }
 
