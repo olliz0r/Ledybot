@@ -186,7 +186,16 @@ namespace Ledybot
             botWorking = true;
             botStop = false;
             botNumber = 3;
-            GTSBot7 = new GTSBot7(pid, tb_PokemonToFind.Text, cb_Blacklist.Checked, cb_Reddit.Checked, rb_back.Checked, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text);
+
+            int tradeDirection = 0;
+            if (rb_frontfpo.Checked)
+            {
+                tradeDirection = 1;
+            }else if (rb_front.Checked)
+            {
+                tradeDirection = 2;
+            }
+            GTSBot7 = new GTSBot7(pid, tb_PokemonToFind.Text, cb_Blacklist.Checked, cb_Reddit.Checked, tradeDirection, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text);
             Task<int> Bot = GTSBot7.RunBot();
             int result = await Bot;
             if (botStop)
@@ -304,6 +313,7 @@ namespace Ledybot
             Properties.Settings.Default.Thread = tb_thread.Text;
             Properties.Settings.Default.Subreddit = tb_Subreddit.Text;
             Properties.Settings.Default.RBFront = rb_front.Checked;
+            Properties.Settings.Default.RBBackFPO = rb_frontfpo.Checked;
             Properties.Settings.Default.RBBack = rb_back.Checked;
             Properties.Settings.Default.Waittime = tb_waittime.Text;
             Properties.Settings.Default.ConsoleName = tb_consoleName.Text;
@@ -322,6 +332,7 @@ namespace Ledybot
             tb_thread.Text = Properties.Settings.Default.Thread;
             tb_Subreddit.Text = Properties.Settings.Default.Subreddit;
             rb_front.Checked = Properties.Settings.Default.RBFront;
+            rb_frontfpo.Checked = Properties.Settings.Default.RBBackFPO;
             rb_back.Checked = Properties.Settings.Default.RBBack;
             tb_waittime.Text = Properties.Settings.Default.Waittime;
             tb_consoleName.Text = Properties.Settings.Default.ConsoleName;

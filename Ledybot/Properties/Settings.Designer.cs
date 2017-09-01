@@ -178,5 +178,17 @@ namespace Ledybot.Properties {
                 this["LedySyncPort"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RBBackFPO {
+            get {
+                return ((bool)(this["RBBackFPO"]));
+            }
+            set {
+                this["RBBackFPO"] = value;
+            }
+        }
     }
 }

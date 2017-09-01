@@ -24,6 +24,10 @@ namespace Ledybot
         private IPEndPoint serverEndPoint = null;
         private bool useLedySync = false;
 
+        private const int SEARCHDIRECTION_FROMBACK = 0;
+        private const int SEARCHDIRECTION_FROMBACKFIRSTPAGEONLY = 1;
+        private const int SEARCHDIRECTION_FROMFRONT = 2;
+
         private uint addr_PageSize = 0x32A6A1A4; //How many entries are on the current GTS page
         private uint addr_PageEndStartRecord = 0x32A6A68C; //This address holds the address to the last block in the entry-block-list
         private uint addr_PageStartStartRecord = 0x32A6A690; //This address holds the address to the first block in the entry block-list
@@ -53,7 +57,7 @@ namespace Ledybot
         private int iPID = 0;
         private bool bBlacklist = false;
         private bool bReddit = false;
-        private bool fromBack = false;
+        private int searchDirection = 0;
         private int dexnumber = 0;
         private string szFC = "";
         private byte[] principal = new byte[4];
@@ -116,13 +120,13 @@ namespace Ledybot
             }
         }
 
-        public GTSBot7(int iP, string szPtF, bool bBlacklist, bool bReddit, bool bSearchFromBack, string waittime, string consoleName, bool useLedySync, string ledySyncIp, string ledySyncPort)
+        public GTSBot7(int iP, string szPtF, bool bBlacklist, bool bReddit, int iSearchDirection, string waittime, string consoleName, bool useLedySync, string ledySyncIp, string ledySyncPort)
         {
             this.szPokemonToFind = szPtF;
             this.iPID = iP;
             this.bBlacklist = bBlacklist;
             this.bReddit = bReddit;
-            this.fromBack = bSearchFromBack;
+            this.searchDirection = iSearchDirection;
             this.o3dswaittime = Int32.Parse(waittime);
             if (useLedySync)
             {
@@ -219,7 +223,7 @@ namespace Ledybot
                         attempts = 0;
                         listlength = (int)Program.helper.lastRead;
 
-                        if (listlength == 100 && !foundLastPage && fromBack)
+                        if (listlength == 100 && !foundLastPage && searchDirection == SEARCHDIRECTION_FROMBACK)
                         {
                             waitTaskbool = Program.helper.waitNTRread(addr_PageStartingIndex);
                             if (await waitTaskbool)
@@ -263,7 +267,7 @@ namespace Ledybot
                             attempts = 0;
                             listlength = (int)Program.helper.lastRead;
                             dexnumber = 0;
-                            if (fromBack)
+                            if (searchDirection == SEARCHDIRECTION_FROMBACK || searchDirection == SEARCHDIRECTION_FROMBACKFIRSTPAGEONLY)
                             {
                                 await Program.helper.waitNTRread(addr_PageEndStartRecord);
                             }else
@@ -274,7 +278,7 @@ namespace Ledybot
                             await Program.helper.waitNTRread(addr_ListOfAllPageEntries, (uint)(256 * 100));
                             byte[] blockBytes = Program.helper.lastArray;
                             int iStartIndex, iEndIndex, iDirection, iNextPrevBlockOffest;
-                            if (fromBack)
+                            if (searchDirection == SEARCHDIRECTION_FROMBACK || searchDirection == SEARCHDIRECTION_FROMBACKFIRSTPAGEONLY)
                             {
                                 iStartIndex = listlength;
                                 iEndIndex = 0;

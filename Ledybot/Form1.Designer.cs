@@ -102,6 +102,7 @@
             this.disconnectTimer = new System.Windows.Forms.Timer(this.components);
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.ofd_WCInjection = new System.Windows.Forms.OpenFileDialog();
+            this.rb_frontfpo = new System.Windows.Forms.RadioButton();
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
             this.tp_Injection.SuspendLayout();
@@ -674,7 +675,7 @@
             // cb_UseLedySync
             // 
             this.cb_UseLedySync.AutoSize = true;
-            this.cb_UseLedySync.Location = new System.Drawing.Point(13, 153);
+            this.cb_UseLedySync.Location = new System.Drawing.Point(12, 173);
             this.cb_UseLedySync.Name = "cb_UseLedySync";
             this.cb_UseLedySync.Size = new System.Drawing.Size(95, 17);
             this.cb_UseLedySync.TabIndex = 10;
@@ -689,7 +690,7 @@
             this.groupBox2.Controls.Add(this.label8);
             this.groupBox2.Controls.Add(this.tb_consoleName);
             this.groupBox2.Controls.Add(this.label13);
-            this.groupBox2.Location = new System.Drawing.Point(11, 176);
+            this.groupBox2.Location = new System.Drawing.Point(10, 196);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(350, 102);
             this.groupBox2.TabIndex = 9;
@@ -749,7 +750,7 @@
             // 
             // tb_waittime
             // 
-            this.tb_waittime.Location = new System.Drawing.Point(132, 128);
+            this.tb_waittime.Location = new System.Drawing.Point(131, 148);
             this.tb_waittime.Name = "tb_waittime";
             this.tb_waittime.Size = new System.Drawing.Size(229, 20);
             this.tb_waittime.TabIndex = 6;
@@ -758,7 +759,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(8, 128);
+            this.label6.Location = new System.Drawing.Point(7, 148);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(121, 13);
             this.label6.TabIndex = 5;
@@ -766,11 +767,12 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.rb_frontfpo);
             this.groupBox1.Controls.Add(this.rb_front);
             this.groupBox1.Controls.Add(this.rb_back);
             this.groupBox1.Location = new System.Drawing.Point(10, 51);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(351, 70);
+            this.groupBox1.Size = new System.Drawing.Size(351, 94);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Trade direction";
@@ -778,7 +780,7 @@
             // rb_front
             // 
             this.rb_front.AutoSize = true;
-            this.rb_front.Location = new System.Drawing.Point(7, 44);
+            this.rb_front.Location = new System.Drawing.Point(6, 66);
             this.rb_front.Name = "rb_front";
             this.rb_front.Size = new System.Drawing.Size(87, 17);
             this.rb_front.TabIndex = 1;
@@ -872,6 +874,17 @@
             // ofd_WCInjection
             // 
             this.ofd_WCInjection.FileName = "WC.wc7";
+            // 
+            // rb_frontfpo
+            // 
+            this.rb_frontfpo.AutoSize = true;
+            this.rb_frontfpo.Location = new System.Drawing.Point(6, 43);
+            this.rb_frontfpo.Name = "rb_frontfpo";
+            this.rb_frontfpo.Size = new System.Drawing.Size(164, 17);
+            this.rb_frontfpo.TabIndex = 2;
+            this.rb_frontfpo.TabStop = true;
+            this.rb_frontfpo.Text = "from the back (first page only)";
+            this.rb_frontfpo.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
@@ -987,6 +1000,7 @@
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.RadioButton rb_frontfpo;
     }
 }
 
