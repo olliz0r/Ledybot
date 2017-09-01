@@ -32,5 +32,14 @@
     <Setting Name="ConsoleName" Type="System.String" Scope="User">
       <Value Profile="(Default)">Ledybot</Value>
     </Setting>
+    <Setting Name="UseLedySync" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="LedySyncIP" Type="System.String" Scope="User">
+      <Value Profile="(Default)">127.0.0.1</Value>
+    </Setting>
+    <Setting Name="LedySyncPort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">3000</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
