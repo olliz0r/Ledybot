@@ -186,7 +186,7 @@ namespace Ledybot
             botWorking = true;
             botStop = false;
             botNumber = 3;
-            GTSBot7 = new GTSBot7(pid, tb_PokemonToFind.Text, cb_Blacklist.Checked, cb_Reddit.Checked, rb_back.Checked, tb_waittime.Text);
+            GTSBot7 = new GTSBot7(pid, tb_PokemonToFind.Text, cb_Blacklist.Checked, cb_Reddit.Checked, rb_back.Checked, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text);
             Task<int> Bot = GTSBot7.RunBot();
             int result = await Bot;
             if (botStop)
@@ -306,6 +306,10 @@ namespace Ledybot
             Properties.Settings.Default.RBFront = rb_front.Checked;
             Properties.Settings.Default.RBBack = rb_back.Checked;
             Properties.Settings.Default.Waittime = tb_waittime.Text;
+            Properties.Settings.Default.ConsoleName = tb_consoleName.Text;
+            Properties.Settings.Default.UseLedySync = cb_UseLedySync.Checked;
+            Properties.Settings.Default.LedySyncIP = tb_LedySyncIP.Text;
+            Properties.Settings.Default.LedySyncPort = tb_LedySyncPort.Text;
             Properties.Settings.Default.Save();
         }
 
@@ -320,6 +324,10 @@ namespace Ledybot
             rb_front.Checked = Properties.Settings.Default.RBFront;
             rb_back.Checked = Properties.Settings.Default.RBBack;
             tb_waittime.Text = Properties.Settings.Default.Waittime;
+            tb_consoleName.Text = Properties.Settings.Default.ConsoleName;
+            cb_UseLedySync.Checked = Properties.Settings.Default.UseLedySync;
+            tb_LedySyncIP.Text = Properties.Settings.Default.LedySyncIP;
+            tb_LedySyncPort.Text = Properties.Settings.Default.LedySyncPort;
         }
 
         private void btn_BrowseInject_Click(object sender, EventArgs e)

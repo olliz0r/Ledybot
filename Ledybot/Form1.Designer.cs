@@ -79,6 +79,14 @@
             this.label11 = new System.Windows.Forms.Label();
             this.btn_EggAvailable = new System.Windows.Forms.Button();
             this.tb_Settings = new System.Windows.Forms.TabPage();
+            this.cb_UseLedySync = new System.Windows.Forms.CheckBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.tb_LedySyncPort = new System.Windows.Forms.TextBox();
+            this.tb_LedySyncIP = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.tb_consoleName = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
             this.tb_waittime = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -103,6 +111,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nud_BoxInjection)).BeginInit();
             this.tp_Breeding.SuspendLayout();
             this.tb_Settings.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_DefaultCount)).BeginInit();
             this.SuspendLayout();
@@ -645,6 +654,8 @@
             // 
             // tb_Settings
             // 
+            this.tb_Settings.Controls.Add(this.cb_UseLedySync);
+            this.tb_Settings.Controls.Add(this.groupBox2);
             this.tb_Settings.Controls.Add(this.tb_waittime);
             this.tb_Settings.Controls.Add(this.label6);
             this.tb_Settings.Controls.Add(this.groupBox1);
@@ -660,6 +671,82 @@
             this.tb_Settings.Text = "Settings";
             this.tb_Settings.UseVisualStyleBackColor = true;
             // 
+            // cb_UseLedySync
+            // 
+            this.cb_UseLedySync.AutoSize = true;
+            this.cb_UseLedySync.Location = new System.Drawing.Point(13, 153);
+            this.cb_UseLedySync.Name = "cb_UseLedySync";
+            this.cb_UseLedySync.Size = new System.Drawing.Size(95, 17);
+            this.cb_UseLedySync.TabIndex = 10;
+            this.cb_UseLedySync.Text = "Use LedySync";
+            this.cb_UseLedySync.UseVisualStyleBackColor = true;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.tb_LedySyncPort);
+            this.groupBox2.Controls.Add(this.tb_LedySyncIP);
+            this.groupBox2.Controls.Add(this.label14);
+            this.groupBox2.Controls.Add(this.label8);
+            this.groupBox2.Controls.Add(this.tb_consoleName);
+            this.groupBox2.Controls.Add(this.label13);
+            this.groupBox2.Location = new System.Drawing.Point(11, 176);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(350, 102);
+            this.groupBox2.TabIndex = 9;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "LedySync Settings";
+            // 
+            // tb_LedySyncPort
+            // 
+            this.tb_LedySyncPort.Location = new System.Drawing.Point(92, 43);
+            this.tb_LedySyncPort.Name = "tb_LedySyncPort";
+            this.tb_LedySyncPort.Size = new System.Drawing.Size(252, 20);
+            this.tb_LedySyncPort.TabIndex = 10;
+            this.tb_LedySyncPort.Text = "3000";
+            // 
+            // tb_LedySyncIP
+            // 
+            this.tb_LedySyncIP.Location = new System.Drawing.Point(92, 17);
+            this.tb_LedySyncIP.Name = "tb_LedySyncIP";
+            this.tb_LedySyncIP.Size = new System.Drawing.Size(252, 20);
+            this.tb_LedySyncIP.TabIndex = 9;
+            this.tb_LedySyncIP.Text = "127.0.0.1";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(7, 76);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(79, 13);
+            this.label14.TabIndex = 2;
+            this.label14.Text = "Console Name:";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(7, 50);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(79, 13);
+            this.label8.TabIndex = 1;
+            this.label8.Text = "LedySync Port:";
+            // 
+            // tb_consoleName
+            // 
+            this.tb_consoleName.Location = new System.Drawing.Point(92, 69);
+            this.tb_consoleName.Name = "tb_consoleName";
+            this.tb_consoleName.Size = new System.Drawing.Size(252, 20);
+            this.tb_consoleName.TabIndex = 8;
+            this.tb_consoleName.Text = "Ledybot";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(7, 20);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(70, 13);
+            this.label13.TabIndex = 0;
+            this.label13.Text = "LedySync IP:";
+            // 
             // tb_waittime
             // 
             this.tb_waittime.Location = new System.Drawing.Point(132, 128);
@@ -673,9 +760,9 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(8, 128);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(118, 13);
+            this.label6.Size = new System.Drawing.Size(121, 13);
             this.label6.TabIndex = 5;
-            this.label6.Text = "extra waittime (for o3ds)";
+            this.label6.Text = "extra waittime (for o3ds):";
             // 
             // groupBox1
             // 
@@ -816,6 +903,8 @@
             this.tp_Breeding.PerformLayout();
             this.tb_Settings.ResumeLayout(false);
             this.tb_Settings.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_DefaultCount)).EndInit();
@@ -890,6 +979,14 @@
         private System.Windows.Forms.RadioButton rb_back;
         private System.Windows.Forms.TextBox tb_waittime;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox tb_consoleName;
+        private System.Windows.Forms.CheckBox cb_UseLedySync;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.TextBox tb_LedySyncPort;
+        private System.Windows.Forms.TextBox tb_LedySyncIP;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label13;
     }
 }
 
