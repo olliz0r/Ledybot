@@ -87,7 +87,7 @@ namespace Ledybot
             return expectedScreen == screenID;
         }
 
-        private Boolean canThisTrade(byte[] principal, string consoleName, string trainerName, string country, string region, string pokemon)
+        private Boolean canThisTrade(byte[] principal, string consoleName, string trainerName, string country, string region, string pokemon, string szFC)
         {
             NetworkStream clientStream = client.GetStream();
             byte[] buffer = new byte[4096];
@@ -103,6 +103,10 @@ namespace Ledybot
             {
                 //blocks until a client sends a message
                 int bytesRead = clientStream.Read(message, 0, 4096);
+                if(message[0] == 0x02)
+                {
+                    Program.f1.banlist.Add(szFC);
+                }
                 return message[0] == 0x01;
             }
             catch
@@ -322,7 +326,7 @@ namespace Ledybot
                                         int subRegionIndex = BitConverter.ToInt16(block, 0x6A);
                                         string subregion = "-";
                                         Program.f1.regions.TryGetValue(subRegionIndex, out subregion);
-                                        if (useLedySync && canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1]))
+                                        if (useLedySync && !Program.f1.banlist.Contains(szFC) && canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC))
                                         {
                                             tradeIndex = i - 1;
                                             botState = (int)gtsbotstates.trade;
@@ -449,7 +453,7 @@ namespace Ledybot
                                         int subRegionIndex = BitConverter.ToInt16(block, 0x6A);
                                         string subregion = "-";
                                         Program.f1.regions.TryGetValue(subRegionIndex, out subregion);
-                                        if (useLedySync && canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1]))
+                                        if (useLedySync && !Program.f1.banlist.Contains(szFC) && canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC))
                                         {
                                             tradeIndex = i - 1;
                                             botState = (int)gtsbotstates.trade;
