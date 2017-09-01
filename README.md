@@ -16,5 +16,7 @@ To get this to run you need a hacked 3DS with CFW! You need NTR (mode 3 version 
 9. Connect!
 10. Start the bot!
 
+(For a slightly outdated, yet more up to date than the above guide check out: https://www.se7ensins.com/forums/threads/how-to-setup-a-pokemon-sun-and-moon-gts-giveaway-bot.1616037/ , thanks to ItsDeidara for letting me know!)
+
 Thanks to kwsch and the guys from PKHeX for their work on the .pk7 format!
 Also thanks to Kazo for his NTR Input Redirection Client as well as Stary2001 for the actual .cia!
