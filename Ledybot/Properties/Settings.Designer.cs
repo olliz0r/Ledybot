@@ -142,5 +142,41 @@ namespace Ledybot.Properties {
                 this["ConsoleName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseLedySync {
+            get {
+                return ((bool)(this["UseLedySync"]));
+            }
+            set {
+                this["UseLedySync"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("127.0.0.1")]
+        public string LedySyncIP {
+            get {
+                return ((string)(this["LedySyncIP"]));
+            }
+            set {
+                this["LedySyncIP"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3000")]
+        public string LedySyncPort {
+            get {
+                return ((string)(this["LedySyncPort"]));
+            }
+            set {
+                this["LedySyncPort"] = value;
+            }
+        }
     }
 }

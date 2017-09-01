@@ -19,7 +19,8 @@ namespace Ledybot
 
         private TcpClient client = new TcpClient();
         private string consoleName = "Ledybot";
-        private IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3000);
+        private IPEndPoint serverEndPoint = null;
+        private bool useLedySync = false;
 
 
 
@@ -86,7 +87,6 @@ namespace Ledybot
 
         private Boolean canThisTrade(byte[] principal, string consoleName, string trainerName, string country, string region, string pokemon)
         {
-
             NetworkStream clientStream = client.GetStream();
             byte[] buffer = new byte[4096];
             byte[] messageID = { 0x00 };
@@ -110,7 +110,7 @@ namespace Ledybot
             }
         }
 
-        public GTSBot7(int iP, string szPtF = "", bool bBlacklist = false, bool bReddit = false, bool bSearchFromBack = true, string waittime = "1000", string consoleName = "Ledybot")
+        public GTSBot7(int iP, string szPtF, bool bBlacklist, bool bReddit, bool bSearchFromBack, string waittime, string consoleName, bool useLedySync, string ledySyncIp, string ledySyncPort)
         {
             this.szPokemonToFind = szPtF;
             this.iPID = iP;
@@ -118,7 +118,13 @@ namespace Ledybot
             this.bReddit = bReddit;
             this.fromBack = bSearchFromBack;
             this.o3dswaittime = Int32.Parse(waittime);
-            client.Connect(serverEndPoint);
+            if (useLedySync)
+            {
+                this.useLedySync = useLedySync;
+                int iPort = Int32.Parse(ledySyncPort);
+                this.serverEndPoint = new IPEndPoint(IPAddress.Parse(ledySyncIp), iPort);
+                client.Connect(serverEndPoint);
+            }
             this.consoleName = consoleName;
         }
 
@@ -357,24 +363,22 @@ namespace Ledybot
                                         int subRegionIndex = BitConverter.ToInt16(block, 0x6A);
                                         string subregion = "-";
                                         Program.f1.regions.TryGetValue(subRegionIndex, out subregion);
-                                        if (canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1]))
+                                        if (useLedySync && canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1]))
                                         {
                                             tradeIndex = i - 1;
                                             botState = (int)gtsbotstates.trade;
                                             break;
+                                        }
+                                        else if (!useLedySync)
+                                        {
+                                            if ((!bReddit || Program.f1.commented.Contains(szFC)) && !details.Item6.Contains(BitConverter.ToInt32(principal, 0)) && !Program.f1.banlist.Contains(szFC))
+                                            {
+                                                tradeIndex = i - 1;
+                                                botState = (int)gtsbotstates.trade;
+                                                break;
+                                            }
                                         }
                                     }
-                                    /*if ((!bReddit || Program.f1.commented.Contains(szFC)) && !details.Item6.Contains(BitConverter.ToInt32(principal, 0)) && !Program.f1.banlist.Contains(szFC))
-                                    {
-                                        int gender = block[0xE];
-                                        int level = block[0xF];
-                                        if ((gender == 0 || gender == details.Item3) && (level == 0 || level == details.Item4))
-                                        {
-                                            tradeIndex = i - 1;
-                                            botState = (int)gtsbotstates.trade;
-                                            break;
-                                        }
-                                    }*/
                                 }
                                 addr_PageEntry = BitConverter.ToUInt32(block, iNextPrevBlockOffest);
                             }
@@ -486,25 +490,22 @@ namespace Ledybot
                                         int subRegionIndex = BitConverter.ToInt16(block, 0x6A);
                                         string subregion = "-";
                                         Program.f1.regions.TryGetValue(subRegionIndex, out subregion);
-                                        if (canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1]))
+                                        if (useLedySync && canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1]))
                                         {
                                             tradeIndex = i - 1;
                                             botState = (int)gtsbotstates.trade;
                                             break;
+                                        }
+                                        else if (!useLedySync)
+                                        {
+                                            if ((!bReddit || Program.f1.commented.Contains(szFC)) && !details.Item6.Contains(BitConverter.ToInt32(principal, 0)) && !Program.f1.banlist.Contains(szFC))
+                                            {
+                                                tradeIndex = i - 1;
+                                                botState = (int)gtsbotstates.trade;
+                                                break;
+                                            }
                                         }
                                     }
-                                    /*
-                                    if ((!bReddit || Program.f1.commented.Contains(szFC)) && !details.Item6.Contains(BitConverter.ToInt32(principal, 0)) && !Program.f1.banlist.Contains(szFC))
-                                    {
-                                        int gender = block[0xE];
-                                        int level = block[0xF];
-                                        if ((gender == 0 || gender == details.Item3) && (level == 0 || level == details.Item4))
-                                        {
-                                            tradeIndex = i - 1;
-                                            botState = (int)gtsbotstates.trade;
-                                            break;
-                                        }
-                                    }*/
                                 }
                                 addr_PageEntry = BitConverter.ToUInt32(block, 0);
 
@@ -799,6 +800,10 @@ namespace Ledybot
                         botstop = true;
                         break;
                 }
+            }
+            if(this.serverEndPoint != null)
+            {
+                client.Close();
             }
             return botresult;
         }
