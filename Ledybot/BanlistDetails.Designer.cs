@@ -39,6 +39,9 @@
             // 
             this.dgv_Details.AllowUserToAddRows = false;
             this.dgv_Details.AllowUserToDeleteRows = false;
+            this.dgv_Details.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dgv_Details.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_Details.Location = new System.Drawing.Point(12, 12);
             this.dgv_Details.Name = "dgv_Details";
@@ -47,6 +50,7 @@
             // 
             // btn_Delete
             // 
+            this.btn_Delete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_Delete.Location = new System.Drawing.Point(210, 257);
             this.btn_Delete.Name = "btn_Delete";
             this.btn_Delete.Size = new System.Drawing.Size(142, 23);
@@ -57,6 +61,7 @@
             // 
             // btn_Add
             // 
+            this.btn_Add.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btn_Add.Location = new System.Drawing.Point(12, 257);
             this.btn_Add.Name = "btn_Add";
             this.btn_Add.Size = new System.Drawing.Size(142, 23);

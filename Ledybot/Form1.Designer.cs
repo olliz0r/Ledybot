@@ -90,6 +90,7 @@
             this.tb_waittime = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.rb_frontfpo = new System.Windows.Forms.RadioButton();
             this.rb_front = new System.Windows.Forms.RadioButton();
             this.rb_back = new System.Windows.Forms.RadioButton();
             this.nud_DefaultCount = new System.Windows.Forms.NumericUpDown();
@@ -102,7 +103,6 @@
             this.disconnectTimer = new System.Windows.Forms.Timer(this.components);
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.ofd_WCInjection = new System.Windows.Forms.OpenFileDialog();
-            this.rb_frontfpo = new System.Windows.Forms.RadioButton();
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
             this.tp_Injection.SuspendLayout();
@@ -176,6 +176,9 @@
             // 
             // lv_log
             // 
+            this.lv_log.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lv_log.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.Time,
             this.Trainer,
@@ -228,6 +231,8 @@
             // 
             // btn_Export
             // 
+            this.btn_Export.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_Export.Location = new System.Drawing.Point(6, 466);
             this.btn_Export.Name = "btn_Export";
             this.btn_Export.Size = new System.Drawing.Size(354, 23);
@@ -248,6 +253,9 @@
             // 
             // tc_Control
             // 
+            this.tc_Control.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tc_Control.Controls.Add(this.tp_GTS);
             this.tc_Control.Controls.Add(this.tp_Injection);
             this.tc_Control.Controls.Add(this.tp_Breeding);
@@ -284,6 +292,8 @@
             // 
             // btn_Clear
             // 
+            this.btn_Clear.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_Clear.Location = new System.Drawing.Point(6, 524);
             this.btn_Clear.Name = "btn_Clear";
             this.btn_Clear.Size = new System.Drawing.Size(354, 23);
@@ -294,6 +304,8 @@
             // 
             // btn_Import
             // 
+            this.btn_Import.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_Import.Location = new System.Drawing.Point(6, 495);
             this.btn_Import.Name = "btn_Import";
             this.btn_Import.Size = new System.Drawing.Size(354, 23);
@@ -372,6 +384,8 @@
             // 
             // btn_WCDelete
             // 
+            this.btn_WCDelete.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_WCDelete.Enabled = false;
             this.btn_WCDelete.Location = new System.Drawing.Point(6, 258);
             this.btn_WCDelete.Name = "btn_WCDelete";
@@ -383,6 +397,8 @@
             // 
             // btn_WCInject
             // 
+            this.btn_WCInject.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_WCInject.Enabled = false;
             this.btn_WCInject.Location = new System.Drawing.Point(6, 229);
             this.btn_WCInject.Name = "btn_WCInject";
@@ -426,6 +442,7 @@
             // 
             // btn_BrowseWCInject
             // 
+            this.btn_BrowseWCInject.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_BrowseWCInject.Location = new System.Drawing.Point(290, 162);
             this.btn_BrowseWCInject.Name = "btn_BrowseWCInject";
             this.btn_BrowseWCInject.Size = new System.Drawing.Size(75, 20);
@@ -436,6 +453,8 @@
             // 
             // tb_WCInjection
             // 
+            this.tb_WCInjection.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tb_WCInjection.Location = new System.Drawing.Point(6, 162);
             this.tb_WCInjection.Name = "tb_WCInjection";
             this.tb_WCInjection.ReadOnly = true;
@@ -453,6 +472,8 @@
             // 
             // btn_Delete
             // 
+            this.btn_Delete.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_Delete.Enabled = false;
             this.btn_Delete.Location = new System.Drawing.Point(7, 120);
             this.btn_Delete.Name = "btn_Delete";
@@ -496,6 +517,8 @@
             // 
             // btn_Inject
             // 
+            this.btn_Inject.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_Inject.Enabled = false;
             this.btn_Inject.Location = new System.Drawing.Point(7, 91);
             this.btn_Inject.Name = "btn_Inject";
@@ -573,6 +596,7 @@
             // 
             // btn_BrowseInject
             // 
+            this.btn_BrowseInject.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_BrowseInject.Location = new System.Drawing.Point(291, 24);
             this.btn_BrowseInject.Name = "btn_BrowseInject";
             this.btn_BrowseInject.Size = new System.Drawing.Size(75, 20);
@@ -583,6 +607,8 @@
             // 
             // tb_FileInjection
             // 
+            this.tb_FileInjection.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tb_FileInjection.Location = new System.Drawing.Point(7, 24);
             this.tb_FileInjection.Name = "tb_FileInjection";
             this.tb_FileInjection.ReadOnly = true;
@@ -644,6 +670,8 @@
             // 
             // btn_EggAvailable
             // 
+            this.btn_EggAvailable.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_EggAvailable.Enabled = false;
             this.btn_EggAvailable.Location = new System.Drawing.Point(8, 4);
             this.btn_EggAvailable.Name = "btn_EggAvailable";
@@ -684,6 +712,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.tb_LedySyncPort);
             this.groupBox2.Controls.Add(this.tb_LedySyncIP);
             this.groupBox2.Controls.Add(this.label14);
@@ -699,6 +729,8 @@
             // 
             // tb_LedySyncPort
             // 
+            this.tb_LedySyncPort.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tb_LedySyncPort.Location = new System.Drawing.Point(92, 43);
             this.tb_LedySyncPort.Name = "tb_LedySyncPort";
             this.tb_LedySyncPort.Size = new System.Drawing.Size(252, 20);
@@ -707,6 +739,8 @@
             // 
             // tb_LedySyncIP
             // 
+            this.tb_LedySyncIP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tb_LedySyncIP.Location = new System.Drawing.Point(92, 17);
             this.tb_LedySyncIP.Name = "tb_LedySyncIP";
             this.tb_LedySyncIP.Size = new System.Drawing.Size(252, 20);
@@ -733,6 +767,8 @@
             // 
             // tb_consoleName
             // 
+            this.tb_consoleName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tb_consoleName.Location = new System.Drawing.Point(92, 69);
             this.tb_consoleName.Name = "tb_consoleName";
             this.tb_consoleName.Size = new System.Drawing.Size(252, 20);
@@ -750,6 +786,8 @@
             // 
             // tb_waittime
             // 
+            this.tb_waittime.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tb_waittime.Location = new System.Drawing.Point(131, 148);
             this.tb_waittime.Name = "tb_waittime";
             this.tb_waittime.Size = new System.Drawing.Size(229, 20);
@@ -767,6 +805,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.rb_frontfpo);
             this.groupBox1.Controls.Add(this.rb_front);
             this.groupBox1.Controls.Add(this.rb_back);
@@ -776,6 +816,17 @@
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Trade direction";
+            // 
+            // rb_frontfpo
+            // 
+            this.rb_frontfpo.AutoSize = true;
+            this.rb_frontfpo.Location = new System.Drawing.Point(6, 43);
+            this.rb_frontfpo.Name = "rb_frontfpo";
+            this.rb_frontfpo.Size = new System.Drawing.Size(164, 17);
+            this.rb_frontfpo.TabIndex = 2;
+            this.rb_frontfpo.TabStop = true;
+            this.rb_frontfpo.Text = "from the back (first page only)";
+            this.rb_frontfpo.UseVisualStyleBackColor = true;
             // 
             // rb_front
             // 
@@ -801,6 +852,7 @@
             // 
             // nud_DefaultCount
             // 
+            this.nud_DefaultCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.nud_DefaultCount.Location = new System.Drawing.Point(241, 32);
             this.nud_DefaultCount.Maximum = new decimal(new int[] {
             99999999,
@@ -833,6 +885,8 @@
             // 
             // tb_Subreddit
             // 
+            this.tb_Subreddit.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tb_Subreddit.Location = new System.Drawing.Point(68, 6);
             this.tb_Subreddit.Name = "tb_Subreddit";
             this.tb_Subreddit.Size = new System.Drawing.Size(293, 20);
@@ -875,17 +929,6 @@
             // 
             this.ofd_WCInjection.FileName = "WC.wc7";
             // 
-            // rb_frontfpo
-            // 
-            this.rb_frontfpo.AutoSize = true;
-            this.rb_frontfpo.Location = new System.Drawing.Point(6, 43);
-            this.rb_frontfpo.Name = "rb_frontfpo";
-            this.rb_frontfpo.Size = new System.Drawing.Size(164, 17);
-            this.rb_frontfpo.TabIndex = 2;
-            this.rb_frontfpo.TabStop = true;
-            this.rb_frontfpo.Text = "from the back (first page only)";
-            this.rb_frontfpo.UseVisualStyleBackColor = true;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -895,7 +938,6 @@
             this.Controls.Add(this.tc_Control);
             this.Controls.Add(this.btn_Connect);
             this.Controls.Add(this.tb_IP);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "MainForm";
