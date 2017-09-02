@@ -44,5 +44,8 @@
     <Setting Name="RBBackFPO" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="DepositedIndex" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">164</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

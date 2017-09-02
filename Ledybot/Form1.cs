@@ -220,14 +220,14 @@ namespace Ledybot
             botNumber = -1;
         }
 
-        public void AppendListViewItem(string szTrainerName, string szNickname, string szCountry, string szSubRegion, string szSent, string fc)
+        public void AppendListViewItem(string szTrainerName, string szNickname, string szCountry, string szSubRegion, string szSent, string fc, string page, string index)
         {
             if (InvokeRequired)
             {
-                this.Invoke(new Action<string, string, string, string, string, string>(AppendListViewItem), new object[] { szTrainerName, szNickname, szCountry, szSubRegion, szSent, fc });
+                this.Invoke(new Action<string, string, string, string, string, string, string, string>(AppendListViewItem), new object[] { szTrainerName, szNickname, szCountry, szSubRegion, szSent, fc, page, index });
                 return;
             }
-            string[] row = { DateTime.Now.ToString("h:mm:ss"), szTrainerName, szNickname, szCountry, szSubRegion, szSent, fc.Insert(4, "-").Insert(9, "-") };
+            string[] row = { DateTime.Now.ToString("h:mm:ss"), szTrainerName, szNickname, szCountry, szSubRegion, szSent, fc.Insert(4, "-").Insert(9, "-"), page, index };
             var listViewItem = new ListViewItem(row);
 
             lv_log.Items.Add(listViewItem);
@@ -318,7 +318,7 @@ namespace Ledybot
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Properties.Settings.Default.IP = tb_IP.Text;
-            Properties.Settings.Default.Deposited = combo_pkmnList.SelectedText;
+            Properties.Settings.Default.DepositedIndex = combo_pkmnList.SelectedIndex;
             Properties.Settings.Default.Blacklist = cb_Blacklist.Checked;
             Properties.Settings.Default.Reddit = cb_Reddit.Checked;
             Properties.Settings.Default.Thread = tb_thread.Text;
@@ -337,7 +337,7 @@ namespace Ledybot
         private void MainForm_Load(object sender, EventArgs e)
         {
             tb_IP.Text = Properties.Settings.Default.IP;
-            combo_pkmnList.SelectedText = Properties.Settings.Default.Deposited;
+            combo_pkmnList.SelectedIndex = Properties.Settings.Default.DepositedIndex;
             cb_Blacklist.Checked = Properties.Settings.Default.Blacklist;
             cb_Reddit.Checked = Properties.Settings.Default.Reddit;
             tb_thread.Text = Properties.Settings.Default.Thread;

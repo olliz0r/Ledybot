@@ -190,5 +190,17 @@ namespace Ledybot.Properties {
                 this["RBBackFPO"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("164")]
+        public int DepositedIndex {
+            get {
+                return ((int)(this["DepositedIndex"]));
+            }
+            set {
+                this["DepositedIndex"] = value;
+            }
+        }
     }
 }

@@ -104,6 +104,8 @@
             this.ofd_WCInjection = new System.Windows.Forms.OpenFileDialog();
             this.combo_pkmnList = new System.Windows.Forms.ComboBox();
             this.rt_status = new System.Windows.Forms.RichTextBox();
+            this.page = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.index = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
             this.tp_Injection.SuspendLayout();
@@ -179,7 +181,9 @@
             this.Country,
             this.subRegion,
             this.pkmnSent,
-            this.FC});
+            this.FC,
+            this.page,
+            this.index});
             this.lv_log.ForeColor = System.Drawing.SystemColors.WindowText;
             this.lv_log.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lv_log.Location = new System.Drawing.Point(6, 74);
@@ -947,6 +951,14 @@
             this.rt_status.TabIndex = 30;
             this.rt_status.Text = "Bot Status: ";
             // 
+            // page
+            // 
+            this.page.Text = "Page";
+            // 
+            // index
+            // 
+            this.index.Text = "Index";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1063,6 +1075,8 @@
         private System.Windows.Forms.RadioButton rb_frontfpo;
         private System.Windows.Forms.ComboBox combo_pkmnList;
         private System.Windows.Forms.RichTextBox rt_status;
+        private System.Windows.Forms.ColumnHeader page;
+        private System.Windows.Forms.ColumnHeader index;
     }
 }
 

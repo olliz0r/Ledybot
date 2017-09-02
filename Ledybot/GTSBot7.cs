@@ -579,7 +579,7 @@ namespace Ledybot
                             {
                                 details.Item6.Add(BitConverter.ToInt32(principal, 0));
                             }
-                            Program.f1.AppendListViewItem(szTrainerName, szNickname, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC);
+                            Program.f1.AppendListViewItem(szTrainerName, szNickname, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC, page+"", tradeIndex + "");
                             //Inject the Pokemon to box1slot1
                             Program.scriptHelper.write(addr_box1slot1, cloneshort, iPID);
                             //spam a to trade pokemon
