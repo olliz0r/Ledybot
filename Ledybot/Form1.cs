@@ -196,7 +196,7 @@ namespace Ledybot
             {
                 tradeDirection = 2;
             }
-            GTSBot7 = new GTSBot7(pid, combo_pkmnList.SelectedIndex + 1, cb_Blacklist.Checked, cb_Reddit.Checked, tradeDirection, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text);
+            GTSBot7 = new GTSBot7(pid, combo_pkmnList.SelectedIndex + 1, combo_gender.SelectedIndex, combo_levelrange.SelectedIndex ,cb_Blacklist.Checked, cb_Reddit.Checked, tradeDirection, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text);
             Task<int> Bot = GTSBot7.RunBot();
             int result = await Bot;
             if (botStop)
@@ -318,7 +318,6 @@ namespace Ledybot
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Properties.Settings.Default.IP = tb_IP.Text;
-            Properties.Settings.Default.DepositedIndex = combo_pkmnList.SelectedIndex;
             Properties.Settings.Default.Blacklist = cb_Blacklist.Checked;
             Properties.Settings.Default.Reddit = cb_Reddit.Checked;
             Properties.Settings.Default.Thread = tb_thread.Text;
@@ -331,13 +330,15 @@ namespace Ledybot
             Properties.Settings.Default.UseLedySync = cb_UseLedySync.Checked;
             Properties.Settings.Default.LedySyncIP = tb_LedySyncIP.Text;
             Properties.Settings.Default.LedySyncPort = tb_LedySyncPort.Text;
+            Properties.Settings.Default.DepositedIndex = combo_pkmnList.SelectedIndex;
+            Properties.Settings.Default.DepositedGender = combo_gender.SelectedIndex;
+            Properties.Settings.Default.DepositedLevel = combo_levelrange.SelectedIndex;
             Properties.Settings.Default.Save();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
             tb_IP.Text = Properties.Settings.Default.IP;
-            combo_pkmnList.SelectedIndex = Properties.Settings.Default.DepositedIndex;
             cb_Blacklist.Checked = Properties.Settings.Default.Blacklist;
             cb_Reddit.Checked = Properties.Settings.Default.Reddit;
             tb_thread.Text = Properties.Settings.Default.Thread;
@@ -350,6 +351,9 @@ namespace Ledybot
             cb_UseLedySync.Checked = Properties.Settings.Default.UseLedySync;
             tb_LedySyncIP.Text = Properties.Settings.Default.LedySyncIP;
             tb_LedySyncPort.Text = Properties.Settings.Default.LedySyncPort;
+            combo_pkmnList.SelectedIndex = Properties.Settings.Default.DepositedIndex;
+            combo_gender.SelectedIndex = Properties.Settings.Default.DepositedGender;
+            combo_levelrange.SelectedIndex = Properties.Settings.Default.DepositedLevel;
         }
 
         private void btn_BrowseInject_Click(object sender, EventArgs e)

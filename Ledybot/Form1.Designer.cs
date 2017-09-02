@@ -43,14 +43,20 @@
             this.subRegion = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.pkmnSent = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.FC = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.page = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.index = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btn_Export = new System.Windows.Forms.Button();
             this.cb_Blacklist = new System.Windows.Forms.CheckBox();
             this.tc_Control = new System.Windows.Forms.TabControl();
             this.tp_GTS = new System.Windows.Forms.TabPage();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.cb_Reddit = new System.Windows.Forms.CheckBox();
+            this.tb_thread = new System.Windows.Forms.TextBox();
+            this.combo_levelrange = new System.Windows.Forms.ComboBox();
+            this.combo_gender = new System.Windows.Forms.ComboBox();
+            this.combo_pkmnList = new System.Windows.Forms.ComboBox();
             this.btn_Clear = new System.Windows.Forms.Button();
             this.btn_Import = new System.Windows.Forms.Button();
-            this.tb_thread = new System.Windows.Forms.TextBox();
-            this.cb_Reddit = new System.Windows.Forms.CheckBox();
             this.btn_Banlist = new System.Windows.Forms.Button();
             this.btn_ShowPaths = new System.Windows.Forms.Button();
             this.tp_Injection = new System.Windows.Forms.TabPage();
@@ -102,12 +108,10 @@
             this.disconnectTimer = new System.Windows.Forms.Timer(this.components);
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.ofd_WCInjection = new System.Windows.Forms.OpenFileDialog();
-            this.combo_pkmnList = new System.Windows.Forms.ComboBox();
             this.rt_status = new System.Windows.Forms.RichTextBox();
-            this.page = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.index = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.tp_Injection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_SlotWCInjection)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_CountInjection)).BeginInit();
@@ -150,7 +154,7 @@
             // btn_Start
             // 
             this.btn_Start.Enabled = false;
-            this.btn_Start.Location = new System.Drawing.Point(159, 45);
+            this.btn_Start.Location = new System.Drawing.Point(3, 45);
             this.btn_Start.Name = "btn_Start";
             this.btn_Start.Size = new System.Drawing.Size(58, 23);
             this.btn_Start.TabIndex = 16;
@@ -161,7 +165,7 @@
             // btn_Stop
             // 
             this.btn_Stop.Enabled = false;
-            this.btn_Stop.Location = new System.Drawing.Point(223, 45);
+            this.btn_Stop.Location = new System.Drawing.Point(67, 45);
             this.btn_Stop.Name = "btn_Stop";
             this.btn_Stop.Size = new System.Drawing.Size(58, 23);
             this.btn_Stop.TabIndex = 17;
@@ -186,9 +190,9 @@
             this.index});
             this.lv_log.ForeColor = System.Drawing.SystemColors.WindowText;
             this.lv_log.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.lv_log.Location = new System.Drawing.Point(6, 74);
+            this.lv_log.Location = new System.Drawing.Point(6, 126);
             this.lv_log.Name = "lv_log";
-            this.lv_log.Size = new System.Drawing.Size(353, 361);
+            this.lv_log.Size = new System.Drawing.Size(353, 309);
             this.lv_log.TabIndex = 18;
             this.lv_log.UseCompatibleStateImageBehavior = false;
             this.lv_log.View = System.Windows.Forms.View.Details;
@@ -226,6 +230,14 @@
             this.FC.Text = "FC";
             this.FC.Width = 110;
             // 
+            // page
+            // 
+            this.page.Text = "Page";
+            // 
+            // index
+            // 
+            this.index.Text = "Index";
+            // 
             // btn_Export
             // 
             this.btn_Export.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
@@ -241,7 +253,7 @@
             // cb_Blacklist
             // 
             this.cb_Blacklist.AutoSize = true;
-            this.cb_Blacklist.Location = new System.Drawing.Point(287, 49);
+            this.cb_Blacklist.Location = new System.Drawing.Point(276, 22);
             this.cb_Blacklist.Name = "cb_Blacklist";
             this.cb_Blacklist.Size = new System.Drawing.Size(72, 17);
             this.cb_Blacklist.TabIndex = 20;
@@ -266,11 +278,12 @@
             // tp_GTS
             // 
             this.tp_GTS.AllowDrop = true;
+            this.tp_GTS.Controls.Add(this.groupBox3);
+            this.tp_GTS.Controls.Add(this.combo_levelrange);
+            this.tp_GTS.Controls.Add(this.combo_gender);
             this.tp_GTS.Controls.Add(this.combo_pkmnList);
             this.tp_GTS.Controls.Add(this.btn_Clear);
             this.tp_GTS.Controls.Add(this.btn_Import);
-            this.tp_GTS.Controls.Add(this.tb_thread);
-            this.tp_GTS.Controls.Add(this.cb_Reddit);
             this.tp_GTS.Controls.Add(this.btn_Banlist);
             this.tp_GTS.Controls.Add(this.btn_ShowPaths);
             this.tp_GTS.Controls.Add(this.label1);
@@ -286,6 +299,76 @@
             this.tp_GTS.TabIndex = 0;
             this.tp_GTS.Text = "GTS";
             this.tp_GTS.UseVisualStyleBackColor = true;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.cb_Reddit);
+            this.groupBox3.Controls.Add(this.tb_thread);
+            this.groupBox3.Location = new System.Drawing.Point(158, 74);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(190, 46);
+            this.groupBox3.TabIndex = 36;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Reddit";
+            // 
+            // cb_Reddit
+            // 
+            this.cb_Reddit.AutoSize = true;
+            this.cb_Reddit.Location = new System.Drawing.Point(6, 19);
+            this.cb_Reddit.Name = "cb_Reddit";
+            this.cb_Reddit.Size = new System.Drawing.Size(88, 17);
+            this.cb_Reddit.TabIndex = 30;
+            this.cb_Reddit.Text = "Use FC Flairs";
+            this.cb_Reddit.UseVisualStyleBackColor = true;
+            // 
+            // tb_thread
+            // 
+            this.tb_thread.Location = new System.Drawing.Point(100, 16);
+            this.tb_thread.Name = "tb_thread";
+            this.tb_thread.Size = new System.Drawing.Size(76, 20);
+            this.tb_thread.TabIndex = 31;
+            // 
+            // combo_levelrange
+            // 
+            this.combo_levelrange.FormattingEnabled = true;
+            this.combo_levelrange.Items.AddRange(new object[] {
+            "  Any",
+            "01 - 10",
+            "11 - 20",
+            "21 - 30",
+            "31 - 40",
+            "41 - 50",
+            "51 - 60",
+            "61 - 70",
+            "71 - 80",
+            "81 - 90",
+            "91 - 100 "});
+            this.combo_levelrange.Location = new System.Drawing.Point(195, 18);
+            this.combo_levelrange.Name = "combo_levelrange";
+            this.combo_levelrange.Size = new System.Drawing.Size(75, 21);
+            this.combo_levelrange.TabIndex = 35;
+            // 
+            // combo_gender
+            // 
+            this.combo_gender.FormattingEnabled = true;
+            this.combo_gender.Items.AddRange(new object[] {
+            "Any",
+            "Male",
+            "Female"});
+            this.combo_gender.Location = new System.Drawing.Point(125, 18);
+            this.combo_gender.Name = "combo_gender";
+            this.combo_gender.Size = new System.Drawing.Size(64, 21);
+            this.combo_gender.TabIndex = 34;
+            // 
+            // combo_pkmnList
+            // 
+            this.combo_pkmnList.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.combo_pkmnList.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.combo_pkmnList.FormattingEnabled = true;
+            this.combo_pkmnList.Location = new System.Drawing.Point(5, 19);
+            this.combo_pkmnList.Name = "combo_pkmnList";
+            this.combo_pkmnList.Size = new System.Drawing.Size(113, 21);
+            this.combo_pkmnList.TabIndex = 30;
             // 
             // btn_Clear
             // 
@@ -311,38 +394,21 @@
             this.btn_Import.UseVisualStyleBackColor = true;
             this.btn_Import.Click += new System.EventHandler(this.btn_Import_Click);
             // 
-            // tb_thread
-            // 
-            this.tb_thread.Location = new System.Drawing.Point(205, 19);
-            this.tb_thread.Name = "tb_thread";
-            this.tb_thread.Size = new System.Drawing.Size(76, 20);
-            this.tb_thread.TabIndex = 31;
-            // 
-            // cb_Reddit
-            // 
-            this.cb_Reddit.AutoSize = true;
-            this.cb_Reddit.Location = new System.Drawing.Point(287, 23);
-            this.cb_Reddit.Name = "cb_Reddit";
-            this.cb_Reddit.Size = new System.Drawing.Size(57, 17);
-            this.cb_Reddit.TabIndex = 30;
-            this.cb_Reddit.Text = "Reddit";
-            this.cb_Reddit.UseVisualStyleBackColor = true;
-            // 
             // btn_Banlist
             // 
-            this.btn_Banlist.Location = new System.Drawing.Point(124, 17);
+            this.btn_Banlist.Location = new System.Drawing.Point(3, 87);
             this.btn_Banlist.Name = "btn_Banlist";
-            this.btn_Banlist.Size = new System.Drawing.Size(75, 23);
+            this.btn_Banlist.Size = new System.Drawing.Size(149, 23);
             this.btn_Banlist.TabIndex = 29;
-            this.btn_Banlist.Text = "Ban List";
+            this.btn_Banlist.Text = "Banned FCs";
             this.btn_Banlist.UseVisualStyleBackColor = true;
             this.btn_Banlist.Click += new System.EventHandler(this.btn_Banlist_Click);
             // 
             // btn_ShowPaths
             // 
-            this.btn_ShowPaths.Location = new System.Drawing.Point(5, 45);
+            this.btn_ShowPaths.Location = new System.Drawing.Point(131, 45);
             this.btn_ShowPaths.Name = "btn_ShowPaths";
-            this.btn_ShowPaths.Size = new System.Drawing.Size(148, 23);
+            this.btn_ShowPaths.Size = new System.Drawing.Size(217, 23);
             this.btn_ShowPaths.TabIndex = 28;
             this.btn_ShowPaths.Text = "Giveaway Details";
             this.btn_ShowPaths.UseVisualStyleBackColor = true;
@@ -372,7 +438,7 @@
             this.tp_Injection.Location = new System.Drawing.Point(4, 22);
             this.tp_Injection.Name = "tp_Injection";
             this.tp_Injection.Padding = new System.Windows.Forms.Padding(3);
-            this.tp_Injection.Size = new System.Drawing.Size(369, 561);
+            this.tp_Injection.Size = new System.Drawing.Size(369, 536);
             this.tp_Injection.TabIndex = 1;
             this.tp_Injection.Text = "Injection";
             this.tp_Injection.UseVisualStyleBackColor = true;
@@ -629,7 +695,7 @@
             this.tp_Breeding.Controls.Add(this.btn_EggAvailable);
             this.tp_Breeding.Location = new System.Drawing.Point(4, 22);
             this.tp_Breeding.Name = "tp_Breeding";
-            this.tp_Breeding.Size = new System.Drawing.Size(369, 561);
+            this.tp_Breeding.Size = new System.Drawing.Size(369, 536);
             this.tp_Breeding.TabIndex = 2;
             this.tp_Breeding.Text = "Breeding";
             this.tp_Breeding.UseVisualStyleBackColor = true;
@@ -692,7 +758,7 @@
             this.tb_Settings.Location = new System.Drawing.Point(4, 22);
             this.tb_Settings.Name = "tb_Settings";
             this.tb_Settings.Padding = new System.Windows.Forms.Padding(3);
-            this.tb_Settings.Size = new System.Drawing.Size(369, 561);
+            this.tb_Settings.Size = new System.Drawing.Size(369, 536);
             this.tb_Settings.TabIndex = 3;
             this.tb_Settings.Text = "Settings";
             this.tb_Settings.UseVisualStyleBackColor = true;
@@ -926,16 +992,6 @@
             // 
             this.ofd_WCInjection.FileName = "WC.wc7";
             // 
-            // combo_pkmnList
-            // 
-            this.combo_pkmnList.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
-            this.combo_pkmnList.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
-            this.combo_pkmnList.FormattingEnabled = true;
-            this.combo_pkmnList.Location = new System.Drawing.Point(5, 19);
-            this.combo_pkmnList.Name = "combo_pkmnList";
-            this.combo_pkmnList.Size = new System.Drawing.Size(113, 21);
-            this.combo_pkmnList.TabIndex = 30;
-            // 
             // rt_status
             // 
             this.rt_status.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
@@ -950,14 +1006,6 @@
             this.rt_status.Size = new System.Drawing.Size(369, 22);
             this.rt_status.TabIndex = 30;
             this.rt_status.Text = "Bot Status: ";
-            // 
-            // page
-            // 
-            this.page.Text = "Page";
-            // 
-            // index
-            // 
-            this.index.Text = "Index";
             // 
             // MainForm
             // 
@@ -979,6 +1027,8 @@
             this.tc_Control.ResumeLayout(false);
             this.tp_GTS.ResumeLayout(false);
             this.tp_GTS.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.tp_Injection.ResumeLayout(false);
             this.tp_Injection.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_SlotWCInjection)).EndInit();
@@ -1077,6 +1127,9 @@
         private System.Windows.Forms.RichTextBox rt_status;
         private System.Windows.Forms.ColumnHeader page;
         private System.Windows.Forms.ColumnHeader index;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.ComboBox combo_levelrange;
+        private System.Windows.Forms.ComboBox combo_gender;
     }
 }
 

@@ -54,6 +54,8 @@ namespace Ledybot
         private int val_duringTrade = 0x3FD5; //trade is split in several steps, sometimes even 0x00
 
         private int iPokemonToFind = 0;
+        private int iPokemonToFindGender = 0;
+        private int iPokemonToFindLevel = 0;
         private int iPID = 0;
         private bool bBlacklist = false;
         private bool bReddit = false;
@@ -120,9 +122,11 @@ namespace Ledybot
             }
         }
 
-        public GTSBot7(int iP, int iPtF, bool bBlacklist, bool bReddit, int iSearchDirection, string waittime, string consoleName, bool useLedySync, string ledySyncIp, string ledySyncPort)
+        public GTSBot7(int iP, int iPtF, int iPtFGender, int iPtFLevel, bool bBlacklist, bool bReddit, int iSearchDirection, string waittime, string consoleName, bool useLedySync, string ledySyncIp, string ledySyncPort)
         {
             this.iPokemonToFind = iPtF;
+            this.iPokemonToFindGender = iPtFGender;
+            this.iPokemonToFindLevel = iPtFLevel;
             this.iPID = iP;
             this.bBlacklist = bBlacklist;
             this.bReddit = bReddit;
@@ -142,9 +146,15 @@ namespace Ledybot
         {
             bool correctScreen = true;
             byte[] pokemonIndex = new byte[2];
+            byte pokemonGender = 0x0;
+            byte pokemonLevel = 0x0;
             byte[] full = BitConverter.GetBytes(iPokemonToFind);
             pokemonIndex[0] = full[0];
             pokemonIndex[1] = full[1];
+            full = BitConverter.GetBytes(iPokemonToFindGender);
+            pokemonGender = full[0];
+            full = BitConverter.GetBytes(iPokemonToFindLevel);
+            pokemonLevel = full[0];
             int panicAttempts = 0;
             while (!botstop)
             {
@@ -166,6 +176,8 @@ namespace Ledybot
                     case (int)gtsbotstates.startsearch:
                         Program.f1.ChangeStatus("Setting Pokemon to find");
                         waitTaskbool = Program.helper.waitNTRwrite(addr_pokemonToFind, pokemonIndex, iPID);
+                        waitTaskbool = Program.helper.waitNTRwrite(addr_pokemonToFindGender, pokemonGender, iPID);
+                        waitTaskbool = Program.helper.waitNTRwrite(addr_pokemonToFindLevel, pokemonLevel, iPID);
                         botState = (int)gtsbotstates.pressSeek;
                         break;
                     case (int)gtsbotstates.pressSeek:

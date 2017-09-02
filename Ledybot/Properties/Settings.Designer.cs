@@ -202,5 +202,29 @@ namespace Ledybot.Properties {
                 this["DepositedIndex"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int DepositedGender {
+            get {
+                return ((int)(this["DepositedGender"]));
+            }
+            set {
+                this["DepositedGender"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int DepositedLevel {
+            get {
+                return ((int)(this["DepositedLevel"]));
+            }
+            set {
+                this["DepositedLevel"] = value;
+            }
+        }
     }
 }
