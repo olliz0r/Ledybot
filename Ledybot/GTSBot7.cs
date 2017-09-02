@@ -53,7 +53,7 @@ namespace Ledybot
         private int val_system = 0x41A8; //during error, saving, early sending
         private int val_duringTrade = 0x3FD5; //trade is split in several steps, sometimes even 0x00
 
-        private string szPokemonToFind = "";
+        private int iPokemonToFind = 0;
         private int iPID = 0;
         private bool bBlacklist = false;
         private bool bReddit = false;
@@ -120,9 +120,9 @@ namespace Ledybot
             }
         }
 
-        public GTSBot7(int iP, string szPtF, bool bBlacklist, bool bReddit, int iSearchDirection, string waittime, string consoleName, bool useLedySync, string ledySyncIp, string ledySyncPort)
+        public GTSBot7(int iP, int iPtF, bool bBlacklist, bool bReddit, int iSearchDirection, string waittime, string consoleName, bool useLedySync, string ledySyncIp, string ledySyncPort)
         {
-            this.szPokemonToFind = szPtF;
+            this.iPokemonToFind = iPtF;
             this.iPID = iP;
             this.bBlacklist = bBlacklist;
             this.bReddit = bReddit;
@@ -141,17 +141,8 @@ namespace Ledybot
         public async Task<int> RunBot()
         {
             bool correctScreen = true;
-            int iPokemonToFindIndex = 0;
-
-            for(int i=0; i<Program.PKTable.Species7.Length; i++)
-            {
-                if (Program.PKTable.Species7[i].Equals(szPokemonToFind))
-                {
-                    iPokemonToFindIndex = i+1;
-                }
-            }
             byte[] pokemonIndex = new byte[2];
-            byte[] full = BitConverter.GetBytes(iPokemonToFindIndex);
+            byte[] full = BitConverter.GetBytes(iPokemonToFind);
             pokemonIndex[0] = full[0];
             pokemonIndex[1] = full[1];
             int panicAttempts = 0;

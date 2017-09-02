@@ -57,6 +57,7 @@ namespace Ledybot
             ofd_WCInjection.InitialDirectory = path;
             getCountries();
             btn_Disconnect.Enabled = false;
+            this.combo_pkmnList.Items.AddRange(Program.PKTable.Species7);
         }
 
         public void startAutoDisconnect()
@@ -195,7 +196,7 @@ namespace Ledybot
             {
                 tradeDirection = 2;
             }
-            GTSBot7 = new GTSBot7(pid, tb_PokemonToFind.Text, cb_Blacklist.Checked, cb_Reddit.Checked, tradeDirection, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text);
+            GTSBot7 = new GTSBot7(pid, combo_pkmnList.SelectedIndex + 1, cb_Blacklist.Checked, cb_Reddit.Checked, tradeDirection, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text);
             Task<int> Bot = GTSBot7.RunBot();
             int result = await Bot;
             if (botStop)
@@ -307,7 +308,7 @@ namespace Ledybot
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Properties.Settings.Default.IP = tb_IP.Text;
-            Properties.Settings.Default.Deposited = tb_PokemonToFind.Text;
+            Properties.Settings.Default.Deposited = combo_pkmnList.SelectedText;
             Properties.Settings.Default.Blacklist = cb_Blacklist.Checked;
             Properties.Settings.Default.Reddit = cb_Reddit.Checked;
             Properties.Settings.Default.Thread = tb_thread.Text;
@@ -326,7 +327,7 @@ namespace Ledybot
         private void MainForm_Load(object sender, EventArgs e)
         {
             tb_IP.Text = Properties.Settings.Default.IP;
-            tb_PokemonToFind.Text = Properties.Settings.Default.Deposited;
+            combo_pkmnList.SelectedText = Properties.Settings.Default.Deposited;
             cb_Blacklist.Checked = Properties.Settings.Default.Blacklist;
             cb_Reddit.Checked = Properties.Settings.Default.Reddit;
             tb_thread.Text = Properties.Settings.Default.Thread;

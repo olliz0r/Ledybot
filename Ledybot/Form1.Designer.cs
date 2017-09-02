@@ -32,7 +32,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.tb_IP = new System.Windows.Forms.TextBox();
             this.btn_Connect = new System.Windows.Forms.Button();
-            this.tb_PokemonToFind = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btn_Start = new System.Windows.Forms.Button();
             this.btn_Stop = new System.Windows.Forms.Button();
@@ -103,6 +102,7 @@
             this.disconnectTimer = new System.Windows.Forms.Timer(this.components);
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.ofd_WCInjection = new System.Windows.Forms.OpenFileDialog();
+            this.combo_pkmnList = new System.Windows.Forms.ComboBox();
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
             this.tp_Injection.SuspendLayout();
@@ -135,14 +135,6 @@
             this.btn_Connect.UseVisualStyleBackColor = true;
             this.btn_Connect.Click += new System.EventHandler(this.btn_Connect_Click);
             // 
-            // tb_PokemonToFind
-            // 
-            this.tb_PokemonToFind.Location = new System.Drawing.Point(6, 19);
-            this.tb_PokemonToFind.Name = "tb_PokemonToFind";
-            this.tb_PokemonToFind.Size = new System.Drawing.Size(100, 20);
-            this.tb_PokemonToFind.TabIndex = 6;
-            this.tb_PokemonToFind.Text = "Ledyba";
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -155,7 +147,7 @@
             // btn_Start
             // 
             this.btn_Start.Enabled = false;
-            this.btn_Start.Location = new System.Drawing.Point(147, 45);
+            this.btn_Start.Location = new System.Drawing.Point(159, 45);
             this.btn_Start.Name = "btn_Start";
             this.btn_Start.Size = new System.Drawing.Size(58, 23);
             this.btn_Start.TabIndex = 16;
@@ -166,7 +158,7 @@
             // btn_Stop
             // 
             this.btn_Stop.Enabled = false;
-            this.btn_Stop.Location = new System.Drawing.Point(211, 45);
+            this.btn_Stop.Location = new System.Drawing.Point(223, 45);
             this.btn_Stop.Name = "btn_Stop";
             this.btn_Stop.Size = new System.Drawing.Size(58, 23);
             this.btn_Stop.TabIndex = 17;
@@ -244,7 +236,7 @@
             // cb_Blacklist
             // 
             this.cb_Blacklist.AutoSize = true;
-            this.cb_Blacklist.Location = new System.Drawing.Point(275, 49);
+            this.cb_Blacklist.Location = new System.Drawing.Point(287, 49);
             this.cb_Blacklist.Name = "cb_Blacklist";
             this.cb_Blacklist.Size = new System.Drawing.Size(72, 17);
             this.cb_Blacklist.TabIndex = 20;
@@ -269,6 +261,7 @@
             // tp_GTS
             // 
             this.tp_GTS.AllowDrop = true;
+            this.tp_GTS.Controls.Add(this.combo_pkmnList);
             this.tp_GTS.Controls.Add(this.btn_Clear);
             this.tp_GTS.Controls.Add(this.btn_Import);
             this.tp_GTS.Controls.Add(this.tb_thread);
@@ -276,7 +269,6 @@
             this.tp_GTS.Controls.Add(this.btn_Banlist);
             this.tp_GTS.Controls.Add(this.btn_ShowPaths);
             this.tp_GTS.Controls.Add(this.label1);
-            this.tp_GTS.Controls.Add(this.tb_PokemonToFind);
             this.tp_GTS.Controls.Add(this.btn_Start);
             this.tp_GTS.Controls.Add(this.cb_Blacklist);
             this.tp_GTS.Controls.Add(this.btn_Stop);
@@ -316,7 +308,7 @@
             // 
             // tb_thread
             // 
-            this.tb_thread.Location = new System.Drawing.Point(193, 19);
+            this.tb_thread.Location = new System.Drawing.Point(205, 19);
             this.tb_thread.Name = "tb_thread";
             this.tb_thread.Size = new System.Drawing.Size(76, 20);
             this.tb_thread.TabIndex = 31;
@@ -324,7 +316,7 @@
             // cb_Reddit
             // 
             this.cb_Reddit.AutoSize = true;
-            this.cb_Reddit.Location = new System.Drawing.Point(275, 23);
+            this.cb_Reddit.Location = new System.Drawing.Point(287, 23);
             this.cb_Reddit.Name = "cb_Reddit";
             this.cb_Reddit.Size = new System.Drawing.Size(57, 17);
             this.cb_Reddit.TabIndex = 30;
@@ -333,7 +325,7 @@
             // 
             // btn_Banlist
             // 
-            this.btn_Banlist.Location = new System.Drawing.Point(112, 17);
+            this.btn_Banlist.Location = new System.Drawing.Point(124, 17);
             this.btn_Banlist.Name = "btn_Banlist";
             this.btn_Banlist.Size = new System.Drawing.Size(75, 23);
             this.btn_Banlist.TabIndex = 29;
@@ -345,7 +337,7 @@
             // 
             this.btn_ShowPaths.Location = new System.Drawing.Point(5, 45);
             this.btn_ShowPaths.Name = "btn_ShowPaths";
-            this.btn_ShowPaths.Size = new System.Drawing.Size(136, 23);
+            this.btn_ShowPaths.Size = new System.Drawing.Size(148, 23);
             this.btn_ShowPaths.TabIndex = 28;
             this.btn_ShowPaths.Text = "Giveaway Details";
             this.btn_ShowPaths.UseVisualStyleBackColor = true;
@@ -929,6 +921,16 @@
             // 
             this.ofd_WCInjection.FileName = "WC.wc7";
             // 
+            // combo_pkmnList
+            // 
+            this.combo_pkmnList.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.combo_pkmnList.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.combo_pkmnList.FormattingEnabled = true;
+            this.combo_pkmnList.Location = new System.Drawing.Point(5, 19);
+            this.combo_pkmnList.Name = "combo_pkmnList";
+            this.combo_pkmnList.Size = new System.Drawing.Size(113, 21);
+            this.combo_pkmnList.TabIndex = 30;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -972,7 +974,6 @@
 
         private System.Windows.Forms.TextBox tb_IP;
         private System.Windows.Forms.Button btn_Connect;
-        private System.Windows.Forms.TextBox tb_PokemonToFind;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btn_Start;
         private System.Windows.Forms.Button btn_Stop;
@@ -1043,6 +1044,7 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.RadioButton rb_frontfpo;
+        private System.Windows.Forms.ComboBox combo_pkmnList;
     }
 }
 
