@@ -103,6 +103,7 @@
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.ofd_WCInjection = new System.Windows.Forms.OpenFileDialog();
             this.combo_pkmnList = new System.Windows.Forms.ComboBox();
+            this.rt_status = new System.Windows.Forms.RichTextBox();
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
             this.tp_Injection.SuspendLayout();
@@ -183,7 +184,7 @@
             this.lv_log.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lv_log.Location = new System.Drawing.Point(6, 74);
             this.lv_log.Name = "lv_log";
-            this.lv_log.Size = new System.Drawing.Size(353, 386);
+            this.lv_log.Size = new System.Drawing.Size(353, 361);
             this.lv_log.TabIndex = 18;
             this.lv_log.UseCompatibleStateImageBehavior = false;
             this.lv_log.View = System.Windows.Forms.View.Details;
@@ -225,7 +226,7 @@
             // 
             this.btn_Export.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_Export.Location = new System.Drawing.Point(6, 466);
+            this.btn_Export.Location = new System.Drawing.Point(6, 441);
             this.btn_Export.Name = "btn_Export";
             this.btn_Export.Size = new System.Drawing.Size(354, 23);
             this.btn_Export.TabIndex = 19;
@@ -255,7 +256,7 @@
             this.tc_Control.Location = new System.Drawing.Point(1, 33);
             this.tc_Control.Name = "tc_Control";
             this.tc_Control.SelectedIndex = 0;
-            this.tc_Control.Size = new System.Drawing.Size(377, 587);
+            this.tc_Control.Size = new System.Drawing.Size(377, 562);
             this.tc_Control.TabIndex = 28;
             // 
             // tp_GTS
@@ -277,7 +278,7 @@
             this.tp_GTS.Location = new System.Drawing.Point(4, 22);
             this.tp_GTS.Name = "tp_GTS";
             this.tp_GTS.Padding = new System.Windows.Forms.Padding(3);
-            this.tp_GTS.Size = new System.Drawing.Size(369, 561);
+            this.tp_GTS.Size = new System.Drawing.Size(369, 536);
             this.tp_GTS.TabIndex = 0;
             this.tp_GTS.Text = "GTS";
             this.tp_GTS.UseVisualStyleBackColor = true;
@@ -286,7 +287,7 @@
             // 
             this.btn_Clear.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_Clear.Location = new System.Drawing.Point(6, 524);
+            this.btn_Clear.Location = new System.Drawing.Point(6, 499);
             this.btn_Clear.Name = "btn_Clear";
             this.btn_Clear.Size = new System.Drawing.Size(354, 23);
             this.btn_Clear.TabIndex = 33;
@@ -298,7 +299,7 @@
             // 
             this.btn_Import.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_Import.Location = new System.Drawing.Point(6, 495);
+            this.btn_Import.Location = new System.Drawing.Point(6, 470);
             this.btn_Import.Name = "btn_Import";
             this.btn_Import.Size = new System.Drawing.Size(354, 23);
             this.btn_Import.TabIndex = 32;
@@ -931,11 +932,27 @@
             this.combo_pkmnList.Size = new System.Drawing.Size(113, 21);
             this.combo_pkmnList.TabIndex = 30;
             // 
+            // rt_status
+            // 
+            this.rt_status.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.rt_status.BackColor = System.Drawing.SystemColors.Control;
+            this.rt_status.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rt_status.Location = new System.Drawing.Point(5, 597);
+            this.rt_status.Multiline = false;
+            this.rt_status.Name = "rt_status";
+            this.rt_status.ReadOnly = true;
+            this.rt_status.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+            this.rt_status.Size = new System.Drawing.Size(369, 22);
+            this.rt_status.TabIndex = 30;
+            this.rt_status.Text = "Bot Status: ";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(378, 620);
+            this.Controls.Add(this.rt_status);
             this.Controls.Add(this.btn_Disconnect);
             this.Controls.Add(this.tc_Control);
             this.Controls.Add(this.btn_Connect);
@@ -1045,6 +1062,7 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.RadioButton rb_frontfpo;
         private System.Windows.Forms.ComboBox combo_pkmnList;
+        private System.Windows.Forms.RichTextBox rt_status;
     }
 }
 

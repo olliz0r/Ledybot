@@ -164,10 +164,12 @@ namespace Ledybot
                         botState = (int)gtsbotstates.research;
                         break;
                     case (int)gtsbotstates.startsearch:
+                        Program.f1.ChangeStatus("Setting Pokemon to find");
                         waitTaskbool = Program.helper.waitNTRwrite(addr_pokemonToFind, pokemonIndex, iPID);
                         botState = (int)gtsbotstates.pressSeek;
                         break;
                     case (int)gtsbotstates.pressSeek:
+                        Program.f1.ChangeStatus("Pressing seek button");
                         //Seek/Deposite pokemon screen
                         correctScreen = await isCorrectWindow(val_Quit_SeekScreen);
                         if (!correctScreen)
@@ -180,6 +182,7 @@ namespace Ledybot
                         botState = (int)gtsbotstates.presssearch;
                         break;
                     case (int)gtsbotstates.presssearch:
+                        Program.f1.ChangeStatus("Press search button");
                         correctScreen = await isCorrectWindow(val_SearchScreen);
                         if (!correctScreen)
                         {
@@ -216,6 +219,7 @@ namespace Ledybot
 
                         if (listlength == 100 && !foundLastPage && searchDirection == SEARCHDIRECTION_FROMBACK)
                         {
+                            Program.f1.ChangeStatus("Moving to last page");
                             waitTaskbool = Program.helper.waitNTRread(addr_PageStartingIndex);
                             if (await waitTaskbool)
                             {
@@ -254,6 +258,7 @@ namespace Ledybot
                         }
                         else
                         {
+                            Program.f1.ChangeStatus("Looking for a pokemon to trade");
                             foundLastPage = true;
                             attempts = 0;
                             listlength = (int)Program.helper.lastRead;
@@ -323,6 +328,7 @@ namespace Ledybot
                                         Program.f1.regions.TryGetValue(subRegionIndex, out subregion);
                                         if (useLedySync && !Program.f1.banlist.Contains(szFC) && canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC))
                                         {
+                                            Program.f1.ChangeStatus("Found a pokemon to trade");
                                             tradeIndex = i - 1;
                                             botState = (int)gtsbotstates.trade;
                                             break;
@@ -344,6 +350,7 @@ namespace Ledybot
                             {
                                 if (startIndex == 0)
                                 {
+                                    Program.f1.ChangeStatus("No pokemon to trade found");
                                     Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
                                     await Task.Delay(commandtime + delaytime + 500);
                                     Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
@@ -359,6 +366,7 @@ namespace Ledybot
                                 }
                                 else
                                 {
+                                    Program.f1.ChangeStatus("No pokemon to trade on this page, try previous page");
                                     startIndex -= 100;
                                     Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
                                     await Task.Delay(commandtime + delaytime);
@@ -383,6 +391,7 @@ namespace Ledybot
                         listlength = (int)Program.helper.lastRead;
                         if (listlength == 100 && !foundLastPage)
                         {
+                            Program.f1.ChangeStatus("Moving to last page");
                             startIndex += 100;
                             Program.helper.quickbuton(Program.PKTable.DpadRIGHT, commandtime);
                             await Task.Delay(commandtime + delaytime);
@@ -414,6 +423,7 @@ namespace Ledybot
                             byte[] blockBytes = Program.helper.lastArray;
                             for (int i = listlength; i > 0; i--)
                             {
+                                Program.f1.ChangeStatus("Looking for a pokemon to trade");
                                 Array.Copy(blockBytes, addr_PageEntry - addr_ListOfAllPageEntries, block, 0, 256);
                                 dexnumber = BitConverter.ToInt16(block, 0xC);
                                 if (Program.f1.giveawayDetails.ContainsKey(dexnumber))
@@ -450,6 +460,7 @@ namespace Ledybot
                                         Program.f1.regions.TryGetValue(subRegionIndex, out subregion);
                                         if (useLedySync && !Program.f1.banlist.Contains(szFC) && canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC))
                                         {
+                                            Program.f1.ChangeStatus("Found a pokemon to trade");
                                             tradeIndex = i - 1;
                                             botState = (int)gtsbotstates.trade;
                                             break;
@@ -472,15 +483,19 @@ namespace Ledybot
                             {
                                 if (listlength < 100 && startIndex >= 200)
                                 {
+                                    Program.f1.ChangeStatus("No pokemon to trade on this page, try previous page");
                                     for (int i = 0; i < listlength; i++)
                                     {
                                         Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
                                         await Task.Delay(commandtime + delaytime);
                                     }
+                                    startIndex -= 100;
                                     await Task.Delay(2250);
+                                    botState = (int)gtsbotstates.findfromstart; //hope this is right
                                 }
                                 else if (startIndex >= 200)
                                 {
+                                    Program.f1.ChangeStatus("No pokemon to trade on this page, try previous page");
                                     waitTaskbool = Program.helper.waitNTRwrite(addr_PageStartingIndex, (uint)(startIndex - 200), iPID);
                                     if (await waitTaskbool)
                                     {
@@ -506,6 +521,7 @@ namespace Ledybot
                                 }
                                 else if (startIndex == 0)
                                 {
+                                    Program.f1.ChangeStatus("No pokemon to trade found");
                                     Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
                                     await Task.Delay(commandtime + delaytime + 500);
                                     Program.helper.quickbuton(Program.PKTable.keyB, commandtime);
@@ -519,8 +535,9 @@ namespace Ledybot
                                         botState = (int)gtsbotstates.research;
                                     }
                                 }
-                                else if (startIndex < 200) 
+                                else if (startIndex < 200)
                                 {
+                                    Program.f1.ChangeStatus("No pokemon to trade found");
                                     botState = (int)gtsbotstates.quicksearch;
                                 }
                             }
@@ -530,6 +547,8 @@ namespace Ledybot
                     case (int)gtsbotstates.trade:
                         //still in GTS list screen
                         //write index we want to trade
+                        int page = Convert.ToInt32(Math.Floor(startIndex / 100.0)) + 1;
+                        Program.f1.ChangeStatus("Trading pokemon on page "+ page + " index " + tradeIndex +"");
                         waitTaskbool = Program.helper.waitNTRwrite(addr_PageCurrentView, BitConverter.GetBytes(tradeIndex), iPID);
                         if (await waitTaskbool)
                         {
@@ -657,9 +676,11 @@ namespace Ledybot
                         botState = (int)gtsbotstates.findfromstart;
                         break;
                     case (int)gtsbotstates.botexit:
+                        Program.f1.ChangeStatus("Stopped");
                         botstop = true;
                         break;
                     case (int)gtsbotstates.panic:
+                        Program.f1.ChangeStatus("Recovery mode!");
                         //recover from weird state here
                         await Program.helper.waitNTRread(addr_currentScreen);
                         int screenID = (int)Program.helper.lastRead;

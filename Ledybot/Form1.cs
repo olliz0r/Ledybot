@@ -234,6 +234,16 @@ namespace Ledybot
             lv_log.Items[lv_log.Items.Count - 1].EnsureVisible();
         }
 
+        public void ChangeStatus(string szNewStatus)
+        {
+            if (InvokeRequired)
+            {
+                this.Invoke(new Action<string>(ChangeStatus), new object[] { szNewStatus });
+                return;
+            }
+            this.rt_status.Text = "Bot Status: "+szNewStatus;
+        }
+
         private void btn_Stop_Click(object sender, EventArgs e)
         {
             GTSBot7.botstop = true;
