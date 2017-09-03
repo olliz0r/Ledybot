@@ -93,12 +93,12 @@ namespace Ledybot
             return expectedScreen == screenID;
         }
 
-        private Boolean canThisTrade(byte[] principal, string consoleName, string trainerName, string country, string region, string pokemon, string szFC)
+        private Boolean canThisTrade(byte[] principal, string consoleName, string trainerName, string country, string region, string pokemon, string szFC, string page, string index)
         {
             NetworkStream clientStream = client.GetStream();
             byte[] buffer = new byte[4096];
             byte[] messageID = { 0x00 };
-            string szmessage = consoleName + '\t' + trainerName + '\t' + country + '\t' + region + '\t' + pokemon + '\t';
+            string szmessage = consoleName + '\t' + trainerName + '\t' + country + '\t' + region + '\t' + pokemon + '\t' + page + "\t" + index +"\t";
             byte[] toSend = Encoding.UTF8.GetBytes(szmessage);
 
             buffer = messageID.Concat(principal).Concat(toSend).ToArray();
@@ -338,7 +338,8 @@ namespace Ledybot
                                         int subRegionIndex = BitConverter.ToInt16(block, 0x6A);
                                         string subregion = "-";
                                         Program.f1.regions.TryGetValue(subRegionIndex, out subregion);
-                                        if (useLedySync && !Program.f1.banlist.Contains(szFC) && canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC))
+                                        int ipage = Convert.ToInt32(Math.Floor(startIndex / 100.0)) + 1;
+                                        if (useLedySync && !Program.f1.banlist.Contains(szFC) && canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC, ipage +"", (i-1)+""))
                                         {
                                             Program.f1.ChangeStatus("Found a pokemon to trade");
                                             tradeIndex = i - 1;
@@ -470,7 +471,8 @@ namespace Ledybot
                                         int subRegionIndex = BitConverter.ToInt16(block, 0x6A);
                                         string subregion = "-";
                                         Program.f1.regions.TryGetValue(subRegionIndex, out subregion);
-                                        if (useLedySync && !Program.f1.banlist.Contains(szFC) && canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC))
+                                        int ipage = Convert.ToInt32(Math.Floor(startIndex / 100.0)) + 1;
+                                        if (useLedySync && !Program.f1.banlist.Contains(szFC) && canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC, ipage + "", (i - 1) + ""))
                                         {
                                             Program.f1.ChangeStatus("Found a pokemon to trade");
                                             tradeIndex = i - 1;
