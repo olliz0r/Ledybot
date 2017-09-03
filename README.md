@@ -3,6 +3,8 @@
 ## About
 Ledybot is a GTS giveaway bot for pokemon sun and moon. Check out LedySync to go along with it, it's really cool: https://github.com/olliz0r/LedySync
 
+If you are rich and like what you see, feel free to throw me a donation at https://www.paypal.me/olliz0r !
+
 ## Credits
 Huge thanks to EzPz/imaboy321 for rewriting, enhancing and maintaining this project for so long!
 
