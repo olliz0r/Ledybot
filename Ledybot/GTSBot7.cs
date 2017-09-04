@@ -246,6 +246,9 @@ namespace Ledybot
                                     await Task.Delay(commandtime + delaytime);
                                     Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
                                     await Task.Delay(commandtime + delaytime);
+                                    //prevent potential loop by going left once more before the page is actually loaded
+                                    Program.helper.quickbuton(Program.PKTable.DpadLEFT, commandtime);
+                                    await Task.Delay(commandtime + delaytime);
                                     await Task.Delay(3000);
                                     Program.helper.quicktouch(10, 10, commandtime);
                                     await Task.Delay(commandtime + delaytime + 250);
