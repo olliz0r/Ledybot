@@ -476,7 +476,7 @@ namespace Ledybot
                             await Task.Delay(commandtime + delaytime + 250);
                             Program.helper.quicktouch(10, 10, commandtime);
                             await Task.Delay(commandtime + delaytime + 250);
-                            await Program.helper.waitNTRread(addr_PageCurrentView);
+                            await Program.helper.waitNTRread(addr_PageStartingIndex);
                             if (Program.helper.lastRead == 0)
                             {
                                 foundLastPage = true;
@@ -564,7 +564,7 @@ namespace Ledybot
                                     }
                                     startIndex -= 100;
                                     await Task.Delay(2250);
-                                    botState = (int)gtsbotstates.findfromstart; //hope this is right
+                                    botState = (int)gtsbotstates.findfromend; //hope this is right
                                 }
                                 else if (startIndex >= 200)
                                 {
@@ -746,6 +746,7 @@ namespace Ledybot
                         await Task.Delay(commandtime + delaytime + 1000);
                         await Program.helper.waittouch(160, 185);
                         await Task.Delay(2250);
+                        foundLastPage = false;
                         botState = (int)gtsbotstates.findfromstart;
                         break;
                     case (int)gtsbotstates.botexit:
