@@ -548,7 +548,7 @@ namespace Ledybot
 
         private async void btn_EggStart_Click(object sender, EventArgs e)
         {
-            eggbot = new EggBot(pid);
+            eggbot = new EggBot(pid, game);
             btn_EggStop.Enabled = true;
             btn_EggStart.Enabled = false;
             await eggbot.RunBot();
