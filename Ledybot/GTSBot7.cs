@@ -16,7 +16,7 @@ namespace Ledybot
     {
 
         //private System.IO.StreamWriter file = new StreamWriter(@"C:\Temp\ledylog.txt");
-        
+
         public enum gtsbotstates { botstart, startsearch, pressSeek, openpokemonwanted, openwhatpokemon, typepokemon, presssearch, startfind, findfromend, findfromstart, trade, research, botexit, updatecomments, quicksearch, panic };
 
         private TcpClient client = new TcpClient();
@@ -28,30 +28,31 @@ namespace Ledybot
         private const int SEARCHDIRECTION_FROMBACKFIRSTPAGEONLY = 1;
         private const int SEARCHDIRECTION_FROMFRONT = 2;
 
-        private uint addr_PageSize = 0x32A6A1A4; //How many entries are on the current GTS page
-        private uint addr_PageEndStartRecord = 0x32A6A68C; //This address holds the address to the last block in the entry-block-list
-        private uint addr_PageStartStartRecord = 0x32A6A690; //This address holds the address to the first block in the entry block-list
-        private uint addr_PageCurrentView = 0x305ea384; //Current selected entry in the list
-        private uint addr_PageStartingIndex = 0x32A6A190; //To determine on which page we are, 0 = first page, 100 = second page, etc
-        private uint addr_ListOfAllPageEntries = 0x32A6A7C4; //Startingaddress of all up to 100 trade entries of the current page
+        private uint addr_PageSize; //How many entries are on the current GTS page
+        private uint addr_PageEndStartRecord; //This address holds the address to the last block in the entry-block-list
+        private uint addr_PageStartStartRecord; //This address holds the address to the first block in the entry block-list
+        private uint addr_PageCurrentView; //Current selected entry in the list
+        private uint addr_PageStartingIndex; //To determine on which page we are, 0 = first page, 100 = second page, etc
+        private uint addr_ListOfAllPageEntries; //Startingaddress of all up to 100 trade entries of the current page
 
-        private uint addr_box1slot1 = 0x330d9838; //To inject the pokemon into box1slot1
-        private uint addr_SearchPokemonNameField = 0x301118D4; //Holds the currently typed in name in the "search pokemon" window
+        private uint addr_box1slot1; //To inject the pokemon into box1slot1
 
-        private uint addr_currentScreen = 0x00674802; //Hopefully a address to tell us in what screen we are (roughly)
+        //private uint addr_SearchPokemonNameField = 0x301118D4; //Holds the currently typed in name in the "search pokemon" window
 
-        private uint addr_pokemonToFind = 0x32A6A180;
-        private uint addr_pokemonToFindGender = 0x32A6A184;
-        private uint addr_pokemonToFindLevel = 0x32A6A188;
+        private uint addr_currentScreen; //Hopefully a address to tell us in what screen we are (roughly)
 
-        private int val_PlazaScreen = 0x00;
-        private int val_Quit_SeekScreen = 0x3F2B;
-        private int val_SearchScreen = 0x4128; //also in the box during selecting etc
-        private int val_WhatPkmnScreen = 0x4160;
-        private int val_GTSListScreen = 0x4180;
-        private int val_BoxScreen = 0x4120;
-        private int val_system = 0x41A8; //during error, saving, early sending
-        private int val_duringTrade = 0x3FD5; //trade is split in several steps, sometimes even 0x00
+        private uint addr_pokemonToFind;
+        private uint addr_pokemonToFindGender;
+        private uint addr_pokemonToFindLevel;
+
+        private int val_PlazaScreen;
+        private int val_Quit_SeekScreen;
+        private int val_SearchScreen; //also in the box during selecting etc
+        private int val_WhatPkmnScreen;
+        private int val_GTSListScreen;
+        private int val_BoxScreen;
+        private int val_system; //during error, saving, early sending
+        private int val_duringTrade; //trade is split in several steps, sometimes even 0x00
 
         private int iPokemonToFind = 0;
         private int iPokemonToFindGender = 0;
@@ -98,7 +99,7 @@ namespace Ledybot
             NetworkStream clientStream = client.GetStream();
             byte[] buffer = new byte[4096];
             byte[] messageID = { 0x00 };
-            string szmessage = consoleName + '\t' + trainerName + '\t' + country + '\t' + region + '\t' + pokemon + '\t' + page + "\t" + index +"\t";
+            string szmessage = consoleName + '\t' + trainerName + '\t' + country + '\t' + region + '\t' + pokemon + '\t' + page + "\t" + index + "\t";
             byte[] toSend = Encoding.UTF8.GetBytes(szmessage);
 
             buffer = messageID.Concat(principal).Concat(toSend).ToArray();
@@ -109,7 +110,7 @@ namespace Ledybot
             {
                 //blocks until a client sends a message
                 int bytesRead = clientStream.Read(message, 0, 4096);
-                if(message[0] == 0x02)
+                if (message[0] == 0x02)
                 {
                     Program.f1.banlist.Add(szFC);
                 }
@@ -122,7 +123,7 @@ namespace Ledybot
             }
         }
 
-        public GTSBot7(int iP, int iPtF, int iPtFGender, int iPtFLevel, bool bBlacklist, bool bReddit, int iSearchDirection, string waittime, string consoleName, bool useLedySync, string ledySyncIp, string ledySyncPort)
+        public GTSBot7(int iP, int iPtF, int iPtFGender, int iPtFLevel, bool bBlacklist, bool bReddit, int iSearchDirection, string waittime, string consoleName, bool useLedySync, string ledySyncIp, string ledySyncPort, int game)
         {
             this.iPokemonToFind = iPtF;
             this.iPokemonToFindGender = iPtFGender;
@@ -140,6 +141,60 @@ namespace Ledybot
                 client.Connect(serverEndPoint);
             }
             this.consoleName = consoleName;
+
+            if (game == 0)
+            {
+                addr_PageSize = 0x32A6A1A4; //How many entries are on the current GTS page
+                addr_PageEndStartRecord = 0x32A6A68C; //This address holds the address to the last block in the entry-block-list
+                addr_PageStartStartRecord = 0x32A6A690; //This address holds the address to the first block in the entry block-list
+                addr_PageCurrentView = 0x305ea384; //Current selected entry in the list
+                addr_PageStartingIndex = 0x32A6A190; //To determine on which page we are, 0 = first page, 100 = second page, etc
+                addr_ListOfAllPageEntries = 0x32A6A7C4; //Startingaddress of all up to 100 trade entries of the current page
+
+                addr_box1slot1 = 0x330D9838; //To inject the pokemon into box1slot1
+
+                addr_currentScreen = 0x00674802; //Hopefully a address to tell us in what screen we are (roughly)
+
+                addr_pokemonToFind = 0x32A6A180;
+                addr_pokemonToFindGender = 0x32A6A184;
+                addr_pokemonToFindLevel = 0x32A6A188;
+
+                val_PlazaScreen = 0x00;
+                val_Quit_SeekScreen = 0x3F2B;
+                val_SearchScreen = 0x4128; //also in the box during selecting etc
+                val_WhatPkmnScreen = 0x4160;
+                val_GTSListScreen = 0x4180;
+                val_BoxScreen = 0x4120;
+                val_system = 0x41A8; //during error, saving, early sending
+                val_duringTrade = 0x3FD5; //trade is split in several steps, sometimes even 0x00
+            }
+            else if (game == 1)
+            {
+                addr_PageSize = 0x329921A4;
+                addr_PageEndStartRecord = 0x3299268C;
+                addr_PageStartStartRecord = 0x32992690;
+                addr_PageCurrentView = 0x305CD9F4;
+                addr_PageStartingIndex = 0x32992190;
+                addr_ListOfAllPageEntries = 0x329927C4;
+
+                addr_box1slot1 = 0x33015AB0;
+
+                addr_currentScreen = 0x006A610A;
+
+                addr_pokemonToFind = 0x32992180;
+                addr_pokemonToFindGender = 0x32992184;
+                addr_pokemonToFindLevel = 0x32992188;
+
+                val_PlazaScreen = 0x00;
+                val_Quit_SeekScreen = 0x3F2B;
+                val_SearchScreen = 0x412A;
+                val_WhatPkmnScreen = 0x1040;
+                val_GTSListScreen = 0x4180;
+                val_BoxScreen = 0x4120;
+                val_system = 0x1C848;
+                val_duringTrade = 0x3FD5;
+            }
+
         }
 
         public async Task<int> RunBot()
@@ -158,7 +213,7 @@ namespace Ledybot
             int panicAttempts = 0;
             while (!botstop)
             {
-                if(botState != (int)gtsbotstates.panic)
+                if (botState != (int)gtsbotstates.panic)
                 {
                     panicAttempts = 0;
                 }
@@ -281,7 +336,8 @@ namespace Ledybot
                             if (searchDirection == SEARCHDIRECTION_FROMBACK || searchDirection == SEARCHDIRECTION_FROMBACKFIRSTPAGEONLY)
                             {
                                 await Program.helper.waitNTRread(addr_PageEndStartRecord);
-                            }else
+                            }
+                            else
                             {
                                 await Program.helper.waitNTRread(addr_PageStartStartRecord);
                             }
@@ -342,7 +398,7 @@ namespace Ledybot
                                         string subregion = "-";
                                         Program.f1.regions.TryGetValue(subRegionIndex, out subregion);
                                         int ipage = Convert.ToInt32(Math.Floor(startIndex / 100.0)) + 1;
-                                        if (useLedySync && !Program.f1.banlist.Contains(szFC) && canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC, ipage +"", (i-1)+""))
+                                        if (useLedySync && !Program.f1.banlist.Contains(szFC) && canThisTrade(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC, ipage + "", (i - 1) + ""))
                                         {
                                             Program.f1.ChangeStatus("Found a pokemon to trade");
                                             tradeIndex = i - 1;
@@ -565,7 +621,7 @@ namespace Ledybot
                         //still in GTS list screen
                         //write index we want to trade
                         int page = Convert.ToInt32(Math.Floor(startIndex / 100.0)) + 1;
-                        Program.f1.ChangeStatus("Trading pokemon on page "+ page + " index " + tradeIndex +"");
+                        Program.f1.ChangeStatus("Trading pokemon on page " + page + " index " + tradeIndex + "");
                         waitTaskbool = Program.helper.waitNTRwrite(addr_PageCurrentView, BitConverter.GetBytes(tradeIndex), iPID);
                         if (await waitTaskbool)
                         {
@@ -596,12 +652,12 @@ namespace Ledybot
                             {
                                 details.Item6.Add(BitConverter.ToInt32(principal, 0));
                             }
-                            Program.f1.AppendListViewItem(szTrainerName, szNickname, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC, page+"", tradeIndex + "");
+                            Program.f1.AppendListViewItem(szTrainerName, szNickname, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC, page + "", tradeIndex + "");
                             //Inject the Pokemon to box1slot1
                             Program.scriptHelper.write(addr_box1slot1, cloneshort, iPID);
                             //spam a to trade pokemon
                             Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
-                            await Task.Delay(commandtime + delaytime + 2500 +o3dswaittime);
+                            await Task.Delay(commandtime + delaytime + 2500 + o3dswaittime);
                             Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
                             await Task.Delay(commandtime + delaytime);
                             Program.helper.quickbuton(Program.PKTable.keyA, commandtime);
@@ -779,7 +835,7 @@ namespace Ledybot
                                 }
                                 else
                                 {
-                                    if(panicAttempts == 0)
+                                    if (panicAttempts == 0)
                                     {
                                         panicAttempts++;
                                         botState = (int)gtsbotstates.panic;
@@ -797,7 +853,7 @@ namespace Ledybot
                         break;
                 }
             }
-            if(this.serverEndPoint != null)
+            if (this.serverEndPoint != null)
             {
                 client.Close();
             }

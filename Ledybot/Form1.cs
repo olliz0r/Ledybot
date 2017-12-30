@@ -20,12 +20,14 @@ namespace Ledybot
         public LogDelegate delLastLog;
         public string lastlog = "";
         public int pid = 0;
+        public int game = 0;
         public PKHeX dumpedPKHeX = new PKHeX();
 
-        public uint boxOff = 0x330D9838;
-        public uint wcOff = 0x331397E4;
-        public uint partyOff = 0x34195E10;
-        private uint eggOff = 0x3313EDD8;
+        public uint boxOff;
+        public uint wcOff;
+
+        public uint partyOff;
+        private uint eggOff;
 
         private bool botWorking = false;
         private bool botStop = false;
@@ -96,7 +98,28 @@ namespace Ledybot
                 pid = Convert.ToInt32("0x" + splitlog.Substring(0, 8), 16);
                 Program.helper.pid = pid;
                 Program.scriptHelper.write(0x3E14C0, BitConverter.GetBytes(0xE3A01000), pid);
+                game = 0;
                 MessageBox.Show("Connection Successful!");
+
+                boxOff = 0x330D9838;
+                wcOff = 0x331397E4;
+                partyOff = 0x34195E10;
+                eggOff = 0x3313EDD8;
+
+            } else if(log.Contains("momiji"))
+            {
+                string splitlog = log.Substring(log.IndexOf(", pname:   momiji") - 8, log.Length - log.IndexOf(", pname:   momiji"));
+                pid = Convert.ToInt32("0x" + splitlog.Substring(0, 8), 16);
+                Program.helper.pid = pid;
+                Program.scriptHelper.write(0x3F341C, BitConverter.GetBytes(0xE3A01000), pid); 
+                Program.scriptHelper.write(0x3F3420, BitConverter.GetBytes(0xE3A01000), pid);
+                game = 1;
+                MessageBox.Show("Connection Successful!");
+
+                boxOff = 0x33015AB0;
+                wcOff = 0x33075BF4;
+                partyOff = 0x33F7FA44;
+                eggOff = 0x3307B1E8;
             }
         }
 
@@ -196,7 +219,7 @@ namespace Ledybot
             {
                 tradeDirection = 2;
             }
-            GTSBot7 = new GTSBot7(pid, combo_pkmnList.SelectedIndex + 1, combo_gender.SelectedIndex, combo_levelrange.SelectedIndex ,cb_Blacklist.Checked, cb_Reddit.Checked, tradeDirection, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text);
+            GTSBot7 = new GTSBot7(pid, combo_pkmnList.SelectedIndex + 1, combo_gender.SelectedIndex, combo_levelrange.SelectedIndex ,cb_Blacklist.Checked, cb_Reddit.Checked, tradeDirection, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text, game);
             Task<int> Bot = GTSBot7.RunBot();
             int result = await Bot;
             if (botStop)
