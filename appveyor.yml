@@ -1,6 +1,3 @@
 version: 1.0.{build}
 build:
   verbosity: minimal
-artifacts:
-- path: Newtonsoft.Json.dll
-  name: Newtonsoft.Json
