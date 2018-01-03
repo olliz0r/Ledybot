@@ -746,7 +746,6 @@ namespace Ledybot
                         await Task.Delay(commandtime + delaytime + 1000);
                         await Program.helper.waittouch(160, 185);
                         await Task.Delay(2250);
-                        foundLastPage = false;
                         botState = (int)gtsbotstates.findfromstart;
                         break;
                     case (int)gtsbotstates.botexit:
