@@ -809,6 +809,7 @@
             this.tb_LedySyncIP.Size = new System.Drawing.Size(252, 20);
             this.tb_LedySyncIP.TabIndex = 9;
             this.tb_LedySyncIP.Text = "127.0.0.1";
+            this.tb_LedySyncIP.TextChanged += new System.EventHandler(this.tb_LedySyncIP_TextChanged);
             // 
             // label14
             // 

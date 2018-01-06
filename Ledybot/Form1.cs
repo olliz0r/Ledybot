@@ -219,7 +219,7 @@ namespace Ledybot
             {
                 tradeDirection = 2;
             }
-            GTSBot7 = new GTSBot7(pid, combo_pkmnList.SelectedIndex + 1, combo_gender.SelectedIndex, combo_levelrange.SelectedIndex ,cb_Blacklist.Checked, cb_Reddit.Checked, tradeDirection, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text, game);
+            GTSBot7 = new GTSBot7(pid, combo_pkmnList.SelectedIndex + 1, combo_gender.SelectedIndex, combo_levelrange.SelectedIndex ,cb_Blacklist.Checked, cb_Reddit.Checked, tradeDirection, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text, game, true, "127.0.0.1", "3001");
             Task<int> Bot = GTSBot7.RunBot();
             int result = await Bot;
             if (botStop)
@@ -673,6 +673,11 @@ namespace Ledybot
                 tb_WCInjection.Text = ofd_WCInjection.FileName;
                 ofd_WCInjection.InitialDirectory = Path.GetDirectoryName(ofd_WCInjection.FileName);
             }
+        }
+
+        private void tb_LedySyncIP_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 

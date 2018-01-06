@@ -19,10 +19,16 @@ namespace Ledybot
 
         public enum gtsbotstates { botstart, startsearch, pressSeek, openpokemonwanted, openwhatpokemon, typepokemon, presssearch, startfind, findfromend, findfromstart, trade, research, botexit, updatecomments, quicksearch, panic };
 
-        private TcpClient client = new TcpClient();
         private string consoleName = "Ledybot";
-        private IPEndPoint serverEndPoint = null;
+
+        private TcpClient syncClient = new TcpClient();
+        private IPEndPoint serverEndPointSync = null;
         private bool useLedySync = false;
+
+        private TcpClient tvClient = new TcpClient();
+        private IPEndPoint serverEndPointTV = null;
+        private bool useLedybotTV = false;
+
 
         private const int SEARCHDIRECTION_FROMBACK = 0;
         private const int SEARCHDIRECTION_FROMBACKFIRSTPAGEONLY = 1;
@@ -96,7 +102,7 @@ namespace Ledybot
 
         private Boolean canThisTrade(byte[] principal, string consoleName, string trainerName, string country, string region, string pokemon, string szFC, string page, string index)
         {
-            NetworkStream clientStream = client.GetStream();
+            NetworkStream clientStream = syncClient.GetStream();
             byte[] buffer = new byte[4096];
             byte[] messageID = { 0x00 };
             string szmessage = consoleName + '\t' + trainerName + '\t' + country + '\t' + region + '\t' + pokemon + '\t' + page + "\t" + index + "\t";
@@ -123,7 +129,33 @@ namespace Ledybot
             }
         }
 
-        public GTSBot7(int iP, int iPtF, int iPtFGender, int iPtFLevel, bool bBlacklist, bool bReddit, int iSearchDirection, string waittime, string consoleName, bool useLedySync, string ledySyncIp, string ledySyncPort, int game)
+        private void didTradeTV(byte[] principal, string consoleName, string trainerName, string country, string region, string pokemon, string szFC, string page, string index)
+        {
+            NetworkStream clientStream = tvClient.GetStream();
+            byte[] buffer = new byte[4096];
+            byte[] messageID = { 0x00 };
+            string szmessage = consoleName + '\t' + trainerName + '\t' + country + '\t' + region + '\t' + pokemon + '\t' + page + "\t" + index + "\t";
+            byte[] toSend = Encoding.UTF8.GetBytes(szmessage);
+
+            buffer = messageID.Concat(principal).Concat(toSend).ToArray();
+            clientStream.Write(buffer, 0, buffer.Length);
+            clientStream.Flush();
+            byte[] message = new byte[4096];
+            try
+            {
+                int bytesRead = clientStream.Read(message, 0, 4096);
+                if(message[0] == 0x01)
+                {
+                    Program.f1.ChangeStatus("LedybotTV message sent.");
+                }
+            }
+            catch
+            {
+                return;
+            }
+        }
+
+        public GTSBot7(int iP, int iPtF, int iPtFGender, int iPtFLevel, bool bBlacklist, bool bReddit, int iSearchDirection, string waittime, string consoleName, bool useLedySync, string ledySyncIp, string ledySyncPort, int game, bool useLedybotTV, string ledybotTVIp, string ledybotTVPort)
         {
             this.iPokemonToFind = iPtF;
             this.iPokemonToFindGender = iPtFGender;
@@ -137,8 +169,16 @@ namespace Ledybot
             {
                 this.useLedySync = useLedySync;
                 int iPort = Int32.Parse(ledySyncPort);
-                this.serverEndPoint = new IPEndPoint(IPAddress.Parse(ledySyncIp), iPort);
-                client.Connect(serverEndPoint);
+                this.serverEndPointSync = new IPEndPoint(IPAddress.Parse(ledySyncIp), iPort);
+                syncClient.Connect(serverEndPointSync);
+            }
+
+            if(useLedybotTV)
+            {
+                this.useLedybotTV = useLedybotTV;
+                int iPort = Int32.Parse(ledybotTVPort);
+                this.serverEndPointTV = new IPEndPoint(IPAddress.Parse(ledybotTVIp), iPort);
+                tvClient.Connect(serverEndPointTV);
             }
             this.consoleName = consoleName;
 
@@ -622,6 +662,7 @@ namespace Ledybot
                         //write index we want to trade
                         int page = Convert.ToInt32(Math.Floor(startIndex / 100.0)) + 1;
                         Program.f1.ChangeStatus("Trading pokemon on page " + page + " index " + tradeIndex + "");
+
                         waitTaskbool = Program.helper.waitNTRwrite(addr_PageCurrentView, BitConverter.GetBytes(tradeIndex), iPID);
                         if (await waitTaskbool)
                         {
@@ -653,6 +694,10 @@ namespace Ledybot
                                 details.Item6.Add(BitConverter.ToInt32(principal, 0));
                             }
                             Program.f1.AppendListViewItem(szTrainerName, szNickname, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC, page + "", tradeIndex + "");
+                            if (useLedybotTV)
+                            {
+                                didTradeTV(principal, consoleName, szTrainerName, country, subregion, Program.PKTable.Species7[dexnumber - 1], szFC, page + "", tradeIndex + "");
+                            }
                             //Inject the Pokemon to box1slot1
                             Program.scriptHelper.write(addr_box1slot1, cloneshort, iPID);
                             //spam a to trade pokemon
@@ -716,6 +761,7 @@ namespace Ledybot
                                 botState = (int)gtsbotstates.botexit;
                                 break;
                             }
+
                             startIndex = 0;
                             tradeIndex = -1;
                             listlength = 0;
@@ -853,9 +899,13 @@ namespace Ledybot
                         break;
                 }
             }
-            if (this.serverEndPoint != null)
+            if (this.serverEndPointSync != null)
             {
-                client.Close();
+                syncClient.Close();
+            }
+            if(this.serverEndPointTV != null)
+            {
+                tvClient.Close();
             }
             return botresult;
         }
