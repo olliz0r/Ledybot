@@ -73,6 +73,7 @@ namespace Ledybot
                     DataRow dr = details.Rows[i];
                     if (dr[0].ToString() == row.Cells[0].Value.ToString())
                         dr.Delete();
+                        break;
                 }
             }
         }
