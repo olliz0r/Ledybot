@@ -114,6 +114,7 @@ namespace Ledybot
             string input = ((string[])e.Data.GetData(DataFormats.FileDrop, false))[0];
             if (File.GetAttributes(input).HasFlag(FileAttributes.Directory))
             {
+                
                 foreach(string file in Directory.GetFiles(input))
                 {
                     if(Path.GetExtension(file) == ".pk7")
@@ -189,8 +190,11 @@ namespace Ledybot
             }
             Directory.CreateDirectory(Path.GetDirectoryName(input) + "\\" + Path.GetFileNameWithoutExtension(input) + "\\");
 
-            details.Rows.Add(dexNum, input, Path.GetDirectoryName(input) + "\\" + Path.GetFileNameWithoutExtension(input) + "\\", genderIndex + 1, levelIndex + 1, -1, 0);
-            Program.f1.giveawayDetails.Add(dexNum, new Tuple<string, string, int, int, int, ArrayList>(input, Path.GetDirectoryName(input) + "\\" + Path.GetFileNameWithoutExtension(input) + "\\", genderIndex + 1, levelIndex + 1, -1, new ArrayList()));
+            if(!Program.f1.giveawayDetails.ContainsKey(dexNum))
+            {
+                details.Rows.Add(dexNum, input, Path.GetDirectoryName(input) + "\\" + Path.GetFileNameWithoutExtension(input) + "\\", genderIndex + 1, levelIndex + 1, -1, 0);
+                Program.f1.giveawayDetails.Add(dexNum, new Tuple<string, string, int, int, int, ArrayList>(input, Path.GetDirectoryName(input) + "\\" + Path.GetFileNameWithoutExtension(input) + "\\", genderIndex + 1, levelIndex + 1, -1, new ArrayList()));
+            }
 
         }
     }
