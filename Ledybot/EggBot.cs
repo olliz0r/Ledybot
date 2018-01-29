@@ -19,9 +19,17 @@ namespace Ledybot
 
         private bool botstop = false;
 
-        public EggBot(int iP)
+        public EggBot(int iP, int game)
         {
             iPID = iP;
+            if(game == 0)
+            {
+                eggOff = 0x3313EDD8;
+            } 
+            else if(game == 1)
+            {
+                eggOff = 0x3307B1E8;
+            }
         }
 
         public async Task RunBot()

@@ -114,7 +114,7 @@
             // 
             this.nud_DexNumber.Location = new System.Drawing.Point(123, 39);
             this.nud_DexNumber.Maximum = new decimal(new int[] {
-            802,
+            807,
             0,
             0,
             0});

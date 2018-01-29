@@ -20,12 +20,14 @@ namespace Ledybot
         public LogDelegate delLastLog;
         public string lastlog = "";
         public int pid = 0;
+        public int game = 0;
         public PKHeX dumpedPKHeX = new PKHeX();
 
-        public uint boxOff = 0x330D9838;
-        public uint wcOff = 0x331397E4;
-        public uint partyOff = 0x34195E10;
-        private uint eggOff = 0x3313EDD8;
+        public uint boxOff;
+        public uint wcOff;
+
+        public uint partyOff;
+        private uint eggOff;
 
         private bool botWorking = false;
         private bool botStop = false;
@@ -57,6 +59,7 @@ namespace Ledybot
             ofd_WCInjection.InitialDirectory = path;
             getCountries();
             btn_Disconnect.Enabled = false;
+            this.combo_pkmnList.Items.AddRange(Program.PKTable.Species7);
         }
 
         public void startAutoDisconnect()
@@ -95,7 +98,28 @@ namespace Ledybot
                 pid = Convert.ToInt32("0x" + splitlog.Substring(0, 8), 16);
                 Program.helper.pid = pid;
                 Program.scriptHelper.write(0x3E14C0, BitConverter.GetBytes(0xE3A01000), pid);
+                game = 0;
                 MessageBox.Show("Connection Successful!");
+
+                boxOff = 0x330D9838;
+                wcOff = 0x331397E4;
+                partyOff = 0x34195E10;
+                eggOff = 0x3313EDD8;
+
+            } else if(log.Contains("momiji"))
+            {
+                string splitlog = log.Substring(log.IndexOf(", pname:   momiji") - 8, log.Length - log.IndexOf(", pname:   momiji"));
+                pid = Convert.ToInt32("0x" + splitlog.Substring(0, 8), 16);
+                Program.helper.pid = pid;
+                Program.scriptHelper.write(0x3F341C, BitConverter.GetBytes(0xE3A01000), pid); 
+                Program.scriptHelper.write(0x3F3420, BitConverter.GetBytes(0xE3A01000), pid);
+                game = 1;
+                MessageBox.Show("Connection Successful!");
+
+                boxOff = 0x33015AB0;
+                wcOff = 0x33075BF4;
+                partyOff = 0x33F7FA44;
+                eggOff = 0x3307B1E8;
             }
         }
 
@@ -186,7 +210,16 @@ namespace Ledybot
             botWorking = true;
             botStop = false;
             botNumber = 3;
-            GTSBot7 = new GTSBot7(pid, tb_PokemonToFind.Text, cb_Blacklist.Checked, cb_Reddit.Checked);
+
+            int tradeDirection = 0;
+            if (rb_frontfpo.Checked)
+            {
+                tradeDirection = 1;
+            }else if (rb_front.Checked)
+            {
+                tradeDirection = 2;
+            }
+            GTSBot7 = new GTSBot7(pid, combo_pkmnList.SelectedIndex + 1, combo_gender.SelectedIndex, combo_levelrange.SelectedIndex ,cb_Blacklist.Checked, cb_Reddit.Checked, tradeDirection, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text, game, true, "127.0.0.1", "3001");
             Task<int> Bot = GTSBot7.RunBot();
             int result = await Bot;
             if (botStop)
@@ -210,18 +243,28 @@ namespace Ledybot
             botNumber = -1;
         }
 
-        public void AppendListViewItem(string szTrainerName, string szNickname, string szCountry, string szSubRegion, string szSent, string fc)
+        public void AppendListViewItem(string szTrainerName, string szNickname, string szCountry, string szSubRegion, string szSent, string fc, string page, string index)
         {
             if (InvokeRequired)
             {
-                this.Invoke(new Action<string, string, string, string, string, string>(AppendListViewItem), new object[] { szTrainerName, szNickname, szCountry, szSubRegion, szSent, fc });
+                this.Invoke(new Action<string, string, string, string, string, string, string, string>(AppendListViewItem), new object[] { szTrainerName, szNickname, szCountry, szSubRegion, szSent, fc, page, index });
                 return;
             }
-            string[] row = { DateTime.Now.ToString("h:mm:ss"), szTrainerName, szNickname, szCountry, szSubRegion, szSent, fc.Insert(4, "-").Insert(9, "-") };
+            string[] row = { DateTime.Now.ToString("h:mm:ss"), szTrainerName, szNickname, szCountry, szSubRegion, szSent, fc.Insert(4, "-").Insert(9, "-"), page, index };
             var listViewItem = new ListViewItem(row);
 
             lv_log.Items.Add(listViewItem);
             lv_log.Items[lv_log.Items.Count - 1].EnsureVisible();
+        }
+
+        public void ChangeStatus(string szNewStatus)
+        {
+            if (InvokeRequired)
+            {
+                this.Invoke(new Action<string>(ChangeStatus), new object[] { szNewStatus });
+                return;
+            }
+            this.rt_status.Text = "Bot Status: "+szNewStatus;
         }
 
         private void btn_Stop_Click(object sender, EventArgs e)
@@ -298,22 +341,42 @@ namespace Ledybot
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Properties.Settings.Default.IP = tb_IP.Text;
-            Properties.Settings.Default.Deposited = tb_PokemonToFind.Text;
             Properties.Settings.Default.Blacklist = cb_Blacklist.Checked;
             Properties.Settings.Default.Reddit = cb_Reddit.Checked;
             Properties.Settings.Default.Thread = tb_thread.Text;
             Properties.Settings.Default.Subreddit = tb_Subreddit.Text;
+            Properties.Settings.Default.RBFront = rb_front.Checked;
+            Properties.Settings.Default.RBBackFPO = rb_frontfpo.Checked;
+            Properties.Settings.Default.RBBack = rb_back.Checked;
+            Properties.Settings.Default.Waittime = tb_waittime.Text;
+            Properties.Settings.Default.ConsoleName = tb_consoleName.Text;
+            Properties.Settings.Default.UseLedySync = cb_UseLedySync.Checked;
+            Properties.Settings.Default.LedySyncIP = tb_LedySyncIP.Text;
+            Properties.Settings.Default.LedySyncPort = tb_LedySyncPort.Text;
+            Properties.Settings.Default.DepositedIndex = combo_pkmnList.SelectedIndex;
+            Properties.Settings.Default.DepositedGender = combo_gender.SelectedIndex;
+            Properties.Settings.Default.DepositedLevel = combo_levelrange.SelectedIndex;
             Properties.Settings.Default.Save();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
             tb_IP.Text = Properties.Settings.Default.IP;
-            tb_PokemonToFind.Text = Properties.Settings.Default.Deposited;
             cb_Blacklist.Checked = Properties.Settings.Default.Blacklist;
             cb_Reddit.Checked = Properties.Settings.Default.Reddit;
             tb_thread.Text = Properties.Settings.Default.Thread;
             tb_Subreddit.Text = Properties.Settings.Default.Subreddit;
+            rb_front.Checked = Properties.Settings.Default.RBFront;
+            rb_frontfpo.Checked = Properties.Settings.Default.RBBackFPO;
+            rb_back.Checked = Properties.Settings.Default.RBBack;
+            tb_waittime.Text = Properties.Settings.Default.Waittime;
+            tb_consoleName.Text = Properties.Settings.Default.ConsoleName;
+            cb_UseLedySync.Checked = Properties.Settings.Default.UseLedySync;
+            tb_LedySyncIP.Text = Properties.Settings.Default.LedySyncIP;
+            tb_LedySyncPort.Text = Properties.Settings.Default.LedySyncPort;
+            combo_pkmnList.SelectedIndex = Properties.Settings.Default.DepositedIndex;
+            combo_gender.SelectedIndex = Properties.Settings.Default.DepositedGender;
+            combo_levelrange.SelectedIndex = Properties.Settings.Default.DepositedLevel;
         }
 
         private void btn_BrowseInject_Click(object sender, EventArgs e)
@@ -485,7 +548,7 @@ namespace Ledybot
 
         private async void btn_EggStart_Click(object sender, EventArgs e)
         {
-            eggbot = new EggBot(pid);
+            eggbot = new EggBot(pid, game);
             btn_EggStop.Enabled = true;
             btn_EggStart.Enabled = false;
             await eggbot.RunBot();
@@ -610,6 +673,11 @@ namespace Ledybot
                 tb_WCInjection.Text = ofd_WCInjection.FileName;
                 ofd_WCInjection.InitialDirectory = Path.GetDirectoryName(ofd_WCInjection.FileName);
             }
+        }
+
+        private void tb_LedySyncIP_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 
