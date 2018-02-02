@@ -409,7 +409,7 @@ namespace Ledybot
                                     Program.f1.giveawayDetails.TryGetValue(dexnumber, out details);
                                     if (details.Item1 == "")
                                     {
-                                        string szNickname = Encoding.Unicode.GetString(block, 0x14, 20).Trim('\0');
+                                        string szNickname = Encoding.Unicode.GetString(block, 0x14, 24).Trim('\0'); //fix to prevent nickname clipping. Count should be 24, 2 bytes per letter, 2x12=24, not 20.
                                         string szFileToFind = details.Item2 + szNickname + ".pk7";
                                         if (!File.Exists(szFileToFind))
                                         {
@@ -429,7 +429,7 @@ namespace Ledybot
                                     int level = block[0xF];
                                     if ((gender == 0 || gender == details.Item3) && (level == 0 || level == details.Item4))
                                     {
-                                        string szTrainerName = Encoding.Unicode.GetString(block, 0x4C, 20).Trim('\0');
+                                        string szTrainerName = Encoding.Unicode.GetString(block, 0x4C, 24).Trim('\0');
                                         int countryIndex = BitConverter.ToInt16(block, 0x68);
                                         string country = "-";
                                         Program.f1.countries.TryGetValue(countryIndex, out country);
@@ -543,7 +543,7 @@ namespace Ledybot
                                     Program.f1.giveawayDetails.TryGetValue(dexnumber, out details);
                                     if (details.Item1 == "")
                                     {
-                                        string szNickname = Encoding.Unicode.GetString(block, 0x14, 20).Trim('\0');
+                                        string szNickname = Encoding.Unicode.GetString(block, 0x14, 24).Trim('\0'); //fix to prevent nickname clipping. Count should be 24, 2 bytes per letter, 2x12=24, not 20.
                                         string szFileToFind = details.Item2 + szNickname + ".pk7";
                                         if (!File.Exists(szFileToFind))
                                         {
@@ -562,7 +562,7 @@ namespace Ledybot
                                     int level = block[0xF];
                                     if ((gender == 0 || gender == details.Item3) && (level == 0 || level == details.Item4))
                                     {
-                                        string szTrainerName = Encoding.Unicode.GetString(block, 0x4C, 20).Trim('\0');
+                                        string szTrainerName = Encoding.Unicode.GetString(block, 0x4C, 24).Trim('\0');
                                         int countryIndex = BitConverter.ToInt16(block, 0x68);
                                         string country = "-";
                                         Program.f1.countries.TryGetValue(countryIndex, out country);
@@ -666,7 +666,7 @@ namespace Ledybot
                         waitTaskbool = Program.helper.waitNTRwrite(addr_PageCurrentView, BitConverter.GetBytes(tradeIndex), iPID);
                         if (await waitTaskbool)
                         {
-                            string szNickname = Encoding.Unicode.GetString(block, 0x14, 20).Trim('\0');
+                            string szNickname = Encoding.Unicode.GetString(block, 0x14, 24).Trim('\0'); //fix to prevent nickname clipping. Count should be 24, 2 bytes per letter, 2x12=24, not 20.
 
 
                             string szPath = details.Item1;
@@ -681,7 +681,7 @@ namespace Ledybot
                             string ek7 = BitConverter.ToString(cloneshort).Replace("-", ", 0x");
 
                             //optional: grab some trainer data
-                            string szTrainerName = Encoding.Unicode.GetString(block, 0x4C, 20).Trim('\0');
+                            string szTrainerName = Encoding.Unicode.GetString(block, 0x4C, 24).Trim('\0');
                             int countryIndex = BitConverter.ToInt16(block, 0x68);
                             string country = "-";
                             Program.f1.countries.TryGetValue(countryIndex, out country);
