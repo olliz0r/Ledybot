@@ -111,8 +111,8 @@ namespace Ledybot
                 string splitlog = log.Substring(log.IndexOf(", pname:   momiji") - 8, log.Length - log.IndexOf(", pname:   momiji"));
                 pid = Convert.ToInt32("0x" + splitlog.Substring(0, 8), 16);
                 Program.helper.pid = pid;
-                Program.scriptHelper.write(0x3F341C, BitConverter.GetBytes(0xE3A01000), pid); 
-                Program.scriptHelper.write(0x3F3420, BitConverter.GetBytes(0xE3A01000), pid);
+                Program.scriptHelper.write(0x3F3424, BitConverter.GetBytes(0xE3A01000), pid); // Ultra Sun  // NFC ON: E3A01001 NFC OFF: E3A01000
+                Program.scriptHelper.write(0x3F3428, BitConverter.GetBytes(0xE3A01000), pid); // Ultra Moon // NFC ON: E3A01001 NFC OFF: E3A01000
                 game = 1;
                 MessageBox.Show("Connection Successful!");
 
