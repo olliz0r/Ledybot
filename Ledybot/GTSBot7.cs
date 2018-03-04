@@ -800,6 +800,8 @@ namespace Ledybot
                         break;
                     case (int)gtsbotstates.panic:
                         Program.f1.ChangeStatus("Recovery mode!");
+                        //In case of stucking on waitbutton
+                        Program.helper.quicktouch(0, 0, commandtime);
                         //recover from weird state here
                         await Program.helper.waitNTRread(addr_currentScreen);
                         int screenID = (int)Program.helper.lastRead;
