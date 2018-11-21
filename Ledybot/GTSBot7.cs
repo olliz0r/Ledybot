@@ -173,13 +173,13 @@ namespace Ledybot
                 syncClient.Connect(serverEndPointSync);
             }
 
-            if(useLedybotTV)
-            {
-                this.useLedybotTV = useLedybotTV;
-                int iPort = Int32.Parse(ledybotTVPort);
-                this.serverEndPointTV = new IPEndPoint(IPAddress.Parse(ledybotTVIp), iPort);
-                tvClient.Connect(serverEndPointTV);
-            }
+            //if(useLedybotTV)
+            //{
+            //    this.useLedybotTV = useLedybotTV;
+            //    int iPort = Int32.Parse(ledybotTVPort);
+            //    this.serverEndPointTV = new IPEndPoint(IPAddress.Parse(ledybotTVIp), iPort);
+            //    tvClient.Connect(serverEndPointTV);
+            //}
             this.consoleName = consoleName;
 
             if (game == 0)
