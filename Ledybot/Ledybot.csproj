@@ -37,9 +37,6 @@
     <ApplicationIcon>165Ledyba.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -84,15 +81,8 @@
     <Compile Include="GiveawayDetails.Designer.cs">
       <DependentUpon>GiveawayDetails.cs</DependentUpon>
     </Compile>
-    <Compile Include="GTSBot7.cs" />
-    <Compile Include="LookupTable.cs" />
-    <Compile Include="NTRClient.cs" />
-    <Compile Include="PKHeX.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RemoteControl.cs" />
-    <Compile Include="ScriptHelper.cs" />
-    <Compile Include="EggBot.cs" />
     <EmbeddedResource Include="BanlistDetails.resx">
       <DependentUpon>BanlistDetails.cs</DependentUpon>
     </EmbeddedResource>
@@ -262,6 +252,12 @@
     <None Include="locale\sr_ID\sr_184.txt" />
     <None Include="locale\sr_ID\sr_185.txt" />
     <None Include="locale\sr_ID\sr_186.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LedyLib\LedyLib.csproj">
+      <Project>{20eaf378-6b39-461b-8879-ac35ca64725c}</Project>
+      <Name>LedyLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

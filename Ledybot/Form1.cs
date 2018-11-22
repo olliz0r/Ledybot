@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -10,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using LedyLib;
 
 namespace Ledybot
 {
@@ -23,25 +23,15 @@ namespace Ledybot
         public int game = 0;
         public PKHeX dumpedPKHeX = new PKHeX();
 
-        public uint boxOff;
         public uint wcOff;
 
-        public uint partyOff;
         private uint eggOff;
 
         private bool botWorking = false;
         private bool botStop = false;
         private int botNumber = -1;
 
-        private GTSBot7 GTSBot7;
-        public EggBot eggbot;
-
-        public ArrayList banlist = new ArrayList();
         static Dictionary<uint, DataReadyWaiting> waitingForData = new Dictionary<uint, DataReadyWaiting>();
-        public ArrayList commented = new ArrayList();
-        public Dictionary<int, Tuple<string, string, int, int, int, ArrayList>> giveawayDetails = new Dictionary<int, Tuple<string, string, int, int, int, ArrayList>>();
-        public Dictionary<int, string> countries = new Dictionary<int, string>();
-        public Dictionary<int, string> regions = new Dictionary<int, string>();
 
         public MainForm()
         {
@@ -57,7 +47,6 @@ namespace Ledybot
             string path = @Application.StartupPath;
             ofd_Injection.InitialDirectory = path;
             ofd_WCInjection.InitialDirectory = path;
-            getCountries();
             btn_Disconnect.Enabled = false;
             this.combo_pkmnList.Items.AddRange(Program.PKTable.Species7);
         }
@@ -101,9 +90,9 @@ namespace Ledybot
                 game = 0;
                 MessageBox.Show("Connection Successful!");
 
-                boxOff = 0x330D9838;
+                Program.helper.boxOff = 0x330D9838;
                 wcOff = 0x331397E4;
-                partyOff = 0x34195E10;
+                Program.helper.partyOff = 0x34195E10;
                 eggOff = 0x3313EDD8;
 
             } else if(log.Contains("momiji"))
@@ -116,34 +105,10 @@ namespace Ledybot
                 game = 1;
                 MessageBox.Show("Connection Successful!");
 
-                boxOff = 0x33015AB0;
+                Program.helper.boxOff = 0x33015AB0;
                 wcOff = 0x33075BF4;
-                partyOff = 0x33F7FA44;
+                Program.helper.partyOff = 0x33F7FA44;
                 eggOff = 0x3307B1E8;
-            }
-        }
-
-        public void getCountries()
-        {
-            string[] inputCSV = getStringList("countries");
-            // Gather our data from the input file
-            for (int i = 1; i < inputCSV.Length; i++)
-            {
-                string[] countryData = inputCSV[i].Split(',');
-                countries.Add(int.Parse(countryData[0]), countryData[2]);
-            }
-        }
-
-        public void getSubRegions(int country)
-        {
-            regions.Clear();
-
-            string[] inputCSV = getStringList("sr_" + country.ToString("000"));
-
-            for (int i = 1; i < inputCSV.Length; i++)
-            {
-                string[] regionData = inputCSV[i].Split(',');
-                regions.Add(int.Parse(regionData[0]), regionData[2]);
             }
         }
 
@@ -199,7 +164,7 @@ namespace Ledybot
 
         private async void btn_Start_Click(object sender, EventArgs e)
         {
-            if (giveawayDetails.Count() == 0)
+            if (!Program.data.giveawayDetails.Any())
             {
                 MessageBox.Show("No details are set!", "GTS Bot", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -219,8 +184,8 @@ namespace Ledybot
             {
                 tradeDirection = 2;
             }
-            GTSBot7 = new GTSBot7(pid, combo_pkmnList.SelectedIndex + 1, combo_gender.SelectedIndex, combo_levelrange.SelectedIndex ,cb_Blacklist.Checked, cb_Reddit.Checked, tradeDirection, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text, game, true, "127.0.0.1", "3001");
-            Task<int> Bot = GTSBot7.RunBot();
+            Program.createGTSBot(pid, combo_pkmnList.SelectedIndex + 1, combo_gender.SelectedIndex, combo_levelrange.SelectedIndex ,cb_Blacklist.Checked, cb_Reddit.Checked, tradeDirection, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text, game, true, "127.0.0.1", "3001");
+            Task<int> Bot = Program.gtsBot.RunBot();
             int result = await Bot;
             if (botStop)
                 result = 8;
@@ -269,7 +234,7 @@ namespace Ledybot
 
         private void btn_Stop_Click(object sender, EventArgs e)
         {
-            GTSBot7.botstop = true;
+            Program.gtsBot.botstop = true;
             btn_Start.Enabled = true;
             btn_Stop.Enabled = false;
             botStop = true;
@@ -411,7 +376,7 @@ namespace Ledybot
             byte[] dataToWrite = new byte[count * 232];
             for (int i = 0; i < count; i++)
                 cloneshort.CopyTo(dataToWrite, i * 232);
-            uint offset = boxOff + boxIndex * 232;
+            uint offset = Program.helper.boxOff + boxIndex * 232;
             Program.scriptHelper.write(offset, dataToWrite, pid);
             MessageBox.Show("Injection Successful!");
         }
@@ -422,15 +387,9 @@ namespace Ledybot
             {
 
 
-                if(GTSBot7 != null)
-                {
-                    GTSBot7.RequestStop();
-                }
+                Program.gtsBot?.RequestStop();
 
-                if(eggbot != null)
-                {
-                    eggbot.RequestStop();
-                }
+                Program.eggBot?.RequestStop();
 
                 Program.scriptHelper.disconnect();
 
@@ -506,7 +465,7 @@ namespace Ledybot
             byte[] dataToWrite = new byte[count * 232];
             for (int i = 0; i < count; i++)
                 cloneshort.CopyTo(dataToWrite, i * 232);
-            uint offset = boxOff + boxIndex * 232;
+            uint offset = Program.helper.boxOff + boxIndex * 232;
             Program.scriptHelper.write(offset, dataToWrite, pid);
             MessageBox.Show("Deletion Successful!");
         }
@@ -548,15 +507,15 @@ namespace Ledybot
 
         private async void btn_EggStart_Click(object sender, EventArgs e)
         {
-            eggbot = new EggBot(pid, game);
+            Program.createEggBot(pid, game);
             btn_EggStop.Enabled = true;
             btn_EggStart.Enabled = false;
-            await eggbot.RunBot();
+            await Program.eggBot.RunBot();
         }
 
         private void btn_EggStop_Click(object sender, EventArgs e)
         {
-            eggbot.RequestStop();
+            Program.eggBot.RequestStop();
             btn_EggStart.Enabled = true;
             btn_EggStop.Enabled = false;
         }
@@ -569,8 +528,7 @@ namespace Ledybot
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Program.gd.saveDetails();
-            Program.bld.saveDetails();
+            Program.data.saveDetails();
             Program.ntrClient.disconnect();
             Application.Exit();
         }
@@ -585,38 +543,6 @@ namespace Ledybot
             Program.bld.ShowDialog(this);
         }
 
-        public void updateJSON()
-        {
-            if (tb_thread.Text == "")
-            {
-                return;
-            }
-            try
-            {
-                using (WebClient wc = new WebClient())
-                {
-                    wc.DownloadStringCompleted += (sender, e) =>
-                    {
-                        List<DataJSON> data = JsonConvert.DeserializeObject<List<DataJSON>>(e.Result);
-                        foreach (ChildrenData cd in data[1].data.children)
-                        {
-                            string fc = (cd.data.flair != null && cd.data.flair.Length >= 14 ? cd.data.flair.Substring(cd.data.flair.IndexOf('-', 4) - 4, 14) : "").Replace("-", "");
-                            if (!commented.Contains(fc) && fc != "")
-                            {
-                                commented.Add(fc);
-                            }
-                        }
-                    };
-
-                    wc.DownloadStringAsync(new Uri("https://www.reddit.com/r/" + tb_Subreddit.Text + "/comments/" + tb_thread.Text + ".json?limt=1000&showmore=true"));
-                }
-            }
-            catch
-            {
-
-            }
-        }
-
         private void btn_Import_Click(object sender, EventArgs e)
         {
             ImportCSV();
@@ -625,16 +551,6 @@ namespace Ledybot
         private void btn_Clear_Click(object sender, EventArgs e)
         {
             lv_log.Items.Clear();
-        }
-
-        public static string[] getStringList(string f)
-        {
-            object txt = Properties.Resources.ResourceManager.GetObject(f); // Fetch File, \n to list.
-            if (txt == null) return new string[0];
-            string[] rawlist = ((string)txt).Split('\n');
-            for (int i = 0; i < rawlist.Length; i++)
-                rawlist[i] = rawlist[i].Trim();
-            return rawlist;
         }
 
         private void btn_WCInject_Click(object sender, EventArgs e)
@@ -679,46 +595,6 @@ namespace Ledybot
         {
 
         }
-    }
-
-    public class DataReadyWaiting
-    {
-        public byte[] data;
-        public object arguments;
-        public delegate void DataHandler(object data_arguments);
-        public DataHandler handler;
-
-        public DataReadyWaiting(byte[] data_, DataHandler handler_, object arguments_)
-        {
-            this.data = data_;
-            this.handler = handler_;
-            this.arguments = arguments_;
-        }
-    }
-
-    public class DataJSON
-    {
-
-        [JsonProperty("data")]
-        public MainData data { get; set; }
-    }
-
-    public class MainData
-    {
-        [JsonProperty("children")]
-        public List<ChildrenData> children { get; set; }
-    }
-
-    public class ChildrenData
-    {
-        [JsonProperty("data")]
-        public CommentData data { get; set; }
-    }
-
-    public class CommentData
-    {
-        [JsonProperty("author_flair_text")]
-        public string flair { get; set; }
     }
 
 
