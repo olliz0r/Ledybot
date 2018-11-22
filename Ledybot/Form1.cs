@@ -160,8 +160,6 @@ namespace Ledybot
             }
         }
 
-        EggBot workerObject = null;
-
         private async void btn_Start_Click(object sender, EventArgs e)
         {
             if (!Program.data.giveawayDetails.Any())
