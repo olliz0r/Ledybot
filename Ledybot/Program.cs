@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO.Pipes;
+using System.Text;
 using System.Windows.Forms;
 using LedyLib;
 
@@ -12,14 +16,14 @@ namespace Ledybot
         public static EggBot eggBot;
         public static ScriptHelper scriptHelper;
         public static RemoteControl helper;
-        public static bool Connected = false;
         public static MainForm f1;
         public static LookupTable PKTable;
         public static PKHeX pkhex;
         public static GiveawayDetails gd;
         public static BanlistDetails bld;
+        public static List<KeyValuePair<string, ArrayList>> ServerList = new List<KeyValuePair<string, ArrayList>>();
 
-        
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -27,14 +31,7 @@ namespace Ledybot
         static void Main()
         {
             ntrClient = new NTR();
-            ntrClient.onLogArrival += log;
-            ntrClient.Disconnected += disconnected;
-            scriptHelper = new ScriptHelper(ntrClient);
-            scriptHelper.onAutoDisconnect += startAutoDisconnect;
-            helper = new RemoteControl(scriptHelper, ntrClient);
-            helper.onWaitingForData += addwaitingfordata;
-            helper.onWriteLastLog += writeLastLog;
-            helper.onDumpedPKHeXData += setDumpedData;
+            ntrClient.DataReady += NTR.handleDataReady;
             PKTable = new LookupTable();
             pkhex = new PKHeX();
             data = new Data();
@@ -43,14 +40,22 @@ namespace Ledybot
             f1 = new MainForm();
             gd = new GiveawayDetails();
             bld = new BanlistDetails();
+            scriptHelper = new ScriptHelper(ntrClient);
+            scriptHelper.onAutoDisconnect += f1.startAutoDisconnect;
+            helper = new RemoteControl(scriptHelper, ntrClient);
+            helper.onDumpedPKHeXData += setDumpedData;
+
+
             Application.Run(f1);
+
         }
 
-        public static void createGTSBot(int iP, int iPtF, int iPtFGender, int iPtFLevel, bool bBlacklist, bool bReddit, int iSearchDirection, string waittime, string consoleName, bool useLedySync, string ledySyncIp, string ledySyncPort, int game, bool useLedybotTV, string ledybotTVIp, string ledybotTVPort)
+        public static void createGTSBot(int iP, int iPtF, int iPtFGender, int iPtFLevel, bool bBlacklist, bool bReddit, int iSearchDirection, string waittime, string consoleName, bool useLedySync, string ledySyncIp, string ledySyncPort, int game, bool tradeQueue)
         {
-            gtsBot = new GTSBot7(iP, iPtF, iPtFGender, iPtFLevel, bBlacklist, bReddit, iSearchDirection, waittime, consoleName, useLedySync, ledySyncIp, ledySyncPort, game, useLedybotTV, ledybotTVIp, ledybotTVPort, helper, PKTable, data, scriptHelper);
-            gtsBot.onChangeStatus += ChangeStatus;
-            gtsBot.onItemDetails += appendItems;
+            gtsBot = new GTSBot7(iP, iPtF, iPtFGender, iPtFLevel, bBlacklist, bReddit, iSearchDirection, waittime, consoleName, useLedySync, ledySyncIp, ledySyncPort, game, tradeQueue, helper, PKTable, data, scriptHelper);
+            gtsBot.onChangeStatus += f1.ChangeStatus;
+            gtsBot.onItemDetails += f1.ReceiveItemDetails;
+            Data.GtsBot7 = gtsBot;
         }
 
         public static void createEggBot(int iP, int game)
@@ -58,52 +63,80 @@ namespace Ledybot
             eggBot = new EggBot(iP, game, helper);
         }
 
-        static void log(string msg)
-        {
-            try
-            {
-                f1.BeginInvoke(f1.delLastLog, msg);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        static void disconnected()
-        {
-            Connected = false;
-        }
-
-        static void startAutoDisconnect()
-        {
-            f1.startAutoDisconnect();
-        }
-
-        static void addwaitingfordata(uint newkey, DataReadyWaiting newvalue)
-        {
-            f1.addwaitingForData(newkey, newvalue);
-        }
-
-        static void writeLastLog(string str)
-        {
-            f1.lastlog = str;
-        }
-
         static void setDumpedData(byte[] data)
         {
             f1.dumpedPKHeX.Data = data;
         }
 
-        static void ChangeStatus(string msg)
+        public static void createPipe(string pipename)
         {
-            f1.ChangeStatus(msg);
+            NamedPipeServerStream server = new NamedPipeServerStream(pipename, PipeDirection.InOut, NamedPipeServerStream.MaxAllowedServerInstances,
+                PipeTransmissionMode.Message,
+                PipeOptions.Asynchronous);
+
+            f1.SendConsoleMessage("Awaiting connection from client...");
+
+            server.WaitForConnectionAsync().ContinueWith(t =>
+            {
+                f1.SendConsoleMessage("Connection Received.");
+                StartReadingAsync(server);
+
+                foreach (var pair in ServerList)
+                {
+                    if (pair.Key == pipename)
+                    {
+                        pair.Value.Add(server);
+                        return;
+                    }
+                }
+
+                ArrayList newPipeName = new ArrayList
+                {
+                    server
+                };
+
+                ServerList.Add(new KeyValuePair<string, ArrayList>(pipename, newPipeName));
+            });
+            
+
         }
 
-        static void appendItems(string szTrainerName, string szNickname, string szCountry, string szSubRegion,
-            string szSent, string fc, string page, string index)
+        public static void StartReadingAsync(NamedPipeServerStream PipeServer)
         {
-            f1.AppendListViewItem(szTrainerName, szNickname, szCountry, szSubRegion, szSent, fc, page, index);
+            // Debug.WriteLine("Pipe " + FullPipeNameDebug() + " calling ReadAsync");
+
+            // okay we're connected, now immediately listen for incoming buffers
+            //
+            byte[] pBuffer = new byte[500];
+            PipeServer.ReadAsync(pBuffer, 0, 500).ContinueWith(t =>
+            {
+                // Debug.WriteLine("Pipe " + FullPipeNameDebug() + " finished a read request");
+
+                // before we call the user back, start reading ANOTHER buffer, so the network stack
+                // will have something to deliver into and we don't keep it waiting.
+                // We're called on the "anonymous task" thread. if we queue another call to
+                // the pipe's read, that request goes down into the kernel, onto a different thread
+                // and this will be called back again, later. it's not recursive, and perfectly legal.
+
+                int ReadLen = t.Result;
+                if (ReadLen == 0)
+                {
+                    return;
+                }
+
+                // lodge ANOTHER read request BEFORE calling the user back. Doing this ensures
+                // the read is ready before we call the user back, which may cause a write request to happen,
+                // which will zip over to the other end of the pipe, cause a write to happen THERE, and we won't be ready to receive it
+                // (perhaps it will stay stuck in a kernel queue, and it's not necessary to do this)
+                //
+                StartReadingAsync(PipeServer);
+
+                string message = Encoding.ASCII.GetString(pBuffer).TrimEnd('\0').Trim(' ');
+
+                f1.ExecuteCommand(message, false, PipeServer);
+
+            });
         }
+
     }
 }

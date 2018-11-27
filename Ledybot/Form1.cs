@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Pipes;
 using System.Linq;
 using System.Net;
+using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -16,14 +18,13 @@ namespace Ledybot
     public partial class MainForm : Form
     {
 
-        public delegate void LogDelegate(string l);
-        public LogDelegate delLastLog;
-        public string lastlog = "";
         public int pid = 0;
         public int game = 0;
         public PKHeX dumpedPKHeX = new PKHeX();
 
         public uint wcOff;
+
+        private bool tradeQueue = false;
 
         private uint eggOff;
 
@@ -31,14 +32,10 @@ namespace Ledybot
         private bool botStop = false;
         private int botNumber = -1;
 
-        static Dictionary<uint, DataReadyWaiting> waitingForData = new Dictionary<uint, DataReadyWaiting>();
-
         public MainForm()
         {
-            Program.ntrClient.DataReady += handleDataReady;
             Program.ntrClient.Connected += connectCheck;
             Program.ntrClient.InfoReady += getGame;
-            delLastLog = new LogDelegate(lastLog);
             InitializeComponent();
             ofd_Injection.Title = "Select an EKX/PKX file";
             ofd_Injection.Filter = "Gen 7 pokémon files|*.pk7";
@@ -51,29 +48,307 @@ namespace Ledybot
             this.combo_pkmnList.Items.AddRange(Program.PKTable.Species7);
         }
 
+        public async void ExecuteCommand(string command, bool button, NamedPipeServerStream stream)
+        {
+            if (InvokeRequired)
+            {
+                this.Invoke(new Action<string, bool, NamedPipeServerStream>(ExecuteCommand), command, button, stream);
+                return;
+            }
+
+            string[] commStrings = command.Split(' ');
+            switch (commStrings[0].Trim('\0'))
+            {
+                case "connect3ds":
+
+                    string szIp = tb_IP.Text;
+                    if (!Program.ntrClient.isConnected)
+                    {
+                        Program.scriptHelper.connect(szIp, 8000);
+                    }
+                    else
+                    {
+                        if (button)
+                            MessageBox.Show("You are already connected!");
+                        else
+                        {
+                            stream?.Write(Encoding.ASCII.GetBytes("command:connect3ds Ledybot is already connected."), 0, 48);
+                            stream?.WaitForPipeDrain();
+                        }
+
+                    }
+                    break;
+                case "disconnect3ds":
+                    if (Program.ntrClient.isConnected)
+                    {
+                        Program.gtsBot?.RequestStop();
+
+                        Program.eggBot?.RequestStop();
+
+                        Program.scriptHelper.disconnect();
+
+                        if (Program.ntrClient.isConnected) return;
+                        if (button)
+                            MessageBox.Show("Successfully disconnected!");
+                        else
+                        {
+                            string msg = "command:disconnect3ds Ledybot successfully disconnected.";
+                            stream?.Write(Encoding.ASCII.GetBytes(msg), 0, msg.Length);
+                            stream?.WaitForPipeDrain();
+                        }
+                        undoButtons();
+                    }
+                    else
+                    {
+                        if (button)
+                            MessageBox.Show("You are already disconnected!");
+                        else
+                        {
+                            string msg = "command:disconnect3ds Ledybot successfully disconnected.";
+                            stream?.Write(Encoding.ASCII.GetBytes(msg), 0, msg.Length);
+                            stream?.WaitForPipeDrain();
+                        }
+                        undoButtons();
+                    }
+                    break;
+                case "startgtsbot":
+                    if (!Program.data.giveawayDetails.Any())
+                    {
+                        if (button)
+                            MessageBox.Show("No details are set!", "GTS Bot", MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                        else
+                        {
+                            string msg = "command:startgtsbot No details are set!";
+                            stream?.Write(Encoding.ASCII.GetBytes(msg), 0, msg.Length);
+                            stream?.WaitForPipeDrain();
+                        }
+                        return;
+                    }
+                    btn_Stop.Enabled = true;
+                    btn_Start.Enabled = false;
+                    Program.gd.disableButtons();
+                    botWorking = true;
+                    botStop = false;
+                    botNumber = 3;
+
+                    int tradeDirection = 0;
+                    if (rb_frontfpo.Checked)
+                    {
+                        tradeDirection = 1;
+                    }
+                    else if (rb_front.Checked)
+                    {
+                        tradeDirection = 2;
+                    }
+                    Program.createGTSBot(pid, combo_pkmnList.SelectedIndex + 1, combo_gender.SelectedIndex, combo_levelrange.SelectedIndex, cb_Blacklist.Checked, cb_Reddit.Checked, tradeDirection, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text, game, tradeQueue);
+                    Task<int> Bot = Program.gtsBot.RunBot();
+                    if (!button)
+                    {
+                        string msg2 = "command:startgtsbot Bot started!";
+                        stream?.Write(Encoding.ASCII.GetBytes(msg2), 0, msg2.Length);
+                        stream?.WaitForPipeDrain();
+                    }
+                    SendConsoleMessage("Bot started.");
+                    int result = await Bot;
+                    if (botStop)
+                        result = 8;
+                    switch (result)
+                    {
+                        case 1:
+                            SendConsoleMessage("All Pokemon Traded.");
+                            string msg3 = "msg:info All Pokemon Traded.";
+                            stream?.Write(Encoding.ASCII.GetBytes(msg3), 0, msg3.Length);
+                            stream?.WaitForPipeDrain();
+                            break;
+                        case 8:
+                            SendConsoleMessage("Bot Stopped by User");
+                            string msg4 = "msg:info Bot Stopped by User.";
+                            stream?.Write(Encoding.ASCII.GetBytes(msg4), 0, msg4.Length);
+                            stream?.WaitForPipeDrain();
+                            break;
+                        default:
+                            SendConsoleMessage("An error has occured.");
+                            string msg5 = "msg:info An error has occured.";
+                            stream?.Write(Encoding.ASCII.GetBytes(msg5), 0, msg5.Length);
+                            stream?.WaitForPipeDrain();
+                            break;
+                    }
+
+
+                    Program.gd.enableButtons();
+                    btn_Stop.Enabled = false;
+                    btn_Start.Enabled = true;
+                    botWorking = false;
+                    botNumber = -1;
+                    break;
+                case "stopgtsbot":
+                    Program.gtsBot.RequestStop();
+                    btn_Start.Enabled = true;
+                    btn_Stop.Enabled = false;
+                    botStop = true;
+                    SendConsoleMessage("Requested Bot Stop.");
+                    string msg6 = "command:stopgtsbot Requested to stop the bot.";
+                    stream?.Write(Encoding.ASCII.GetBytes(msg6), 0, msg6.Length);
+                    stream?.WaitForPipeDrain();
+                    break;
+                case "refresh":
+                    switch (commStrings.Length)
+                    {
+                        case 1:
+                            Program.data.refreshDetails();
+                            string msg7 = "command:refresh Ban list and giveaway details refreshed.";
+                            stream?.Write(Encoding.ASCII.GetBytes(msg7), 0, msg7.Length);
+                            stream?.WaitForPipeDrain();
+                            break;
+                        case 2:
+                            switch (commStrings[1])
+                            {
+                                case "details":
+                                    Program.data.refreshDetails(true, false);
+                                    string msg8 = "command:refresh Giveaway details refreshed.";
+                                    stream?.Write(Encoding.ASCII.GetBytes(msg8), 0, msg8.Length);
+                                    stream?.WaitForPipeDrain();
+                                    break;
+                                case "bans":
+                                    Program.data.refreshDetails(false);
+                                    string msg9 = "command:refresh Ban list refreshed.";
+                                    stream?.Write(Encoding.ASCII.GetBytes(msg9), 0, msg9.Length);
+                                    stream?.WaitForPipeDrain();
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        case 3:
+                            switch (commStrings[1])
+                            {
+                                case "details":
+                                    Program.data.refreshDetails(true, false, commStrings[2]);
+                                    string msg10 = "command:refresh Giveaway details refreshed from " + commStrings[2] + ".";
+                                    stream?.Write(Encoding.ASCII.GetBytes(msg10), 0, msg10.Length);
+                                    stream?.WaitForPipeDrain();
+                                    break;
+                                case "bans":
+                                    Program.data.refreshDetails(false, true, "", commStrings[2]);
+                                    string msg11 = "command:refresh Ban list refreshed from " + commStrings[2] + ".";
+                                    stream?.Write(Encoding.ASCII.GetBytes(msg11), 0, msg11.Length);
+                                    stream?.WaitForPipeDrain();
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "togglequeue":
+                    tradeQueue = !tradeQueue;
+                    if (tradeQueue)
+                    {
+                        SendConsoleMessage("Trade Queue Enabled.");
+                        string msg12 = "command:togglequeue Trade Queue Enabled.";
+                        stream?.Write(Encoding.ASCII.GetBytes(msg12), 0, msg12.Length);
+                        stream?.WaitForPipeDrain();
+                    }
+                    else
+                    {
+                        SendConsoleMessage("Trade Queue Disabled.");
+                        string msg13 = "command:togglequeue Trade Queue Disabled.";
+                        stream?.Write(Encoding.ASCII.GetBytes(msg13), 0, msg13.Length);
+                        stream?.WaitForPipeDrain();
+                    }
+                    break;
+                case "trade":
+                    if (tradeQueue)
+                    {
+                        if (commStrings.Length == 3)
+                        {
+                            Program.data.AddToQueue(int.Parse(commStrings[2]), commStrings[1]);
+                            SendConsoleMessage("Added FC " + commStrings[1] + " to queue with deposit of " + commStrings[2]);
+                            string msg15 = "command:trade Added FC " + commStrings[1] + " to queue with deposit of " + commStrings[2];
+                            stream?.Write(Encoding.ASCII.GetBytes(msg15), 0, msg15.Length);
+                            stream?.WaitForPipeDrain();
+                            break;
+                        }
+                        string msg16 = "command:trade Invalid Use. Usage: trade {fc} {dex}";
+                        stream?.Write(Encoding.ASCII.GetBytes(msg16), 0, msg16.Length);
+                        stream?.WaitForPipeDrain();
+                    }
+                    else
+                    {
+                        string msg14 = "command:trade Trade Queue is not enabled.";
+                        stream?.Write(Encoding.ASCII.GetBytes(msg14), 0, msg14.Length);
+                        stream?.WaitForPipeDrain();
+                    }
+                    break;
+                case "remove":
+                    if (tradeQueue)
+                    {
+                        if (commStrings.Length == 2)
+                        {
+                            Program.data.RemoveFromQueue(int.Parse(commStrings[1]));
+                            SendConsoleMessage("Removed trade of index " + commStrings[1] + " from queue");
+                            string msg18 = "command:remove Removed trade of index " + commStrings[1] + " from queue.";
+                            stream?.Write(Encoding.ASCII.GetBytes(msg18), 0, msg18.Length);
+                            stream?.WaitForPipeDrain();
+                            break;
+                        }
+                        string msg19 = "command:remove Invalid Use. Usage: remove {index}";
+                        stream?.Write(Encoding.ASCII.GetBytes(msg19), 0, msg19.Length);
+                        stream?.WaitForPipeDrain();
+                    }
+                    else
+                    {
+                        string msg17 = "command:remove Trade Queue is not enabled.";
+                        stream?.Write(Encoding.ASCII.GetBytes(msg17), 0, msg17.Length);
+                        stream?.WaitForPipeDrain();
+                    }
+
+                    break;
+
+                case "viewqueue":
+                    if (tradeQueue)
+                    {
+                        if (commStrings.Length == 1)
+                        {
+                            string msg21 = "command:viewqueue 1 " + Program.data.ViewQueue(1);
+                            stream?.Write(Encoding.ASCII.GetBytes(msg21), 0, msg21.Length);
+                            stream?.WaitForPipeDrain();
+                            break;
+                        }
+                        if (commStrings.Length == 2)
+                        {
+                            string msg22 = "command:viewqueue " + commStrings[1] + " " + Program.data.ViewQueue(int.Parse(commStrings[1]));
+                            stream?.Write(Encoding.ASCII.GetBytes(msg22), 0, msg22.Length);
+                            stream?.WaitForPipeDrain();
+                            break;
+                        }
+                        string msg19 = "command:remove Invalid Use. Usage: viewqueue {page}";
+                        stream?.Write(Encoding.ASCII.GetBytes(msg19), 0, msg19.Length);
+                        stream?.WaitForPipeDrain();
+                    }
+                    else
+                    {
+                        string msg20 = "command:viewqueue Trade Queue is not enabled.";
+                        stream?.Write(Encoding.ASCII.GetBytes(msg20), 0, msg20.Length);
+                        stream?.WaitForPipeDrain();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
         public void startAutoDisconnect()
         {
             disconnectTimer.Enabled = true;
         }
 
-        public void lastLog(string l)
-        {
-            lastlog = l;
-        }
-
         private void btn_Connect_Click(object sender, EventArgs e)
         {
-            string szIp = tb_IP.Text;
-
-            if (!Program.Connected)
-            {
-                Program.scriptHelper.connect(szIp, 8000);
-            }
-            else
-            {
-                MessageBox.Show("You are already connected!");
-            }
-
+            ExecuteCommand("connect3ds", true, null);
         }
 
         public void getGame(object sender, EventArgs e)
@@ -88,14 +363,15 @@ namespace Ledybot
                 Program.helper.pid = pid;
                 Program.scriptHelper.write(0x3E14C0, BitConverter.GetBytes(0xE3A01000), pid);
                 game = 0;
-                MessageBox.Show("Connection Successful!");
+                SendConsoleMessage("Connection Successful!");
 
                 Program.helper.boxOff = 0x330D9838;
                 wcOff = 0x331397E4;
                 Program.helper.partyOff = 0x34195E10;
                 eggOff = 0x3313EDD8;
 
-            } else if(log.Contains("momiji"))
+            }
+            else if (log.Contains("momiji"))
             {
                 string splitlog = log.Substring(log.IndexOf(", pname:   momiji") - 8, log.Length - log.IndexOf(", pname:   momiji"));
                 pid = Convert.ToInt32("0x" + splitlog.Substring(0, 8), 16);
@@ -103,7 +379,7 @@ namespace Ledybot
                 Program.scriptHelper.write(0x3F3424, BitConverter.GetBytes(0xE3A01000), pid); // Ultra Sun  // NFC ON: E3A01001 NFC OFF: E3A01000
                 Program.scriptHelper.write(0x3F3428, BitConverter.GetBytes(0xE3A01000), pid); // Ultra Moon // NFC ON: E3A01001 NFC OFF: E3A01000
                 game = 1;
-                MessageBox.Show("Connection Successful!");
+                SendConsoleMessage("Connection Successful!");
 
                 Program.helper.boxOff = 0x33015AB0;
                 wcOff = 0x33075BF4;
@@ -114,6 +390,11 @@ namespace Ledybot
 
         public void setupButtons()
         {
+            if (InvokeRequired)
+            {
+                this.Invoke(new Action(setupButtons));
+                return;
+            }
             btn_Connect.Enabled = false;
             btn_Disconnect.Enabled = true;
             btn_Start.Enabled = true;
@@ -127,6 +408,11 @@ namespace Ledybot
 
         public void undoButtons()
         {
+            if (InvokeRequired)
+            {
+                this.Invoke(new Action(undoButtons));
+                return;
+            }
             btn_Connect.Enabled = true;
             btn_Disconnect.Enabled = false;
             btn_Start.Enabled = false;
@@ -145,65 +431,44 @@ namespace Ledybot
 
             Program.scriptHelper.listprocess();
             setupButtons();
-            Program.Connected = true;
-        }
+            Program.ntrClient.isConnected = true;
 
-        static void handleDataReady(object sender, DataReadyEventArgs e)
-        { // We move data processing to a separate thread. This way even if processing takes a long time, the netcode doesn't hang.
-            DataReadyWaiting args;
-            if (waitingForData.TryGetValue(e.seq, out args))
+            List<NamedPipeServerStream> needToRemove = new List<NamedPipeServerStream>();
+
+            foreach (var list in Program.ServerList)
             {
-                Array.Copy(e.data, args.data, Math.Min(e.data.Length, args.data.Length));
-                Thread t = new Thread(new ParameterizedThreadStart(args.handler));
-                t.Start(args);
-                waitingForData.Remove(e.seq);
+                foreach (NamedPipeServerStream server in list.Value)
+                {
+                    try
+                    {
+                        server.Write(Encoding.ASCII.GetBytes("command:connect3ds Ledybot is connected."), 0, 40);
+                        server.WaitForPipeDrain();
+                    }
+                    catch
+                    {
+                        server.Disconnect();
+                        server.Dispose();
+                        needToRemove.Add(server);
+                    }
+                }
+
+                foreach (var server in needToRemove)
+                {
+                    list.Value.Remove(server);
+                }
+                needToRemove.Clear();
+
             }
         }
 
-        private async void btn_Start_Click(object sender, EventArgs e)
+        private void btn_Start_Click(object sender, EventArgs e)
         {
-            if (!Program.data.giveawayDetails.Any())
-            {
-                MessageBox.Show("No details are set!", "GTS Bot", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            btn_Stop.Enabled = true;
-            btn_Start.Enabled = false;
-            Program.gd.disableButtons();
-            botWorking = true;
-            botStop = false;
-            botNumber = 3;
+            ExecuteCommand("startgtsbot", true, null);
+        }
 
-            int tradeDirection = 0;
-            if (rb_frontfpo.Checked)
-            {
-                tradeDirection = 1;
-            }else if (rb_front.Checked)
-            {
-                tradeDirection = 2;
-            }
-            Program.createGTSBot(pid, combo_pkmnList.SelectedIndex + 1, combo_gender.SelectedIndex, combo_levelrange.SelectedIndex ,cb_Blacklist.Checked, cb_Reddit.Checked, tradeDirection, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text, game, true, "127.0.0.1", "3001");
-            Task<int> Bot = Program.gtsBot.RunBot();
-            int result = await Bot;
-            if (botStop)
-                result = 8;
-            switch (result)
-            {
-                case 1:
-                    MessageBox.Show("All Pokemon Traded.", "GTS Bot", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    break;
-                case 8:
-                    MessageBox.Show("Bot stopped by user.", "GTS Bot", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    break;
-                default:
-                    MessageBox.Show("An error has occurred.", "GTS Bot", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-            }
-            Program.gd.enableButtons();
-            btn_Stop.Enabled = false;
-            btn_Start.Enabled = true;
-            botWorking = false;
-            botNumber = -1;
+        public void ReceiveItemDetails(object sender, ItemDetailsEventArgs e)
+        {
+            AppendListViewItem(e.szTrainerName, e.szNickname, e.szCountry, e.szSubRegion, e.szSent, e.fc, e.page, e.index);
         }
 
         public void AppendListViewItem(string szTrainerName, string szNickname, string szCountry, string szSubRegion, string szSent, string fc, string page, string index)
@@ -216,6 +481,34 @@ namespace Ledybot
             string[] row = { DateTime.Now.ToString("h:mm:ss"), szTrainerName, szNickname, szCountry, szSubRegion, szSent, fc.Insert(4, "-").Insert(9, "-"), page, index };
             var listViewItem = new ListViewItem(row);
 
+            List<NamedPipeServerStream> needToRemove = new List<NamedPipeServerStream>();
+
+            foreach (var list in Program.ServerList)
+            {
+                foreach (NamedPipeServerStream server in list.Value)
+                {
+                    try
+                    {
+                        server.Write(Encoding.ASCII.GetBytes("Traded " + szSent + " to FC " + fc), 0,
+                            14 + szSent.Length + fc.Length);
+                        server.WaitForPipeDrain();
+                    }
+                    catch
+                    {
+                        server.Disconnect();
+                        server.Dispose();
+                        needToRemove.Add(server);
+                    }
+                }
+
+                foreach (var server in needToRemove)
+                {
+                    list.Value.Remove(server);
+                }
+                needToRemove.Clear();
+
+            }
+
             lv_log.Items.Add(listViewItem);
             lv_log.Items[lv_log.Items.Count - 1].EnsureVisible();
         }
@@ -227,15 +520,12 @@ namespace Ledybot
                 this.Invoke(new Action<string>(ChangeStatus), new object[] { szNewStatus });
                 return;
             }
-            this.rt_status.Text = "Bot Status: "+szNewStatus;
+            this.rt_status.Text = "Bot Status: " + szNewStatus;
         }
 
         private void btn_Stop_Click(object sender, EventArgs e)
         {
-            Program.gtsBot.botstop = true;
-            btn_Start.Enabled = true;
-            btn_Stop.Enabled = false;
-            botStop = true;
+            ExecuteCommand("stopgtsbot", true, null);
         }
 
         private void btn_Export_Click(object sender, EventArgs e)
@@ -351,8 +641,6 @@ namespace Ledybot
             }
         }
 
-
-
         private void btn_Inject_Click(object sender, EventArgs e)
         {
 
@@ -381,32 +669,7 @@ namespace Ledybot
 
         private void btn_Disconnect_Click(object sender, EventArgs e)
         {
-            if (Program.Connected)
-            {
-
-
-                Program.gtsBot?.RequestStop();
-
-                Program.eggBot?.RequestStop();
-
-                Program.scriptHelper.disconnect();
-
-                if (!Program.Connected)
-                {
-                    MessageBox.Show("Disconnection Successful!");
-                    undoButtons();
-                }
-            }
-            else
-            {
-                MessageBox.Show("You are already disconnected!");
-                undoButtons();
-            }
-        }
-
-        public void addwaitingForData(uint newkey, DataReadyWaiting newvalue)
-        {
-            waitingForData.Add(newkey, newvalue);
+            ExecuteCommand("disconnect3ds", true, null);
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -592,6 +855,36 @@ namespace Ledybot
         private void tb_LedySyncIP_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void btn_SendCommand_Click(object sender, EventArgs e)
+        {
+            if (tb_ConsoleCommand.Text.Length != 0)
+            {
+                string[] commStrings = tb_ConsoleCommand.Text.Split(' ');
+
+                switch (commStrings[0])
+                {
+                    case "connect":
+                        if (commStrings.Length == 2)
+                        {
+                            Program.createPipe(commStrings[1]);
+                        }
+                        else
+                            rtb_Console.AppendText("\nCommand Usage: connect {pipename}");
+                        break;
+                }
+            }
+        }
+
+        public void SendConsoleMessage(string message)
+        {
+            if (rtb_Console.InvokeRequired)
+            {
+                this.Invoke(new Action<string>(SendConsoleMessage), message);
+                return;
+            }
+            rtb_Console.AppendText("\n" + message);
         }
     }
 

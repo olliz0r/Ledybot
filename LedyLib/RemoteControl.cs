@@ -50,7 +50,7 @@ namespace LedyLib
         // Log Handler
         private void WriteLastLog(string str)
         {
-            onWriteLastLog.Invoke(str);
+            _ntrClient.lastlog = str;
         }
 
         private bool CompareLastLog(string str)
@@ -317,7 +317,7 @@ namespace LedyLib
             lastRead = 0;
             WriteLastLog("");
             DataReadyWaiting myArgs = new DataReadyWaiting(new byte[0x04], handleMemoryRead, null);
-            onWaitingForData.Invoke(_scriptHelper.data(address, 0x04, pid), myArgs);
+            _ntrClient.addwaitingForData(_scriptHelper.data(address, 0x04, pid), myArgs);
             int readcount = 0;
             for (readcount = 0; readcount < timeout * 100; readcount++)
             {
@@ -341,7 +341,7 @@ namespace LedyLib
             lastArray = null;
             WriteLastLog("");
             DataReadyWaiting myArgs = new DataReadyWaiting(new byte[size], handleMemoryRead, null);
-            onWaitingForData.Invoke(_scriptHelper.data(address, size, pid), myArgs);
+            _ntrClient.addwaitingForData(_scriptHelper.data(address, size, pid), myArgs);
             int readcount = 0;
             for (readcount = 0; readcount < timeout * 100; readcount++)
             {
@@ -369,7 +369,7 @@ namespace LedyLib
         {
             uint dumpOff = boxOff + (Convert.ToUInt32(box * BOXSIZE + slot) * POKEBYTES);
             DataReadyWaiting myArgs = new DataReadyWaiting(new byte[POKEBYTES], handlePokeRead, null);
-            onWaitingForData.Invoke(_scriptHelper.data(dumpOff, POKEBYTES, pid), myArgs);
+            _ntrClient.addwaitingForData(_scriptHelper.data(dumpOff, POKEBYTES, pid), myArgs);
             int readcount = 0;
             for (readcount = 0; readcount < timeout * 100; readcount++)
             {
@@ -392,7 +392,7 @@ namespace LedyLib
         {
             uint dumpOff = partyOff + Convert.ToUInt32(slot * 484);
             DataReadyWaiting myArgs = new DataReadyWaiting(new byte[POKEBYTES], handlePokeRead, null);
-            onWaitingForData.Invoke(_scriptHelper.data(dumpOff, POKEBYTES, pid), myArgs);
+            _ntrClient.addwaitingForData(_scriptHelper.data(dumpOff, POKEBYTES, pid), myArgs);
             int readcount = 0;
             for (readcount = 0; readcount < timeout * 100; readcount++)
             {
@@ -416,7 +416,7 @@ namespace LedyLib
             lastRead = 0;
             WriteLastLog("");
             DataReadyWaiting myArgs = new DataReadyWaiting(new byte[0x04], handleMemoryRead, null);
-            onWaitingForData.Invoke(_scriptHelper.data(address, 0x04, pid), myArgs);
+            _ntrClient.addwaitingForData(_scriptHelper.data(address, 0x04, pid), myArgs);
             int readcount = 0;
             for (readcount = 0; readcount < timeout * 100; readcount++)
             {
@@ -443,7 +443,7 @@ namespace LedyLib
                 lastRead = 0;
                 WriteLastLog("");
                 DataReadyWaiting myArgs = new DataReadyWaiting(new byte[0x04], handleMemoryRead, null);
-                onWaitingForData.Invoke(_scriptHelper.data(address, 0x04, pid), myArgs);
+                _ntrClient.addwaitingForData(_scriptHelper.data(address, 0x04, pid), myArgs);
                 // Wait for data
                 int readcount = 0;
                 for (readcount = 0; readcount < timeout * 100; readcount++)

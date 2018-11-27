@@ -70,6 +70,7 @@ namespace LedyLib
         public String host;
         public string lastlog;
         public int port;
+        public bool isConnected = false;
         public TcpClient tcp;
         public NetworkStream netStream;
         public Thread packetRecvThread;
@@ -78,6 +79,9 @@ namespace LedyLib
         public event EventHandler<DataReadyEventArgs> DataReady;
         public event EventHandler Connected;
         public event EventHandler<InfoReadyEventArgs> InfoReady;
+
+        public static Dictionary<uint, DataReadyWaiting> waitingForData = new Dictionary<uint, DataReadyWaiting>();
+
         UInt32 lastReadMemSeq;
 
         protected virtual void OnDataReady(DataReadyEventArgs e)
@@ -95,11 +99,6 @@ namespace LedyLib
             InfoReady?.Invoke(this, e);
         }
 
-
-        public delegate void logHandler(string msg);
-        public delegate void disconnected();
-        public event disconnected Disconnected;
-        public event logHandler onLogArrival;
         UInt32 currentSeq;
         public Dictionary<UInt32, readMemRequest> pendingReadMem = new Dictionary<UInt32, readMemRequest>();
         public volatile int progress = -1;
@@ -308,7 +307,7 @@ namespace LedyLib
                 log(ex.Message);
             }
             tcp = null;
-            Disconnected?.Invoke();
+            isConnected = false;
         }
 
         public void sendPacket(UInt32 type, UInt32 cmd, UInt32[] args, UInt32 dataLen)
@@ -422,7 +421,23 @@ namespace LedyLib
         public void log(string msg)
         {
             lastlog = msg;
-            onLogArrival?.Invoke(msg);
+        }
+
+        public static void handleDataReady(object sender, DataReadyEventArgs e)
+        { // We move data processing to a separate thread. This way even if processing takes a long time, the netcode doesn't hang.
+            DataReadyWaiting args;
+            if (waitingForData.TryGetValue(e.seq, out args))
+            {
+                Array.Copy(e.data, args.data, Math.Min(e.data.Length, args.data.Length));
+                Thread t = new Thread(new ParameterizedThreadStart(args.handler));
+                t.Start(args);
+                waitingForData.Remove(e.seq);
+            }
+        }
+
+        public void addwaitingForData(uint newkey, DataReadyWaiting newvalue)
+        {
+            waitingForData.Add(newkey, newvalue);
         }
     }
 }

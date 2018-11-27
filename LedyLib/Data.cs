@@ -23,6 +23,10 @@ namespace LedyLib
         public DataTable gdetails = new DataTable();
         public DataTable bdetails = new DataTable();
 
+        public List<Tuple<string, int, int>> tradeQueueRec = new List<Tuple<string, int, int>>();
+
+        public static GTSBot7 GtsBot7;
+
         public string thread = "";
         public string subreddit = "PokemonPlaza";
 
@@ -186,10 +190,76 @@ namespace LedyLib
 
         }
 
+        public void refreshDetails(bool giveawayB = true, bool banB = true, string giveaway = "giveawaydetails.xml",
+            string ban = "banlistdetails.xml")
+        {
+            if (giveawayB)
+            {
+                gdetails.Clear();
+                if (File.Exists(Application.StartupPath + "\\" + giveaway))
+                {
+                    gdetails.ReadXml(Application.StartupPath + "\\" + giveaway);
+                }
+
+                foreach (DataRow row in gdetails.Rows)
+                {
+                    giveawayDetails.Add((int)row[0], new Tuple<string, string, int, int, int, ArrayList>(row[1].ToString(), row[2].ToString(), (int)row[3], (int)row[4], (int)row[5], new ArrayList()));
+                }
+            }
+
+            if (banB)
+            {
+                bdetails.Clear();
+                if (File.Exists(Application.StartupPath + "\\" + ban))
+                {
+                    bdetails.ReadXml(Application.StartupPath + "\\" + ban);
+                }
+
+                foreach (DataRow row in bdetails.Rows)
+                {
+                    banlist.Add(row[0]);
+                }
+            }
+
+        }
+
         public void saveDetails()
         {
             gdetails.WriteXml(Application.StartupPath + "\\giveawaydetails.xml", true);
             bdetails.WriteXml(Application.StartupPath + "\\banlistdetails.xml", true);
+        }
+
+        public void AddToQueue(int dex, string fc)
+        {
+            tradeQueueRec.Add(new Tuple<string, int, int>(fc, dex, 0));
+        }
+
+        public void RemoveFromQueue(int index)
+        {
+            if (tradeQueueRec.Count > 0)
+                tradeQueueRec.RemoveAt(index);
+        }
+
+        public string ViewQueue(int page)
+        {
+            string result = "";
+            if (tradeQueueRec.Count == 0) return result;
+            if (tradeQueueRec.Count < 5 * page - 4)
+            {
+                for (var i = (tradeQueueRec.Count - 6 < 0 ? 0 : tradeQueueRec.Count - 6); i < tradeQueueRec.Count - 1; i++)
+                {
+                    result += i + "|" + tradeQueueRec[i].Item1 + "|" + tradeQueueRec[i].Item2 + ",";
+                }
+            }
+            else
+            {
+                for (var i = 5 * (page - 1); i < (5 * page > tradeQueueRec.Count ? tradeQueueRec.Count : 5 * page); i++)
+                {
+                    result += i + "|" + tradeQueueRec[i].Item1 + "|" + tradeQueueRec[i].Item2 + ",";
+                }
+            }
+
+            return result.TrimEnd(',');
         }
     }
 }

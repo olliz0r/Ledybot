@@ -11,23 +11,30 @@ using System.Threading.Tasks;
 
 namespace LedyLib
 {
+    public class ItemDetailsEventArgs : EventArgs
+    {
+        public string szTrainerName { get; set; }
+        public string szNickname { get; set; }
+        public string szCountry { get; set; }
+        public string szSubRegion { get; set; }
+        public string szSent { get; set; }
+        public string fc { get; set; }
+        public string page { get; set; }
+        public string index { get; set; }
+    }
+
     public class GTSBot7
     {
 
         //private System.IO.StreamWriter file = new StreamWriter(@"C:\Temp\ledylog.txt");
 
-        public enum gtsbotstates { botstart, startsearch, pressSeek, openpokemonwanted, openwhatpokemon, typepokemon, presssearch, startfind, findfromend, findfromstart, trade, research, botexit, updatecomments, quicksearch, panic };
+        public enum gtsbotstates { botstart, startsearch, pressSeek, openpokemonwanted, openwhatpokemon, typepokemon, presssearch, startfind, findfromend, findfromstart, trade, research, botexit, updatecomments, quicksearch, panic, queueempty };
 
         private string consoleName = "Ledybot";
 
         private TcpClient syncClient = new TcpClient();
         private IPEndPoint serverEndPointSync = null;
         private bool useLedySync = false;
-
-        private TcpClient tvClient = new TcpClient();
-        private IPEndPoint serverEndPointTV = null;
-        private bool useLedybotTV = false;
-
 
         private const int SEARCHDIRECTION_FROMBACK = 0;
         private const int SEARCHDIRECTION_FROMBACKFIRSTPAGEONLY = 1;
@@ -78,6 +85,9 @@ namespace LedyLib
         private int commandtime = 250;
         private int delaytime = 150;
         private int o3dswaittime = 1000;
+        private bool tradeQueue;
+        private const int maxQueueAttempts = 3;
+        private int queueAttempts = 0;
 
         private int listlength = 0;
         private int startIndex = 0;
@@ -95,10 +105,7 @@ namespace LedyLib
 
         public delegate void changeStatus(string msg);
 
-        public delegate void itemDetails(string szTrainerName, string szNickname, string szCountry, string szSubRegion,
-            string szSent, string fc, string page, string index);
-
-        public event itemDetails onItemDetails;
+        public event EventHandler<ItemDetailsEventArgs> onItemDetails; 
 
         public event changeStatus onChangeStatus;
 
@@ -142,33 +149,7 @@ namespace LedyLib
             }
         }
 
-        private void didTradeTV(byte[] principal, string consoleName, string trainerName, string country, string region, string pokemon, string szFC, string page, string index)
-        {
-            NetworkStream clientStream = tvClient.GetStream();
-            byte[] buffer = new byte[4096];
-            byte[] messageID = { 0x00 };
-            string szmessage = consoleName + '\t' + trainerName + '\t' + country + '\t' + region + '\t' + pokemon + '\t' + page + "\t" + index + "\t";
-            byte[] toSend = Encoding.UTF8.GetBytes(szmessage);
-
-            buffer = messageID.Concat(principal).Concat(toSend).ToArray();
-            clientStream.Write(buffer, 0, buffer.Length);
-            clientStream.Flush();
-            byte[] message = new byte[4096];
-            try
-            {
-                int bytesRead = clientStream.Read(message, 0, 4096);
-                if (message[0] == 0x01)
-                {
-                    onChangeStatus?.Invoke("LedybotTV message sent.");
-                }
-            }
-            catch
-            {
-                return;
-            }
-        }
-
-        public GTSBot7(int iP, int iPtF, int iPtFGender, int iPtFLevel, bool bBlacklist, bool bReddit, int iSearchDirection, string waittime, string consoleName, bool useLedySync, string ledySyncIp, string ledySyncPort, int game, bool useLedybotTV, string ledybotTVIp, string ledybotTVPort, RemoteControl helper, LookupTable pkTable, Data data, ScriptHelper scriptHelper)
+        public GTSBot7(int iP, int iPtF, int iPtFGender, int iPtFLevel, bool bBlacklist, bool bReddit, int iSearchDirection, string waittime, string consoleName, bool useLedySync, string ledySyncIp, string ledySyncPort, int game, bool tradeQueue, RemoteControl helper, LookupTable pkTable, Data data, ScriptHelper scriptHelper)
         {
             this.iPokemonToFind = iPtF;
             this.iPokemonToFindGender = iPtFGender;
@@ -252,6 +233,8 @@ namespace LedyLib
                 val_duringTrade = 0x3FD5;
             }
 
+            this.tradeQueue = tradeQueue;
+
         }
 
         public async Task<int> RunBot()
@@ -268,6 +251,12 @@ namespace LedyLib
             full = BitConverter.GetBytes(iPokemonToFindLevel);
             pokemonLevel = full[0];
             int panicAttempts = 0;
+
+            if (tradeQueue)
+            {
+                botState = (int) gtsbotstates.queueempty;
+            }
+
             while (!botstop)
             {
                 if (botState != (int)gtsbotstates.panic)
@@ -276,6 +265,14 @@ namespace LedyLib
                 }
                 switch (botState)
                 {
+                    case (int)gtsbotstates.queueempty:
+                        await Task.Delay(2000);
+                        if (_data.tradeQueueRec.Count > 0)
+                        {
+                            botState = (int)gtsbotstates.startsearch;
+                        }
+                            
+                        break;
                     case (int)gtsbotstates.botstart:
                         if (bReddit)
                             _data.updateJSON();
@@ -286,6 +283,13 @@ namespace LedyLib
                         botState = (int)gtsbotstates.research;
                         break;
                     case (int)gtsbotstates.startsearch:
+                        if (tradeQueue)
+                        {
+                            full = BitConverter.GetBytes(_data.tradeQueueRec[0].Item2);
+                            pokemonIndex[0] = full[0];
+                            pokemonIndex[1] = full[1];
+                            _data.tradeQueueRec[0] = new Tuple<string, int, int>(_data.tradeQueueRec[0].Item1, _data.tradeQueueRec[0].Item2, _data.tradeQueueRec[0].Item3 + 1);
+                        }
                         onChangeStatus?.Invoke("Setting Pokemon to find");
                         waitTaskbool = _helper.waitNTRwrite(addr_pokemonToFind, pokemonIndex, iPID);
                         waitTaskbool = _helper.waitNTRwrite(addr_pokemonToFindGender, pokemonGender, iPID);
@@ -420,6 +424,27 @@ namespace LedyLib
                             {
                                 Array.Copy(blockBytes, addr_PageEntry - addr_ListOfAllPageEntries, block, 0, 256);
                                 dexnumber = BitConverter.ToInt16(block, 0xC);
+                                Array.Copy(block, 0x48, principal, 0, 4);
+                                byte checksum = _data.calculateChecksum(principal);
+                                byte[] fc = new byte[8];
+                                Array.Copy(principal, 0, fc, 0, 4);
+                                fc[4] = checksum;
+                                long iFC = BitConverter.ToInt64(fc, 0);
+                                szFC = iFC.ToString().PadLeft(12, '0');
+                                if (tradeQueue)
+                                {
+                                    if (!_data.tradeQueueRec.Any())
+                                    {
+                                        tradeIndex = -1;
+                                        startIndex = 0;
+                                        break;
+                                    }
+                                    if (_data.tradeQueueRec[0].Item1 != szFC)
+                                    {
+                                        addr_PageEntry = BitConverter.ToUInt32(block, iNextPrevBlockOffest);
+                                        continue;
+                                    }
+                                }
                                 if (_data.giveawayDetails.ContainsKey(dexnumber))
                                 {
 
@@ -434,13 +459,6 @@ namespace LedyLib
                                             continue;
                                         }
                                     }
-                                    Array.Copy(block, 0x48, principal, 0, 4);
-                                    byte checksum = _data.calculateChecksum(principal);
-                                    byte[] fc = new byte[8];
-                                    Array.Copy(principal, 0, fc, 0, 4);
-                                    fc[4] = checksum;
-                                    long iFC = BitConverter.ToInt64(fc, 0);
-                                    szFC = iFC.ToString().PadLeft(12, '0');
 
                                     int gender = block[0xE];
                                     int level = block[0xF];
@@ -462,7 +480,7 @@ namespace LedyLib
                                             botState = (int)gtsbotstates.trade;
                                             break;
                                         }
-                                        else if (!useLedySync)
+                                        if (!useLedySync)
                                         {
                                             if ((!bReddit || _data.commented.Contains(szFC)) && !details.Item6.Contains(BitConverter.ToInt32(principal, 0)) && !_data.banlist.Contains(szFC))
                                             {
@@ -484,7 +502,21 @@ namespace LedyLib
                                     await Task.Delay(commandtime + delaytime + 500);
                                     _helper.quickbuton(_pkTable.keyB, commandtime);
                                     await Task.Delay(commandtime + delaytime + 500);
-                                    if (bReddit)
+                                    if (tradeQueue)
+                                    {
+                                        if(!_data.tradeQueueRec.Any())
+                                            botState = (int) gtsbotstates.queueempty;
+                                        else if (_data.tradeQueueRec[0].Item3 >= maxQueueAttempts)
+                                        {
+                                            botState = (int) gtsbotstates.queueempty;
+                                            _data.RemoveFromQueue(0);
+                                        }
+                                        else
+                                        {
+                                            botState = (int)gtsbotstates.research;
+                                        }
+                                    }
+                                    else if (bReddit)
                                     {
                                         botState = (int)gtsbotstates.updatecomments;
                                     }
@@ -555,6 +587,27 @@ namespace LedyLib
                                 onChangeStatus?.Invoke("Looking for a pokemon to trade");
                                 Array.Copy(blockBytes, addr_PageEntry - addr_ListOfAllPageEntries, block, 0, 256);
                                 dexnumber = BitConverter.ToInt16(block, 0xC);
+                                Array.Copy(block, 0x48, principal, 0, 4);
+                                byte checksum = _data.calculateChecksum(principal);
+                                byte[] fc = new byte[8];
+                                Array.Copy(principal, 0, fc, 0, 4);
+                                fc[4] = checksum;
+                                long iFC = BitConverter.ToInt64(fc, 0);
+                                szFC = iFC.ToString().PadLeft(12, '0');
+                                if (tradeQueue)
+                                {
+                                    if (!_data.tradeQueueRec.Any())
+                                    {
+                                        tradeIndex = -1;
+                                        startIndex = 0;
+                                        break;
+                                    }
+                                    if (_data.tradeQueueRec[0].Item1 != szFC)
+                                    {
+                                        addr_PageEntry = BitConverter.ToUInt32(block, 0);
+                                        continue;
+                                    }
+                                }
                                 if (_data.giveawayDetails.ContainsKey(dexnumber))
                                 {
                                     _data.giveawayDetails.TryGetValue(dexnumber, out details);
@@ -568,13 +621,7 @@ namespace LedyLib
                                             continue;
                                         }
                                     }
-                                    Array.Copy(block, 0x48, principal, 0, 4);
-                                    byte checksum = _data.calculateChecksum(principal);
-                                    byte[] fc = new byte[8];
-                                    Array.Copy(principal, 0, fc, 0, 4);
-                                    fc[4] = checksum;
-                                    long iFC = BitConverter.ToInt64(fc, 0);
-                                    szFC = iFC.ToString().PadLeft(12, '0');
+                                    
                                     int gender = block[0xE];
                                     int level = block[0xF];
                                     if ((gender == 0 || gender == details.Item3) && (level == 0 || level == details.Item4))
@@ -595,7 +642,7 @@ namespace LedyLib
                                             botState = (int)gtsbotstates.trade;
                                             break;
                                         }
-                                        else if (!useLedySync)
+                                        if (!useLedySync)
                                         {
                                             if ((!bReddit || _data.commented.Contains(szFC)) && !details.Item6.Contains(BitConverter.ToInt32(principal, 0)) && !_data.banlist.Contains(szFC))
                                             {
@@ -656,7 +703,21 @@ namespace LedyLib
                                     await Task.Delay(commandtime + delaytime + 500);
                                     _helper.quickbuton(_pkTable.keyB, commandtime);
                                     await Task.Delay(commandtime + delaytime + 500);
-                                    if (bReddit)
+                                    if (tradeQueue)
+                                    {
+                                        if (!_data.tradeQueueRec.Any())
+                                            botState = (int)gtsbotstates.queueempty;
+                                        else if (_data.tradeQueueRec[0].Item3 >= maxQueueAttempts)
+                                        {
+                                            botState = (int)gtsbotstates.queueempty;
+                                            _data.RemoveFromQueue(0);
+                                        }
+                                        else
+                                        {
+                                            botState = (int)gtsbotstates.research;
+                                        }
+                                    }
+                                    else if (bReddit)
                                     {
                                         botState = (int)gtsbotstates.updatecomments;
                                     }
@@ -706,15 +767,7 @@ namespace LedyLib
                             int subRegionIndex = BitConverter.ToInt16(block, 0x6A);
                             string subregion = "-";
                             _data.regions.TryGetValue(subRegionIndex, out subregion);
-                            if (bBlacklist)
-                            {
-                                details.Item6.Add(BitConverter.ToInt32(principal, 0));
-                            }
-                            onItemDetails?.Invoke(szTrainerName, szNickname, country, subregion, _pkTable.Species7[dexnumber - 1], szFC, page + "", tradeIndex + "");
-                            if (useLedybotTV)
-                            {
-                                didTradeTV(principal, consoleName, szTrainerName, country, subregion, _pkTable.Species7[dexnumber - 1], szFC, page + "", tradeIndex + "");
-                            }
+                            
                             //Inject the Pokemon to box1slot1
                             _scriptHelper.write(addr_box1slot1, cloneshort, iPID);
                             //spam a to trade pokemon
@@ -726,29 +779,12 @@ namespace LedyLib
                             await Task.Delay(commandtime + delaytime);
                             _helper.quickbuton(_pkTable.keyA, commandtime);
                             await Task.Delay(commandtime + delaytime);
-                            if (details.Item5 > 0)
-                            {
-                                _data.giveawayDetails[dexnumber] = new Tuple<string, string, int, int, int, ArrayList>(details.Item1, details.Item2, details.Item3, details.Item4, details.Item5 - 1, details.Item6);
-                                foreach (System.Data.DataRow row in _data.gdetails.Rows)
-                                {
-                                    if (row[0].ToString() == dexnumber.ToString())
-                                    {
-                                        int count = int.Parse(row[5].ToString()) - 1;
-                                        row[5] = count;
-                                        break;
-                                    }
-                                }
-                            }
 
-                            foreach (System.Data.DataRow row in _data.gdetails.Rows)
+                            if (bBlacklist)
                             {
-                                if (row[0].ToString() == dexnumber.ToString())
-                                {
-                                    int amount = int.Parse(row[6].ToString()) + 1;
-                                    row[6] = amount;
-                                    break;
-                                }
+                                details.Item6.Add(BitConverter.ToInt32(principal, 0));
                             }
+                            
                             //during the trade spam a/b to get back to the start screen in case of "this pokemon has been traded"
                             await Task.Delay(10250);
                             _helper.quickbuton(_pkTable.keyA, commandtime);
@@ -763,6 +799,56 @@ namespace LedyLib
                             _helper.quickbuton(_pkTable.keyB, commandtime);
                             await Task.Delay(commandtime + delaytime);
                             await Task.Delay(32000);
+
+                            await _helper.waitNTRread(addr_box1slot1 + 0x8, 2);
+
+                            byte[] ek7ID = new byte[2];
+
+                            Array.Copy(cloneshort, 8, ek7ID, 0, 2);
+
+                            if (tradeQueue)
+                                _data.RemoveFromQueue(0);
+
+                            if (!_helper.lastArray.SequenceEqual(ek7ID))
+                            {
+                                var args = new ItemDetailsEventArgs()
+                                {
+                                    fc = szFC,
+                                    index = tradeIndex + "",
+                                    page = page + "",
+                                    szCountry = country,
+                                    szNickname = szNickname,
+                                    szSent = _pkTable.Species7[dexnumber - 1],
+                                    szSubRegion = subregion,
+                                    szTrainerName = szTrainerName
+                                };
+
+                                onItemDetails?.Invoke(this, args);
+                                if (details.Item5 > 0)
+                                {
+                                    _data.giveawayDetails[dexnumber] = new Tuple<string, string, int, int, int, ArrayList>(details.Item1, details.Item2, details.Item3, details.Item4, details.Item5 - 1, details.Item6);
+                                    foreach (System.Data.DataRow row in _data.gdetails.Rows)
+                                    {
+                                        if (row[0].ToString() == dexnumber.ToString())
+                                        {
+                                            int count = int.Parse(row[5].ToString()) - 1;
+                                            row[5] = count;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                foreach (System.Data.DataRow row in _data.gdetails.Rows)
+                                {
+                                    if (row[0].ToString() == dexnumber.ToString())
+                                    {
+                                        int amount = int.Parse(row[6].ToString()) + 1;
+                                        row[6] = amount;
+                                        break;
+                                    }
+                                }
+                            }
+
                             bool cont = false;
                             foreach (KeyValuePair<int, Tuple<string, string, int, int, int, ArrayList>> pair in _data.giveawayDetails)
                             {
@@ -785,7 +871,11 @@ namespace LedyLib
                             addr_PageEntry = 0;
                             foundLastPage = false;
 
-                            if (bReddit)
+                            if (tradeQueue)
+                            {
+                                botState = (int) gtsbotstates.queueempty;
+                            }
+                            else if (bReddit)
                             {
                                 botState = (int)gtsbotstates.updatecomments;
                             }
@@ -809,6 +899,8 @@ namespace LedyLib
                         await Task.Delay(commandtime + delaytime + 1000);
                         await _helper.waittouch(160, 185);
                         await Task.Delay(2250);
+                        if(tradeQueue)
+                            _data.tradeQueueRec[0] = new Tuple<string, int, int>(_data.tradeQueueRec[0].Item1, _data.tradeQueueRec[0].Item2, _data.tradeQueueRec[0].Item3 + 1);
                         botState = (int)gtsbotstates.findfromstart;
                         break;
                     case (int)gtsbotstates.botexit:
@@ -920,10 +1012,6 @@ namespace LedyLib
             {
                 syncClient.Close();
             }
-            if (this.serverEndPointTV != null)
-            {
-                tvClient.Close();
-            }
             return botresult;
         }
 
@@ -931,7 +1019,6 @@ namespace LedyLib
         {
             botstop = true;
         }
-
 
     }
 }

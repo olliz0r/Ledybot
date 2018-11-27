@@ -109,6 +109,10 @@
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.ofd_WCInjection = new System.Windows.Forms.OpenFileDialog();
             this.rt_status = new System.Windows.Forms.RichTextBox();
+            this.tb_Console = new System.Windows.Forms.TabPage();
+            this.rtb_Console = new System.Windows.Forms.RichTextBox();
+            this.tb_ConsoleCommand = new System.Windows.Forms.TextBox();
+            this.btn_SendCommand = new System.Windows.Forms.Button();
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -122,6 +126,7 @@
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_DefaultCount)).BeginInit();
+            this.tb_Console.SuspendLayout();
             this.SuspendLayout();
             // 
             // tb_IP
@@ -269,6 +274,7 @@
             this.tc_Control.Controls.Add(this.tp_Injection);
             this.tc_Control.Controls.Add(this.tp_Breeding);
             this.tc_Control.Controls.Add(this.tb_Settings);
+            this.tc_Control.Controls.Add(this.tb_Console);
             this.tc_Control.Location = new System.Drawing.Point(1, 33);
             this.tc_Control.Name = "tc_Control";
             this.tc_Control.SelectedIndex = 0;
@@ -1008,6 +1014,47 @@
             this.rt_status.TabIndex = 30;
             this.rt_status.Text = "Bot Status: ";
             // 
+            // tb_Console
+            // 
+            this.tb_Console.Controls.Add(this.btn_SendCommand);
+            this.tb_Console.Controls.Add(this.tb_ConsoleCommand);
+            this.tb_Console.Controls.Add(this.rtb_Console);
+            this.tb_Console.Location = new System.Drawing.Point(4, 22);
+            this.tb_Console.Name = "tb_Console";
+            this.tb_Console.Padding = new System.Windows.Forms.Padding(3);
+            this.tb_Console.Size = new System.Drawing.Size(369, 536);
+            this.tb_Console.TabIndex = 4;
+            this.tb_Console.Text = "Console";
+            this.tb_Console.UseVisualStyleBackColor = true;
+            // 
+            // rtb_Console
+            // 
+            this.rtb_Console.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.rtb_Console.Location = new System.Drawing.Point(4, 4);
+            this.rtb_Console.Name = "rtb_Console";
+            this.rtb_Console.ReadOnly = true;
+            this.rtb_Console.Size = new System.Drawing.Size(362, 490);
+            this.rtb_Console.TabIndex = 0;
+            this.rtb_Console.Text = "";
+            // 
+            // tb_ConsoleCommand
+            // 
+            this.tb_ConsoleCommand.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tb_ConsoleCommand.Location = new System.Drawing.Point(4, 501);
+            this.tb_ConsoleCommand.Name = "tb_ConsoleCommand";
+            this.tb_ConsoleCommand.Size = new System.Drawing.Size(281, 20);
+            this.tb_ConsoleCommand.TabIndex = 1;
+            // 
+            // btn_SendCommand
+            // 
+            this.btn_SendCommand.Location = new System.Drawing.Point(291, 501);
+            this.btn_SendCommand.Name = "btn_SendCommand";
+            this.btn_SendCommand.Size = new System.Drawing.Size(75, 20);
+            this.btn_SendCommand.TabIndex = 2;
+            this.btn_SendCommand.Text = "Send";
+            this.btn_SendCommand.UseVisualStyleBackColor = true;
+            this.btn_SendCommand.Click += new System.EventHandler(this.btn_SendCommand_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1045,6 +1092,8 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_DefaultCount)).EndInit();
+            this.tb_Console.ResumeLayout(false);
+            this.tb_Console.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1131,6 +1180,10 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.ComboBox combo_levelrange;
         private System.Windows.Forms.ComboBox combo_gender;
+        private System.Windows.Forms.TabPage tb_Console;
+        private System.Windows.Forms.RichTextBox rtb_Console;
+        private System.Windows.Forms.Button btn_SendCommand;
+        private System.Windows.Forms.TextBox tb_ConsoleCommand;
     }
 }
 
