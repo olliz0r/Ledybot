@@ -131,7 +131,7 @@ namespace Ledybot
                 //
                 StartReadingAsync(PipeServer);
 
-                string message = Encoding.ASCII.GetString(pBuffer).TrimEnd('\0').Trim(' ');
+                string message = Encoding.Unicode.GetString(pBuffer).TrimEnd('\0').Trim(' ');
 
                 f1.ExecuteCommand(message, false, PipeServer);
 

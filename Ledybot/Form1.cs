@@ -72,7 +72,9 @@ namespace Ledybot
                             MessageBox.Show("You are already connected!");
                         else
                         {
-                            stream?.Write(Encoding.ASCII.GetBytes("command:connect3ds Ledybot is already connected."), 0, 48);
+                            string msg = "command:connect3ds Ledybot is already connected.";
+                            byte[] bytes = Encoding.Unicode.GetBytes(msg);
+                            stream?.Write(bytes, 0, bytes.Length);
                             stream?.WaitForPipeDrain();
                         }
 
@@ -93,7 +95,8 @@ namespace Ledybot
                         else
                         {
                             string msg = "command:disconnect3ds Ledybot successfully disconnected.";
-                            stream?.Write(Encoding.ASCII.GetBytes(msg), 0, msg.Length);
+                            byte[] bytes = Encoding.Unicode.GetBytes(msg);
+                            stream?.Write(bytes, 0, bytes.Length);
                             stream?.WaitForPipeDrain();
                         }
                         undoButtons();
@@ -105,7 +108,8 @@ namespace Ledybot
                         else
                         {
                             string msg = "command:disconnect3ds Ledybot successfully disconnected.";
-                            stream?.Write(Encoding.ASCII.GetBytes(msg), 0, msg.Length);
+                            byte[] bytes = Encoding.Unicode.GetBytes(msg);
+                            stream?.Write(bytes, 0, bytes.Length);
                             stream?.WaitForPipeDrain();
                         }
                         undoButtons();
@@ -120,7 +124,8 @@ namespace Ledybot
                         else
                         {
                             string msg = "command:startgtsbot No details are set!";
-                            stream?.Write(Encoding.ASCII.GetBytes(msg), 0, msg.Length);
+                            byte[] bytes = Encoding.Unicode.GetBytes(msg);
+                            stream?.Write(bytes, 0, bytes.Length);
                             stream?.WaitForPipeDrain();
                         }
                         return;
@@ -146,7 +151,8 @@ namespace Ledybot
                     if (!button)
                     {
                         string msg2 = "command:startgtsbot Bot started!";
-                        stream?.Write(Encoding.ASCII.GetBytes(msg2), 0, msg2.Length);
+                        byte[] bytes2 = Encoding.Unicode.GetBytes(msg2);
+                        stream?.Write(bytes2, 0, bytes2.Length);
                         stream?.WaitForPipeDrain();
                     }
                     SendConsoleMessage("Bot started.");
@@ -158,19 +164,22 @@ namespace Ledybot
                         case 1:
                             SendConsoleMessage("All Pokemon Traded.");
                             string msg3 = "msg:info All Pokemon Traded.";
-                            stream?.Write(Encoding.ASCII.GetBytes(msg3), 0, msg3.Length);
+                            byte[] bytes3 = Encoding.Unicode.GetBytes(msg3);
+                            stream?.Write(bytes3, 0, bytes3.Length);
                             stream?.WaitForPipeDrain();
                             break;
                         case 8:
                             SendConsoleMessage("Bot Stopped by User");
                             string msg4 = "msg:info Bot Stopped by User.";
-                            stream?.Write(Encoding.ASCII.GetBytes(msg4), 0, msg4.Length);
+                            byte[] bytes4 = Encoding.Unicode.GetBytes(msg4);
+                            stream?.Write(bytes4, 0, bytes4.Length);
                             stream?.WaitForPipeDrain();
                             break;
                         default:
                             SendConsoleMessage("An error has occured.");
                             string msg5 = "msg:info An error has occured.";
-                            stream?.Write(Encoding.ASCII.GetBytes(msg5), 0, msg5.Length);
+                            byte[] bytes5 = Encoding.Unicode.GetBytes(msg5);
+                            stream?.Write(bytes5, 0, bytes5.Length);
                             stream?.WaitForPipeDrain();
                             break;
                     }
@@ -189,7 +198,8 @@ namespace Ledybot
                     botStop = true;
                     SendConsoleMessage("Requested Bot Stop.");
                     string msg6 = "command:stopgtsbot Requested to stop the bot.";
-                    stream?.Write(Encoding.ASCII.GetBytes(msg6), 0, msg6.Length);
+                    byte[] bytes6 = Encoding.Unicode.GetBytes(msg6);
+                    stream?.Write(bytes6, 0, bytes6.Length);
                     stream?.WaitForPipeDrain();
                     break;
                 case "refresh":
@@ -198,7 +208,8 @@ namespace Ledybot
                         case 1:
                             Program.data.refreshDetails();
                             string msg7 = "command:refresh Ban list and giveaway details refreshed.";
-                            stream?.Write(Encoding.ASCII.GetBytes(msg7), 0, msg7.Length);
+                            byte[] bytes7 = Encoding.Unicode.GetBytes(msg7);
+                            stream?.Write(bytes7, 0, bytes7.Length);
                             stream?.WaitForPipeDrain();
                             break;
                         case 2:
@@ -207,13 +218,15 @@ namespace Ledybot
                                 case "details":
                                     Program.data.refreshDetails(true, false);
                                     string msg8 = "command:refresh Giveaway details refreshed.";
-                                    stream?.Write(Encoding.ASCII.GetBytes(msg8), 0, msg8.Length);
+                                    byte[] bytes8 = Encoding.Unicode.GetBytes(msg8);
+                                    stream?.Write(bytes8, 0, bytes8.Length);
                                     stream?.WaitForPipeDrain();
                                     break;
                                 case "bans":
                                     Program.data.refreshDetails(false);
                                     string msg9 = "command:refresh Ban list refreshed.";
-                                    stream?.Write(Encoding.ASCII.GetBytes(msg9), 0, msg9.Length);
+                                    byte[] bytes9 = Encoding.Unicode.GetBytes(msg9);
+                                    stream?.Write(bytes9, 0, bytes9.Length);
                                     stream?.WaitForPipeDrain();
                                     break;
                                 default:
@@ -226,13 +239,15 @@ namespace Ledybot
                                 case "details":
                                     Program.data.refreshDetails(true, false, commStrings[2]);
                                     string msg10 = "command:refresh Giveaway details refreshed from " + commStrings[2] + ".";
-                                    stream?.Write(Encoding.ASCII.GetBytes(msg10), 0, msg10.Length);
+                                    byte[] bytes10 = Encoding.Unicode.GetBytes(msg10);
+                                    stream?.Write(bytes10, 0, bytes10.Length);
                                     stream?.WaitForPipeDrain();
                                     break;
                                 case "bans":
                                     Program.data.refreshDetails(false, true, "", commStrings[2]);
                                     string msg11 = "command:refresh Ban list refreshed from " + commStrings[2] + ".";
-                                    stream?.Write(Encoding.ASCII.GetBytes(msg11), 0, msg11.Length);
+                                    byte[] bytes11 = Encoding.Unicode.GetBytes(msg11);
+                                    stream?.Write(bytes11, 0, bytes11.Length);
                                     stream?.WaitForPipeDrain();
                                     break;
                                 default:
@@ -249,14 +264,16 @@ namespace Ledybot
                     {
                         SendConsoleMessage("Trade Queue Enabled.");
                         string msg12 = "command:togglequeue Trade Queue Enabled.";
-                        stream?.Write(Encoding.ASCII.GetBytes(msg12), 0, msg12.Length);
+                        byte[] bytes12 = Encoding.Unicode.GetBytes(msg12);
+                        stream?.Write(bytes12, 0, bytes12.Length);
                         stream?.WaitForPipeDrain();
                     }
                     else
                     {
                         SendConsoleMessage("Trade Queue Disabled.");
                         string msg13 = "command:togglequeue Trade Queue Disabled.";
-                        stream?.Write(Encoding.ASCII.GetBytes(msg13), 0, msg13.Length);
+                        byte[] bytes13 = Encoding.Unicode.GetBytes(msg13);
+                        stream?.Write(bytes13, 0, bytes13.Length);
                         stream?.WaitForPipeDrain();
                     }
                     break;
@@ -268,18 +285,21 @@ namespace Ledybot
                             Program.data.AddToQueue(int.Parse(commStrings[2]), commStrings[1]);
                             SendConsoleMessage("Added FC " + commStrings[1] + " to queue with deposit of " + commStrings[2]);
                             string msg15 = "command:trade Added FC " + commStrings[1] + " to queue with deposit of " + commStrings[2];
-                            stream?.Write(Encoding.ASCII.GetBytes(msg15), 0, msg15.Length);
+                            byte[] bytes15 = Encoding.Unicode.GetBytes(msg15);
+                            stream?.Write(bytes15, 0, bytes15.Length);
                             stream?.WaitForPipeDrain();
                             break;
                         }
                         string msg16 = "command:trade Invalid Use. Usage: trade {fc} {dex}";
-                        stream?.Write(Encoding.ASCII.GetBytes(msg16), 0, msg16.Length);
+                        byte[] bytes16 = Encoding.Unicode.GetBytes(msg16);
+                        stream?.Write(bytes16, 0, bytes16.Length);
                         stream?.WaitForPipeDrain();
                     }
                     else
                     {
                         string msg14 = "command:trade Trade Queue is not enabled.";
-                        stream?.Write(Encoding.ASCII.GetBytes(msg14), 0, msg14.Length);
+                        byte[] bytes14 = Encoding.Unicode.GetBytes(msg14);
+                        stream?.Write(bytes14, 0, bytes14.Length);
                         stream?.WaitForPipeDrain();
                     }
                     break;
@@ -291,18 +311,21 @@ namespace Ledybot
                             Program.data.RemoveFromQueue(int.Parse(commStrings[1]));
                             SendConsoleMessage("Removed trade of index " + commStrings[1] + " from queue");
                             string msg18 = "command:remove Removed trade of index " + commStrings[1] + " from queue.";
-                            stream?.Write(Encoding.ASCII.GetBytes(msg18), 0, msg18.Length);
+                            byte[] bytes18 = Encoding.Unicode.GetBytes(msg18);
+                            stream?.Write(bytes18, 0, bytes18.Length);
                             stream?.WaitForPipeDrain();
                             break;
                         }
                         string msg19 = "command:remove Invalid Use. Usage: remove {index}";
-                        stream?.Write(Encoding.ASCII.GetBytes(msg19), 0, msg19.Length);
+                        byte[] bytes19 = Encoding.Unicode.GetBytes(msg19);
+                        stream?.Write(bytes19, 0, bytes19.Length);
                         stream?.WaitForPipeDrain();
                     }
                     else
                     {
                         string msg17 = "command:remove Trade Queue is not enabled.";
-                        stream?.Write(Encoding.ASCII.GetBytes(msg17), 0, msg17.Length);
+                        byte[] bytes17 = Encoding.Unicode.GetBytes(msg17);
+                        stream?.Write(bytes17, 0, bytes17.Length);
                         stream?.WaitForPipeDrain();
                     }
 
@@ -314,25 +337,29 @@ namespace Ledybot
                         if (commStrings.Length == 1)
                         {
                             string msg21 = "command:viewqueue 1 " + Program.data.ViewQueue(1);
-                            stream?.Write(Encoding.ASCII.GetBytes(msg21), 0, msg21.Length);
+                            byte[] bytes21 = Encoding.Unicode.GetBytes(msg21);
+                            stream?.Write(bytes21, 0, bytes21.Length);
                             stream?.WaitForPipeDrain();
                             break;
                         }
                         if (commStrings.Length == 2)
                         {
                             string msg22 = "command:viewqueue " + commStrings[1] + " " + Program.data.ViewQueue(int.Parse(commStrings[1]));
-                            stream?.Write(Encoding.ASCII.GetBytes(msg22), 0, msg22.Length);
+                            byte[] bytes22 = Encoding.Unicode.GetBytes(msg22);
+                            stream?.Write(bytes22, 0, bytes22.Length);
                             stream?.WaitForPipeDrain();
                             break;
                         }
                         string msg19 = "command:remove Invalid Use. Usage: viewqueue {page}";
-                        stream?.Write(Encoding.ASCII.GetBytes(msg19), 0, msg19.Length);
+                        byte[] bytes19 = Encoding.Unicode.GetBytes(msg19);
+                        stream?.Write(bytes19, 0, bytes19.Length);
                         stream?.WaitForPipeDrain();
                     }
                     else
                     {
                         string msg20 = "command:viewqueue Trade Queue is not enabled.";
-                        stream?.Write(Encoding.ASCII.GetBytes(msg20), 0, msg20.Length);
+                        byte[] bytes20 = Encoding.Unicode.GetBytes(msg20);
+                        stream?.Write(bytes20, 0, bytes20.Length);
                         stream?.WaitForPipeDrain();
                     }
                     break;
@@ -441,7 +468,7 @@ namespace Ledybot
                 {
                     try
                     {
-                        server.Write(Encoding.ASCII.GetBytes("command:connect3ds Ledybot is connected."), 0, 40);
+                        server.Write(Encoding.Unicode.GetBytes("command:connect3ds Ledybot is connected."), 0, 40);
                         server.WaitForPipeDrain();
                     }
                     catch
@@ -489,9 +516,10 @@ namespace Ledybot
                 {
                     try
                     {
-                        server.Write(Encoding.ASCII.GetBytes("Traded " + szSent + " to FC " + fc), 0,
-                            14 + szSent.Length + fc.Length);
-                        server.WaitForPipeDrain();
+                        string msg = "msg:trade " + string.Join("|", szTrainerName, szNickname, szCountry, szSubRegion, szSent, fc, page, index);
+                        byte[] bytes = Encoding.Unicode.GetBytes(msg);
+                        server?.Write(bytes, 0, bytes.Length);
+                        server?.WaitForPipeDrain();
                     }
                     catch
                     {
