@@ -337,7 +337,7 @@ namespace LedyLib
                             if (!correctScreen)
                             {
                                 //Hotfix for Only one Pokemon on List
-                                if (Program.helper.lastRead != 0x40C0)
+                                if (_helper.lastRead != 0x40C0)
                                 {
                                     botState = (int)gtsbotstates.panic;
                                     break;
@@ -547,7 +547,7 @@ namespace LedyLib
                             if (!correctScreen)
                             {
                                 //Hotfix for Only one Pokemon on List
-                                if (Program.helper.lastRead != 0x40C0)
+                                if (_helper.lastRead != 0x40C0)
                                 {
                                     botState = (int)gtsbotstates.panic;
                                     break;
