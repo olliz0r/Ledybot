@@ -834,23 +834,9 @@ namespace Ledybot
 
         private void btn_SendCommand_Click(object sender, EventArgs e)
         {
-            if (tb_ConsoleCommand.Text.Length != 0)
-            {
-                string[] commStrings = tb_ConsoleCommand.Text.Split(' ');
-
-                switch (commStrings[0])
-                {
-                    case "connect":
-                        if (commStrings.Length == 2)
-                        {
-                            Program.createPipe(commStrings[1]);
-                        }
-                        else
-                            rtb_Console.AppendText("\nCommand Usage: connect {pipename}");
-                        break;
-                }
-            }
+            consolePress();
         }
+
 
         public void SendConsoleMessage(string message)
         {
@@ -880,6 +866,35 @@ namespace Ledybot
             stream.WaitForPipeDrain();
             Console.WriteLine("Wrote: \"{0}\"", str);
         }
+
+        private void tb_ConsoleCommand_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                consolePress();
+            }
+        }
+
+        public void consolePress()
+        {
+            if (tb_ConsoleCommand.Text.Length != 0){
+                string[] comStrings = tb_ConsoleCommand.Text.Split(' ');
+
+                switch (comStrings[0])
+                {
+                    case "connect":
+                        if (comStrings.Length == 2)
+                        {
+                            Program.createPipe(comStrings[1]);
+                        }
+                        else
+                            rtb_Console.AppendText("\nCommand Usage: conect {pipename}");
+                        break;
+                }
+            }
+        }
+
+        
 
     }
 

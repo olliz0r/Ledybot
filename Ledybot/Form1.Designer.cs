@@ -102,6 +102,10 @@
             this.label5 = new System.Windows.Forms.Label();
             this.tb_Subreddit = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.tb_Console = new System.Windows.Forms.TabPage();
+            this.btn_SendCommand = new System.Windows.Forms.Button();
+            this.tb_ConsoleCommand = new System.Windows.Forms.TextBox();
+            this.rtb_Console = new System.Windows.Forms.RichTextBox();
             this.ofd_Injection = new System.Windows.Forms.OpenFileDialog();
             this.btn_Disconnect = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
@@ -109,10 +113,6 @@
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.ofd_WCInjection = new System.Windows.Forms.OpenFileDialog();
             this.rt_status = new System.Windows.Forms.RichTextBox();
-            this.tb_Console = new System.Windows.Forms.TabPage();
-            this.rtb_Console = new System.Windows.Forms.RichTextBox();
-            this.tb_ConsoleCommand = new System.Windows.Forms.TextBox();
-            this.btn_SendCommand = new System.Windows.Forms.Button();
             this.tc_Control.SuspendLayout();
             this.tp_GTS.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -971,6 +971,48 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "Subreddit:";
             // 
+            // tb_Console
+            // 
+            this.tb_Console.Controls.Add(this.btn_SendCommand);
+            this.tb_Console.Controls.Add(this.tb_ConsoleCommand);
+            this.tb_Console.Controls.Add(this.rtb_Console);
+            this.tb_Console.Location = new System.Drawing.Point(4, 22);
+            this.tb_Console.Name = "tb_Console";
+            this.tb_Console.Padding = new System.Windows.Forms.Padding(3);
+            this.tb_Console.Size = new System.Drawing.Size(369, 536);
+            this.tb_Console.TabIndex = 4;
+            this.tb_Console.Text = "Console";
+            this.tb_Console.UseVisualStyleBackColor = true;
+            // 
+            // btn_SendCommand
+            // 
+            this.btn_SendCommand.Location = new System.Drawing.Point(291, 501);
+            this.btn_SendCommand.Name = "btn_SendCommand";
+            this.btn_SendCommand.Size = new System.Drawing.Size(75, 20);
+            this.btn_SendCommand.TabIndex = 2;
+            this.btn_SendCommand.Text = "Send";
+            this.btn_SendCommand.UseVisualStyleBackColor = true;
+            this.btn_SendCommand.Click += new System.EventHandler(this.btn_SendCommand_Click);
+            // 
+            // tb_ConsoleCommand
+            // 
+            this.tb_ConsoleCommand.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tb_ConsoleCommand.Location = new System.Drawing.Point(4, 501);
+            this.tb_ConsoleCommand.Name = "tb_ConsoleCommand";
+            this.tb_ConsoleCommand.Size = new System.Drawing.Size(281, 20);
+            this.tb_ConsoleCommand.TabIndex = 1;
+            this.tb_ConsoleCommand.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tb_ConsoleCommand_KeyUp);
+            // 
+            // rtb_Console
+            // 
+            this.rtb_Console.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.rtb_Console.Location = new System.Drawing.Point(4, 4);
+            this.rtb_Console.Name = "rtb_Console";
+            this.rtb_Console.ReadOnly = true;
+            this.rtb_Console.Size = new System.Drawing.Size(362, 490);
+            this.rtb_Console.TabIndex = 0;
+            this.rtb_Console.Text = "";
+            // 
             // ofd_Injection
             // 
             this.ofd_Injection.FileName = "Pokemon.pk7";
@@ -1013,47 +1055,6 @@
             this.rt_status.Size = new System.Drawing.Size(369, 22);
             this.rt_status.TabIndex = 30;
             this.rt_status.Text = "Bot Status: ";
-            // 
-            // tb_Console
-            // 
-            this.tb_Console.Controls.Add(this.btn_SendCommand);
-            this.tb_Console.Controls.Add(this.tb_ConsoleCommand);
-            this.tb_Console.Controls.Add(this.rtb_Console);
-            this.tb_Console.Location = new System.Drawing.Point(4, 22);
-            this.tb_Console.Name = "tb_Console";
-            this.tb_Console.Padding = new System.Windows.Forms.Padding(3);
-            this.tb_Console.Size = new System.Drawing.Size(369, 536);
-            this.tb_Console.TabIndex = 4;
-            this.tb_Console.Text = "Console";
-            this.tb_Console.UseVisualStyleBackColor = true;
-            // 
-            // rtb_Console
-            // 
-            this.rtb_Console.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.rtb_Console.Location = new System.Drawing.Point(4, 4);
-            this.rtb_Console.Name = "rtb_Console";
-            this.rtb_Console.ReadOnly = true;
-            this.rtb_Console.Size = new System.Drawing.Size(362, 490);
-            this.rtb_Console.TabIndex = 0;
-            this.rtb_Console.Text = "";
-            // 
-            // tb_ConsoleCommand
-            // 
-            this.tb_ConsoleCommand.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tb_ConsoleCommand.Location = new System.Drawing.Point(4, 501);
-            this.tb_ConsoleCommand.Name = "tb_ConsoleCommand";
-            this.tb_ConsoleCommand.Size = new System.Drawing.Size(281, 20);
-            this.tb_ConsoleCommand.TabIndex = 1;
-            // 
-            // btn_SendCommand
-            // 
-            this.btn_SendCommand.Location = new System.Drawing.Point(291, 501);
-            this.btn_SendCommand.Name = "btn_SendCommand";
-            this.btn_SendCommand.Size = new System.Drawing.Size(75, 20);
-            this.btn_SendCommand.TabIndex = 2;
-            this.btn_SendCommand.Text = "Send";
-            this.btn_SendCommand.UseVisualStyleBackColor = true;
-            this.btn_SendCommand.Click += new System.EventHandler(this.btn_SendCommand_Click);
             // 
             // MainForm
             // 
