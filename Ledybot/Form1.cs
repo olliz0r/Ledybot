@@ -838,26 +838,20 @@ namespace Ledybot
         }
 
 
-        public void SendConsoleMessage(string message)
-        {
-            if (rtb_Console.InvokeRequired)
-            {
-                this.Invoke(new Action<string>(SendConsoleMessage), message);
-                return;
-            }
-            rtb_Console.AppendText("\n" + message);
-        }
+        
 
-        public static void Writer(NamedPipeServerStream stream,String str)
+        public void Writer(NamedPipeServerStream stream,String str)
         {
             Tuple<String, NamedPipeServerStream> writerData = Tuple.Create(str,stream);
             ParameterizedThreadStart thready = new ParameterizedThreadStart(writeThread);
             Thread  newThread = new Thread(thready);
+            //rtb_Console.AppendText("\n" + "Writing Start");
             newThread.Start(writerData);
+            //rtb_Console.AppendText("\n" + "Writing End");
 
         }
 
-        public static void writeThread(object x)
+        public void writeThread(object x)
         {
             string str = ((Tuple<String, NamedPipeServerStream>)x).Item1;
             NamedPipeServerStream stream = ((Tuple<String, NamedPipeServerStream>)x).Item2;
@@ -894,7 +888,17 @@ namespace Ledybot
             }
         }
 
-        
+
+        public void SendConsoleMessage(string message)
+        {
+            if (rtb_Console.InvokeRequired)
+            {
+                this.Invoke(new Action<string>(SendConsoleMessage), message);
+                return;
+            }
+            rtb_Console.AppendText("\n" + message);
+        }
+
 
     }
 
