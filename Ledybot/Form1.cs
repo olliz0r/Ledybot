@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using LedyLib;
+using system.Threading;
 
 namespace Ledybot
 {
@@ -914,6 +915,26 @@ namespace Ledybot
             }
             rtb_Console.AppendText("\n" + message);
         }
+
+        public static void Writer(NamedPipeServerStream stream,String str)
+        {
+            Tuple<String, NamedPipeServerStream> writerData = Tuple.Create(str,stream);
+            ParameterizedThreadStart thready = new ParameterizedThreadStart(writeThread);
+            Thread  newThread = new Thread(thready);
+            newThread.Start(writerData);
+
+        }
+
+        public static void writeThread(object x)
+        {
+            string str = ((Tuple<String, NamedPipeServerStream>)x).Item1;
+            NamedPipeServerStream stream = ((Tuple<String, NamedPipeServerStream>)x).Item2;
+            byte[] bytes = Encoding.Unicode.GetBytes(str);
+            stream.Write(bytes, 0, bytes.Length);
+            stream.WaitForPipeDrain();
+            Console.WriteLine("Wrote: \"{0}\"", str);
+        }
+
     }
 
 
