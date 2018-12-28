@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -58,133 +58,133 @@ namespace Ledybot
             }
 
             string[] commStrings = command.Split(' ');
-            switch (commStrings[0].Trim('\0'))
-            {
-                case "connect3ds":
+			switch (commStrings[0].Trim('\0'))
+			{
+				case "connect3ds":
 
-                    string szIp = tb_IP.Text;
-                    if (!Program.ntrClient.isConnected)
-                    {
-                        Program.scriptHelper.connect(szIp, 8000);
-                    }
-                    else
-                    {
-                        if (button)
-                            MessageBox.Show("You are already connected!");
-                        else
-                        {
-                            string msg = "command:connect3ds Ledybot is already connected.";
-                            Writer(stream,msg);
-                        }
+					string szIp = tb_IP.Text;
+					if (!Program.ntrClient.isConnected)
+					{
+						Program.scriptHelper.connect(szIp, 8000);
+					}
+					else
+					{
+						if (button)
+							MessageBox.Show("You are already connected!");
+						else
+						{
+							string msg = "command:connect3ds Ledybot is already connected.";
+							Writer(stream, msg);
+						}
 
-                    }
-                    break;
-                case "disconnect3ds":
-                    if (Program.ntrClient.isConnected)
-                    {
-                        Program.gtsBot?.RequestStop();
+					}
+					break;
+				case "disconnect3ds":
+					if (Program.ntrClient.isConnected)
+					{
+						Program.gtsBot?.RequestStop();
 
-                        Program.eggBot?.RequestStop();
+						Program.eggBot?.RequestStop();
 
-                        Program.scriptHelper.disconnect();
+						Program.scriptHelper.disconnect();
 
-                        if (Program.ntrClient.isConnected) return;
-                        if (button)
-                            MessageBox.Show("Successfully disconnected!");
-                        else
-                        {
-                            string msg = "command:disconnect3ds Ledybot successfully disconnected.";
-                            Writer(stream, msg);
-                        }
-                        undoButtons();
-                    }
-                    else
-                    {
-                        if (button)
-                            MessageBox.Show("You are already disconnected!");
-                        else
-                        {
-                            string msg = "command:disconnect3ds Ledybot successfully disconnected.";
-                            Writer(stream, msg);
-                        }
-                        undoButtons();
-                    }
-                    break;
-                case "startgtsbot":
-                    if (!Program.data.giveawayDetails.Any())
-                    {
-                        if (button)
-                            MessageBox.Show("No details are set!", "GTS Bot", MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                        else
-                        {
-                            string msg = "command:startgtsbot No details are set!";
-                            Writer(stream, msg);
-                        }
-                        return;
-                    }
-                    btn_Stop.Enabled = true;
-                    btn_Start.Enabled = false;
-                    Program.gd.disableButtons();
-                    botWorking = true;
-                    botStop = false;
-                    botNumber = 3;
+						if (Program.ntrClient.isConnected) return;
+						if (button)
+							MessageBox.Show("Successfully disconnected!");
+						else
+						{
+							string msg = "command:disconnect3ds Ledybot successfully disconnected.";
+							Writer(stream, msg);
+						}
+						undoButtons();
+					}
+					else
+					{
+						if (button)
+							MessageBox.Show("You are already disconnected!");
+						else
+						{
+							string msg = "command:disconnect3ds Ledybot successfully disconnected.";
+							Writer(stream, msg);
+						}
+						undoButtons();
+					}
+					break;
+				case "startgtsbot":
+					if (!Program.data.giveawayDetails.Any())
+					{
+						if (button)
+							MessageBox.Show("No details are set!", "GTS Bot", MessageBoxButtons.OK,
+								MessageBoxIcon.Error);
+						else
+						{
+							string msg = "command:startgtsbot No details are set!";
+							Writer(stream, msg);
+						}
+						return;
+					}
+					btn_Stop.Enabled = true;
+					btn_Start.Enabled = false;
+					Program.gd.disableButtons();
+					botWorking = true;
+					botStop = false;
+					botNumber = 3;
 
-                    int tradeDirection = 0;
-                    if (rb_frontfpo.Checked)
-                    {
-                        tradeDirection = 1;
-                    }
-                    else if (rb_front.Checked)
-                    {
-                        tradeDirection = 2;
-                    }
-                    Program.createGTSBot(pid, combo_pkmnList.SelectedIndex + 1, combo_gender.SelectedIndex, combo_levelrange.SelectedIndex, cb_Blacklist.Checked, cb_Reddit.Checked, tradeDirection, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text, game, tradeQueue);
-                    Task<int> Bot = Program.gtsBot.RunBot();
-                    if (!button)
-                    {
-                        string msg2 = "command:startgtsbot Bot started!";
-                        Writer(stream, msg2);
-                    }
-                    SendConsoleMessage("Bot started.");
-                    int result = await Bot;
-                    if (botStop)
-                        result = 8;
-                    switch (result)
-                    {
-                        case 1:
-                            SendConsoleMessage("All Pokemon Traded.");
-                            string msg3 = "msg:info All Pokemon Traded.";
-                            Writer(stream, msg3);
-                            break;
-                        case 8:
-                            SendConsoleMessage("Bot Stopped by User");
-                            string msg4 = "msg:info Bot Stopped by User.";
-                            Writer(stream, msg4);
-                            break;
-                        default:
-                            SendConsoleMessage("An error has occured.");
-                            string msg5 = "msg:info An error has occured.";
-                            Writer(stream, msg5);
-                            break;
-                    }
+					int tradeDirection = 0;
+					if (rb_frontfpo.Checked)
+					{
+						tradeDirection = 1;
+					}
+					else if (rb_front.Checked)
+					{
+						tradeDirection = 2;
+					}
+					Program.createGTSBot(pid, combo_pkmnList.SelectedIndex + 1, combo_gender.SelectedIndex, combo_levelrange.SelectedIndex, cb_Blacklist.Checked, cb_Reddit.Checked, tradeDirection, tb_waittime.Text, tb_consoleName.Text, cb_UseLedySync.Checked, tb_LedySyncIP.Text, tb_LedySyncPort.Text, game, tradeQueue);
+					Task<int> Bot = Program.gtsBot.RunBot();
+					if (!button)
+					{
+						string msg2 = "command:startgtsbot Bot started!";
+						Writer(stream, msg2);
+					}
+					SendConsoleMessage("Bot started.");
+					int result = await Bot;
+					if (botStop)
+						result = 8;
+					switch (result)
+					{
+						case 1:
+							SendConsoleMessage("All Pokemon Traded.");
+							string msg3 = "msg:info All Pokemon Traded.";
+							Writer(stream, msg3);
+							break;
+						case 8:
+							SendConsoleMessage("Bot Stopped by User");
+							string msg4 = "msg:info Bot Stopped by User.";
+							Writer(stream, msg4);
+							break;
+						default:
+							SendConsoleMessage("An error has occured.");
+							string msg5 = "msg:info An error has occured.";
+							Writer(stream, msg5);
+							break;
+					}
 
 
-                    Program.gd.enableButtons();
-                    btn_Stop.Enabled = false;
-                    btn_Start.Enabled = true;
-                    botWorking = false;
-                    botNumber = -1;
-                    break;
-                case "stopgtsbot":
-                    Program.gtsBot.RequestStop();
+					Program.gd.enableButtons();
+					btn_Stop.Enabled = false;
+					btn_Start.Enabled = true;
+					botWorking = false;
+					botNumber = -1;
+					break;
+				case "stopgtsbot":
+					Program.gtsBot.RequestStop();
                     btn_Start.Enabled = true;
                     btn_Stop.Enabled = false;
                     botStop = true;
-                    SendConsoleMessage("Requested Bot Stop.");
-                    string msg6 = "command:stopgtsbot Requested to stop the bot.";
-                    Writer(stream, msg6);
-                    break;
+					SendConsoleMessage("Requested Bot Stop.");
+					string msg6 = "command:stopgtsbot Requested to stop the bot.";
+					Writer(stream, msg6);
+					break;
                 case "refresh":
                     switch (commStrings.Length)
                     {
