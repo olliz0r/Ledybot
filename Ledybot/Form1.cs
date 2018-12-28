@@ -852,18 +852,26 @@ namespace Ledybot
         }
 
         public void writeThread(object x)
-		{ 
-			string str = ((Tuple<String, NamedPipeServerStream>)x).Item1;
-            NamedPipeServerStream stream = ((Tuple<String, NamedPipeServerStream>)x).Item2;
-			if (stream != null) //solves the bot crashing when sending to a null pipe
+		{
+			try //catches any exceptions that may crash the pipe
 			{
-				byte[] bytes = Encoding.Unicode.GetBytes(str);
-				stream.Write(bytes, 0, bytes.Length);
-				stream.WaitForPipeDrain();
-				Console.WriteLine("Wrote: \"{0}\"", str);
-			} else
+				string str = ((Tuple<String, NamedPipeServerStream>)x).Item1;
+				NamedPipeServerStream stream = ((Tuple<String, NamedPipeServerStream>)x).Item2;
+				if (stream != null) //solves the bot crashing when sending to a null pipe
+				{
+					byte[] bytes = Encoding.Unicode.GetBytes(str);
+					stream.Write(bytes, 0, bytes.Length);
+					stream.WaitForPipeDrain();
+					Console.WriteLine("Wrote: \"{0}\"", str);
+				}
+				else
+				{
+					Console.WriteLine("\r\n Error nothing worked PIPE ERROR \r\n");
+				}
+			}
+			catch
 			{
-				Console.WriteLine("\r\n Error nothing worked PIPE ERROR \r\n");
+				Console.WriteLine("\r\n Bad pipe. Bad BAD! *SPANKS* \r\n");
 			}
         }
 
