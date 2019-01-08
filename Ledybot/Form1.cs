@@ -33,6 +33,8 @@ namespace Ledybot
         private bool botStop = false;
         private int botNumber = -1;
 
+        private Form touchfrm;
+
         public MainForm()
         {
             Program.ntrClient.Connected += connectCheck;
@@ -47,6 +49,46 @@ namespace Ledybot
             ofd_WCInjection.InitialDirectory = path;
             btn_Disconnect.Enabled = false;
             this.combo_pkmnList.Items.AddRange(Program.PKTable.Species7);
+
+            touchfrm = new Form()
+            {
+                FormBorderStyle = FormBorderStyle.FixedSingle
+            };
+            touchfrm.ClientSize = new System.Drawing.Size(320, 240);
+            touchfrm.MouseDown += Touchfrm_MouseDown;
+            touchfrm.MouseMove += Touchfrm_MouseMove;
+            touchfrm.MouseUp += Touchfrm_MouseUp;
+            touchfrm.Show(this);
+        }
+
+        bool touchtouch = false;
+
+        private void Touchfrm_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (touchtouch && Program.ntrClient.isConnected)
+                Program.helper.holdtouch(Math.Min(319, Math.Max(0, e.X)),
+                                         Math.Min(239, Math.Max(0, e.Y)));
+        }
+
+        private void Touchfrm_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (Program.ntrClient.isConnected)
+            {
+                Program.helper.holdtouch(e.X, e.Y);
+                touchtouch = true;
+            }
+            else
+            {
+                MessageBox.Show("You haven't even connected yet, you dummy!");
+                touchtouch = false;
+            }
+        }
+
+        private void Touchfrm_MouseUp(object sender, MouseEventArgs e)
+        {
+            touchtouch = false;
+            if (Program.ntrClient.isConnected)
+                Program.helper.freetouch();
         }
 
         public async void ExecuteCommand(string command, bool button, NamedPipeServerStream stream)
