@@ -336,12 +336,14 @@ namespace Ledybot
                         if (commStrings.Length == 1)
                         {
                             string msg21 = "command:viewqueue 1 " + Program.data.ViewQueue(1);
+                            SendConsoleMessage(msg21);
                             Writer(stream, msg21);
                             break;
                         }
                         if (commStrings.Length == 2)
                         {
                             string msg22 = "command:viewqueue " + commStrings[1] + " " + Program.data.ViewQueue(int.Parse(commStrings[1]));
+                            SendConsoleMessage(msg22);
                             Writer(stream, msg22);
                             break;
                         }
