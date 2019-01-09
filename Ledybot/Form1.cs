@@ -108,7 +108,9 @@ namespace Ledybot
 					if (!Program.ntrClient.isConnected)
 					{
 						Program.scriptHelper.connect(szIp, 8000);
-					}
+                        string msg = "command:connect3ds Ledybot is now connected.";
+                        Writer(stream, msg);
+                    }
 					else
 					{
 						if (button)
@@ -270,6 +272,8 @@ namespace Ledybot
                             }
                             break;
                         default:
+                            string msg11 = "command:refresh I do not know what you want...";
+                            Writer(stream, msg11);
                             break;
                     }
                     break;
