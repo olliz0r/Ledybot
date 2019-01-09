@@ -272,8 +272,8 @@ namespace Ledybot
                             }
                             break;
                         default:
-                            string msg11 = "command:refresh I do not know what you want...";
-                            Writer(stream, msg11);
+                            string msg12 = "command:refresh I do not know what you want...";
+                            Writer(stream, msg12);
                             break;
                     }
                     break;
