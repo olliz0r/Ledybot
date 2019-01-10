@@ -148,7 +148,7 @@ namespace Ledybot
 							MessageBox.Show("You are already disconnected!");
 						else
 						{
-							string msg = "command:disconnect3ds Ledybot successfully disconnected.";
+							string msg = "command:disconnect3ds Ledybot are already disconnected!";
 							Writer(stream, msg);
 						}
 						undoButtons();
@@ -251,6 +251,8 @@ namespace Ledybot
                                     Writer(stream, msg9);
                                     break;
                                 default:
+                                    string msg91 = "command:refresh Invalid Something or Other";
+                                    Writer(stream, msg91);
                                     break;
                             }
                             break;
@@ -268,6 +270,8 @@ namespace Ledybot
                                     Writer(stream, msg11);
                                     break;
                                 default:
+                                    string msg92 = "command:refresh Invalid Something or Other";
+                                    Writer(stream, msg92);
                                     break;
                             }
                             break;
@@ -361,6 +365,8 @@ namespace Ledybot
                     }
                     break;
                 default:
+                    string msg201 = "command:viewqueue Invalid Something or Other.. This is not Intended..";
+                    Writer(stream, msg201);
                     break;
             }
         }
