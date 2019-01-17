@@ -878,18 +878,6 @@ namespace LedyLib
                             listlength = 0;
                             addr_PageEntry = 0;
                             foundLastPage = false;
-                            
-                            correctScreen = await isCorrectWindow(val_Quit_SeekScreen);
-                            if (!correctScreen)
-                            {
-                                //Ban Friencode that caused a Failed Trade
-                                Program.f1.banlist.Add(szFC);
-                                Program.bld.details.Rows.Add(szFC);
-                                Program.bld.saveDetails();
-                                botState = (int)gtsbotstates.panic;
-                                break;
-                            }
-
 
                             if (tradeQueue)
                             {
