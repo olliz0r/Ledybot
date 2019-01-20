@@ -879,6 +879,16 @@ namespace LedyLib
                             addr_PageEntry = 0;
                             foundLastPage = false;
 
+                            correctScreen = await isCorrectWindow(val_Quit_SeekScreen);
+                            if (!correctScreen)
+                            {
+                                //Ban Friencode that caused a Failed Trade
+                                _data.banlist.Add(szFC);
+                                _data.bdetails.Rows.Add(szFC);
+                                botState = (int)gtsbotstates.panic;
+                                break;
+                            }
+                            
                             if (tradeQueue)
                             {
                                 botState = (int) gtsbotstates.queueempty;
