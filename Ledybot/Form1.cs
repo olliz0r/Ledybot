@@ -221,13 +221,19 @@ namespace Ledybot
 					botNumber = -1;
 					break;
 				case "stopgtsbot":
-					Program.gtsBot.RequestStop();
-                    btn_Start.Enabled = true;
-                    btn_Stop.Enabled = false;
-                    botStop = true;
-					SendConsoleMessage("Requested Bot Stop.");
-					string msg6 = "command:stopgtsbot Requested to stop the bot.";
-					Writer(stream, msg6);
+                    if (btn_Start.Enabled == true)
+                    {
+                        Program.gtsBot.RequestStop();
+                        btn_Start.Enabled = true;
+                        btn_Stop.Enabled = false;
+                        botStop = true;
+                        SendConsoleMessage("Requested Bot Stop.");
+                        string msg6 = "command:stopgtsbot Requested to stop the bot.";
+                        Writer(stream, msg6);
+                    } else {
+                        string msg6 = "command:stopgtsbot Requested to stop the bot. But bot never started";
+                        Writer(stream, msg6);
+                    }
 					break;
                 case "refresh":
                     switch (commStrings.Length)
