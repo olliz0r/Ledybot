@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -25,7 +25,7 @@ namespace LedyLib
 
     public class GTSBot7
     {
-
+        
         //private System.IO.StreamWriter file = new StreamWriter(@"C:\Temp\ledylog.txt");
 
         public enum gtsbotstates { botstart, startsearch, pressSeek, openpokemonwanted, openwhatpokemon, typepokemon, presssearch, startfind, findfromend, findfromstart, trade, research, botexit, updatecomments, quicksearch, panic, queueempty };
@@ -85,6 +85,7 @@ namespace LedyLib
         private int commandtime = 250;
         private int delaytime = 150;
         private int o3dswaittime = 1000;
+        private string szIP;
         private bool tradeQueue;
         private const int maxQueueAttempts = 3;
         private int queueAttempts = 0;
@@ -98,6 +99,7 @@ namespace LedyLib
 
         private Tuple<string, string, int, int, int, ArrayList> details;
 
+        private NTR _ntr;
         private RemoteControl _helper;
         private LookupTable _pkTable;
         private ScriptHelper _scriptHelper;
@@ -149,7 +151,7 @@ namespace LedyLib
             }
         }
 
-        public GTSBot7(int iP, int iPtF, int iPtFGender, int iPtFLevel, bool bBlacklist, bool bReddit, int iSearchDirection, string waittime, string consoleName, bool useLedySync, string ledySyncIp, string ledySyncPort, int game, bool tradeQueue, RemoteControl helper, LookupTable pkTable, Data data, ScriptHelper scriptHelper)
+        public GTSBot7(string szIP, int iP, int iPtF, int iPtFGender, int iPtFLevel, bool bBlacklist, bool bReddit, int iSearchDirection, string waittime, string consoleName, bool useLedySync, string ledySyncIp, string ledySyncPort, int game, bool tradeQueue, RemoteControl helper, LookupTable pkTable, Data data, ScriptHelper scriptHelper)
         {
             this.iPokemonToFind = iPtF;
             this.iPokemonToFindGender = iPtFGender;
@@ -159,6 +161,7 @@ namespace LedyLib
             this.bReddit = bReddit;
             this.searchDirection = iSearchDirection;
             this.o3dswaittime = Int32.Parse(waittime);
+            this.szIP = szIP;
             _helper = helper;
             _pkTable = pkTable;
             _data = data;
@@ -879,16 +882,6 @@ namespace LedyLib
                             addr_PageEntry = 0;
                             foundLastPage = false;
 
-                            correctScreen = await isCorrectWindow(val_Quit_SeekScreen);
-                            if (!correctScreen)
-                            {
-                                //Ban Friencode that caused a Failed Trade
-                                _data.banlist.Add(szFC);
-                                _data.bdetails.Rows.Add(szFC);
-                                botState = (int)gtsbotstates.panic;
-                                break;
-                            }
-                            
                             if (tradeQueue)
                             {
                                 botState = (int) gtsbotstates.queueempty;
@@ -928,6 +921,11 @@ namespace LedyLib
                     case (int)gtsbotstates.panic:
                         onChangeStatus?.Invoke("Recovery mode!");
                         //recover from weird state here
+                        if(!_ntr.isConnected)
+                        {
+                            _scriptHelper.connect(szIP, 8000);
+                        }
+
                         await _helper.waitNTRread(addr_currentScreen);
                         int screenID = (int)_helper.lastRead;
 
